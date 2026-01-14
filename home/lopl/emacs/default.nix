@@ -122,7 +122,6 @@ in {
         typst-preview
 
         proof-general
-        emacs-lean4-mode
       ];
 
     extraConfig = ''
