@@ -68,7 +68,6 @@
     qmmp
     quakespasm
     quickemu
-    r2modman
     r2mod_cli
     steam-run
     teams-for-linux
