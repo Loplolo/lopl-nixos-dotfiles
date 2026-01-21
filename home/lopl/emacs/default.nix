@@ -614,10 +614,8 @@ in {
 
     nil
     
-    python3Packages.python-lsp-server
-    rust-analyzer
-    cargo
     rustc
+    rustup
     clang-tools
     jdt-language-server
     jdk17
