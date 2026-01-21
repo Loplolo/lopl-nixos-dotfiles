@@ -209,8 +209,12 @@ in {
 (set-face-attribute 'link-visited nil :underline nil)
 
 (use-package dashboard
+  :ensure t    
   :hook (dashboard-mode . (lambda () (display-line-numbers-mode -1)))
   :config
+  (require 'projectile) 
+  (setq initial-buffer-choice t)
+  (dashboard-setup-startup-hook) 
   (setq dashboard-page-separator "\n\f\n"
         initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name))
         dashboard-banner-logo-title "Welcome to Emacs Dashboard"
@@ -532,6 +536,7 @@ in {
   (pdf-tools-install :no-query)
   (setq-default pdf-view-display-size 'fit-page))
 
+;; Latex
 (use-package auctex
   :defer t
   :hook (LaTeX-mode . (lambda ()
