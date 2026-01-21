@@ -62,7 +62,6 @@
     pavucontrol
     playerctl
     prismlauncher
-    python3
     qbittorrent
     qemu
     qmmp

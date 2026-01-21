@@ -39,6 +39,18 @@
     };
     packageRequires = [pkgs.emacsPackages.helm];
   };
+  
+   python-pkgs = pkgs.python3.withPackages (ps: with ps; [
+     pyqt6
+     pyqt6-webengine
+     epc
+     lxml
+     qrcode 
+     pysocks
+     retrying
+     python-lsp-server
+   ]);
+     
 in {
   home.file.".emacs.d/logo.png".source = ./logo.png;
 
@@ -46,7 +58,7 @@ in {
 
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs;
+    package = pkgs.emacs-gtk;
 
     extraPackages = epkgs:
       with epkgs; [
@@ -55,6 +67,7 @@ in {
         doom-themes
         all-the-icons
         dashboard
+        (eaf.withApplications [ eaf-browser eaf-pdf-viewer ])
         page-break-lines
         visual-fill-column
         rainbow-delimiters
@@ -531,7 +544,43 @@ in {
   (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer))
 
+(use-package eaf
+  :load-path "~/.emacs.d/site-lisp/emacs-application-framework" ; Needed if manually cloned, but with nix package use:
+  :init
+  (setq eaf-python-command "${python-pkgs}/bin/python3")
+     
+  (setq process-environment
+    (cons (concat "QT_QPA_PLATFORM_PLUGIN_PATH="
+                  "${pkgs.qt6.qtbase}/lib/qt-6/plugins")
+          process-environment))
+        
+        :custom
+        (eaf-browser-continue-where-left-off t)
+        (eaf-browser-enable-adblocker t)
+        :config
+        (require 'eaf-browser))
 
+;; typst preview
+(use-package typst-preview
+  :after typst-ts-mode
+  :init
+  (setq typst-preview-autostart t)
+  (setq typst-preview-open-browser-automatically t)
+  :custom
+  (typst-preview-browser "eaf-browser")
+  (typst-preview-invert-colors "auto")
+  (typst-preview-executable "tinymist")
+  (typst-preview-partial-rendering t)
+  
+  :bind
+  (:map typst-ts-mode-map
+        ("C-c C-p" . typst-preview-mode)
+        ("C-c C-b" . (typst-preview-open-browser))
+
+  )
+  
+  :config
+  (define-key typst-preview-mode-map (kbd "C-c C-j") 'typst-preview-send-position))
 
 (use-package editorconfig
   :config (editorconfig-mode 1))
@@ -551,11 +600,13 @@ in {
     auctex
     texlive.combined.scheme-full
     tinymist
-
     fira-code
     noto-fonts
     emacs-all-the-icons-fonts
-
+    
+    wmctrl
+    xdotool
+    
     ripgrep
     fd
     feh
