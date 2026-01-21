@@ -11,6 +11,7 @@
     ./theme.nix
     ./flatpak.nix
     ./firefox.nix
+    ./nyxt.nix
     ./git.nix
     ./shell.nix
     ./sway.nix

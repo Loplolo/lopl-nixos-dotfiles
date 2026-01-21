@@ -105,7 +105,8 @@ in {
         "${mod}+Shift+e" = "exec swaynag -t warning -m 'You pressed the exit shortcut.' -B 'Yes, exit sway' 'swaymsg exit'";
 
         # Custom Apps
-        "${sup}+f" = "exec nyxt"; # "exec firefox";
+        "${sup}+f" = "exec nyxt --no-socket";
+        "${sup}+g" = "exec firefox";
         "${sup}+t" = "exec Telegram";
         "${sup}+r" = "exec thunderbird";
         "${sup}+c" = "exec code";

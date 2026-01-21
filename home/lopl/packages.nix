@@ -55,7 +55,6 @@
     libreoffice
     mpv
     networkmanagerapplet
-    nyxt
     obsidian
     openarena
     openttd
