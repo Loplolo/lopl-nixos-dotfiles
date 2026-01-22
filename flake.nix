@@ -33,15 +33,13 @@
   } @ inputs: let
     system = "x86_64-linux";
 
-    overlay = final: prev: {
-    };
   in {
     nixosConfigurations = {
       rachael = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {inherit inputs;};
         modules = [
-          {nixpkgs.overlays = [overlay];}
+ 
           disko.nixosModules.disko
           stylix.nixosModules.stylix
           nix-flatpak.nixosModules.nix-flatpak
@@ -65,7 +63,7 @@
         inherit system;
         specialArgs = {inherit inputs;};
         modules = [
-          {nixpkgs.overlays = [overlay];}
+
           disko.nixosModules.disko
           stylix.nixosModules.stylix
           nix-flatpak.nixosModules.nix-flatpak

@@ -21,8 +21,6 @@
     ./xdg_mime.nix
   ];
 
-  
-
   home.username = "lopl";
   home.homeDirectory = "/home/lopl";
   home.stateVersion = "25.11";
