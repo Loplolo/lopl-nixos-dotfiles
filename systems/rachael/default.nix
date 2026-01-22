@@ -156,7 +156,7 @@
   users.users.lopl = {
     isNormalUser = true;
     description = "lopl";
-    extraGroups = ["networkmanager" "wheel" "video" "audio" "input" "greeter" "libvirtd" "podman" "nm-openvpn"];
+    extraGroups = ["networkmanager" "wheel" "video" "audio" "input" "greeter" "libvirtd" "podman" "docker" "nm-openvpn"];
     shell = pkgs.zsh;
   };
 
@@ -164,10 +164,9 @@
   # Flatpak
   services.flatpak.enable = true;
 
-  # Podman
-  virtualisation.podman = {
+  # Docker
+  virtualisation.docker = {
     enable = true;
-    dockerCompat = true;
   };
 
   # Steam
