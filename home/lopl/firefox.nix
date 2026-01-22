@@ -15,4 +15,6 @@
       };
     };
   };
+
+  stylix.targets.firefox.profileNames = ["lopl"];
 }
