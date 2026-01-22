@@ -41,6 +41,9 @@
     gnutar
     grim
     gvfs
+    guile
+    guile-hoot
+    haunt
     gzdoom
     htop
     i3status
