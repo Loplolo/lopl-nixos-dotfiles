@@ -6,6 +6,18 @@
   xdg.configFile."nyxt/config.lisp".text = ''
     (in-package #:nyxt-user)
 
+    ;; Emacs mode
+    (define-configuration buffer
+      ((default-modes (pushnew 'nyxt/mode/emacs:emacs-mode %slot-value%))))
+
+    ;; Other modes
+    (define-configuration web-buffer
+      ((default-modes (append (list 
+                                    'nyxt/mode/blocker:blocker-mode
+                                    'nyxt/mode/reduce-tracking:reduce-tracking-mode
+                                    'nyxt/mode/password:password-mode)
+                              %slot-value%))))
+
     ;; Keybindings Configuration
     (define-configuration buffer
       ((override-map (let ((map (make-keymap "override-map")))
