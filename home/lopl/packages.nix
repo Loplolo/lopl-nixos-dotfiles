@@ -54,6 +54,7 @@
     jetbrains.idea-community
     jetbrains.pycharm-community
     jetbrains.webstorm
+    keepassxc
     krita
     libreoffice
     mpv
