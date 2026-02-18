@@ -13,6 +13,7 @@
     ./firefox.nix
     ./nyxt.nix
     ./git.nix
+    ./secret-service.nix
     ./shell.nix
     ./sway.nix
     ./tofi.nix
