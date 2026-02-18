@@ -102,6 +102,10 @@
 (use-package hydra)
 (use-package general)
 
+;; Nix direnv integration
+(use-package envrc
+  :hook (after-init . envrc-global-mode))
+
 ;; Helm
 (use-package helm
   :bind
@@ -178,8 +182,8 @@
    (c-mode . lsp-deferred)
    (c++-mode . lsp-deferred)
    (csharp-mode . lsp-deferred)
-   (python-mode . lsp-deferred)
-   (rust-mode . lsp-deferred))
+   (rust-mode . lsp-deferred)
+   (python-mode . lsp-deferred))
   :init
   (setq lsp-keymap-prefix "C-c l"
         lsp-enable-file-watchers nil
@@ -209,7 +213,13 @@
   (require 'dap-java)
   (require 'dap-lldb)
   (require 'dap-cpptools)
-  (require 'dap-gdb-lldb))
+  (require 'dap-gdb-lldb)
+  
+  ;; Python Debugging
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy)
+  (setq dap-python-executable "python")
+  (dap-python-setup))
 
 (use-package lsp-ui
   :after (lsp-mode)
@@ -274,13 +284,21 @@
 (use-package ccls)
 
 ;; Python
-(use-package lsp-python-ms
-  :init (setq lsp-python-ms-auto-install-server t)
+(use-package lsp-pyright
+  :ensure t
+  :custom
+  (lsp-pyright-auto-import-completions t)
+  (lsp-pyright-multi-root nil)
   :hook (python-mode . (lambda ()
-                         (require 'lsp-python-ms)
-                         (lsp))))
+                          (require 'lsp-pyright)
+                          (lsp-deferred))))
 
-;; AMPL & QuakeC
+;; Black Formatter
+(use-package python-black
+  :after python
+  :hook (python-mode . python-black-on-save-mode))
+
+;; AMPL 
 (use-package ampl-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.mod$" . ampl-mode))
@@ -288,6 +306,7 @@
   (add-to-list 'auto-mode-alist '("\\.run$" . ampl-mode))
   (add-to-list 'interpreter-mode-alist '("ampl" . ampl-mode)))
 
+;; QuakeC
 (use-package quakec-mode
   :hook (quakec-mode . (lambda ()
                          (setq-local indent-tabs-mode t
@@ -412,8 +431,6 @@
   (eaf-browser-continue-where-left-off t)
   (eaf-browser-enable-adblocker t)
   :config
-  ;; NixOS Wayland compatibility (if applicable)
-  ;; (setq eaf-epc-process-environment (cons "QT_QPA_PLATFORM=xcb" process-environment))
   (require 'eaf-browser)
   (require 'eaf-pdf-viewer))
 
@@ -430,20 +447,14 @@
   (setq typst-preview-autostart t)
   (setq typst-preview-open-browser-automatically t)
   :config
-  ;; Point directly to Tinymist for the preview executable
   (setq typst-preview-executable "tinymist")
-  
-  ;; Configure EAF browser bridge
   (defun my/typst-preview-browser (url)
     (if (featurep 'eaf-browser)
         (eaf-open-browser url)
       (browse-url-firefox url)))
-      
   (setq typst-preview-browser 'my/typst-preview-browser)
   (setq typst-preview-invert-colors "auto")
   (setq typst-preview-partial-rendering t)
-  
-  ;; Keybindings
   (define-key typst-ts-mode-map (kbd "C-c C-p") 'typst-preview-mode)
   (define-key typst-preview-mode-map (kbd "C-c C-j") 'typst-preview-send-position))
 

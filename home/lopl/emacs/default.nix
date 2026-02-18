@@ -51,18 +51,15 @@ in {
 
     extraPackages = epkgs:
       with epkgs; [
-        auto-complete
-        ac-geiser
-        geiser
-        geiser-guile
-        iedit
-        use-package
+        # System Integration
+        envrc
+        exec-path-from-shell
+        
+        # UI
         doom-modeline
         doom-themes
         all-the-icons
         dashboard
-        # EAF and its applications
-        (eaf.withApplications [ eaf-browser eaf-pdf-viewer ])
         page-break-lines
         visual-fill-column
         rainbow-delimiters
@@ -71,6 +68,10 @@ in {
         general
         hydra
         
+        # EAF
+        (eaf.withApplications [ eaf-browser eaf-pdf-viewer ])
+
+        # Project Navigation
         helm
         helm-tramp
         helm-descbinds
@@ -83,6 +84,7 @@ in {
         treemacs-magit
         treemacs-all-the-icons
 
+        # Tools
         magit
         all-the-icons-dired
         dired-open
@@ -93,49 +95,68 @@ in {
         eshell-vterm
         quickrun
         editorconfig
-        exec-path-from-shell
-
+        
+        # Completion
         company
         yasnippet
         yasnippet-snippets
+        auto-complete
+
+        # General Programming 
         flycheck
         ligature
-
         lsp-mode
         lsp-ui
-        lsp-java
-        lsp-python-ms
         lsp-treemacs
         dap-mode
+        treesit-auto
+        (treesit-grammars.with-all-grammars)
 
+        # Nix
         nix-mode
+        
+        # Python
+        lsp-pyright
+        python-black
+        
+        # Java
+        lsp-java
+        
+        # Rust
         rustic
         cargo-mode
         cargo-transient
+        
+        # Web/Godot/C++
         gdscript-mode
         ccls
         web-mode
         impatient-mode
+        
+        # Scheme/Guile
+        ac-geiser
+        geiser
+        geiser-guile
+        
+        # Latex/Org
         auctex
-
-        treesit-auto
-        (treesit-grammars.with-all-grammars)
-
         org-bullets
         
+        # Custom Builds
         ampl-mode
         quakec-mode
 
+        # Typst
         typst-ts-mode
         typst-preview
 
+        # Coq
         proof-general
         company-coq
         
         helpful                  
         eterm-256color           
         base16-theme   
-
         ement
       ];
     
@@ -143,20 +164,37 @@ in {
   };
 
   home.packages = with pkgs; [
-    auctex
-    texlive.combined.scheme-full
-    tinymist
-    websocat
-    fira-code
-    noto-fonts
-    emacs-all-the-icons-fonts
+    # System
     wmctrl
     xdotool
     ripgrep
     fd
     feh
     mpv
+
+    # Fonts
+    fira-code
+    noto-fonts
+    emacs-all-the-icons-fonts
+
+    # Nix
     nil
+    direnv 
+
+    # Python tools
+    pyright               
+    python3Packages.black 
+    python3Packages.isort 
+    python3Packages.debugpy 
+    python3
+
+    # Latex/Typst
+    auctex
+    texlive.combined.scheme-full
+    tinymist
+    websocat
+
+    # Programming languages
     cargo
     rustc
     rust-analyzer
