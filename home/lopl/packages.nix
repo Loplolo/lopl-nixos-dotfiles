@@ -9,23 +9,28 @@
       obs-pipewire-audio-capture
     ];
   };
-
+  
+  
  home.packages = with pkgs; [
     i7z
     appimage-run
-    aider-chat
     blockbench
     blueman
     blender
     calibre
-    cdparanoia
     chromium
+    vscode
+    code-cursor
     cmus
+    direnv
     # Metodi formali
-    coqPackages.coq
-    coqPackages.coq-hammer 
+    (coq.withPackages (coqPkgs: [
+      coqPkgs.stdlib  
+      coqPkgs.mathcomp
+    ]))
     # ----------------
     darkplaces
+    dbeaver-bin
     (discord.override {
       withOpenASAR = true;
       withVencord = true;
@@ -34,6 +39,7 @@
     fastfetch
     ffmpeg-full
     flameshot
+    element-desktop
     gcc
     geteduroam-cli
     gimp
@@ -43,6 +49,8 @@
     gvfs
     guile
     guile-hoot
+    guile-reader
+    guile-lib
     haunt
     gzdoom
     htop
@@ -54,16 +62,18 @@
     jetbrains.idea-community
     jetbrains.pycharm-community
     jetbrains.webstorm
-    keepassxc
     krita
     libreoffice
     mpv
+    python3
     networkmanagerapplet
     obsidian
     openarena
     openttd
     openvpn
+    pandoc
     pavucontrol
+    pkg-config
     playerctl
     prismlauncher
     qbittorrent
