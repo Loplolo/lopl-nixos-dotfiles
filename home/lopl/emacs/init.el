@@ -429,7 +429,7 @@
 (use-package eaf
   :custom
   (eaf-browser-continue-where-left-off t)
-  (eaf-browser-enable-adblocker t)
+  (eaf-browser-enable-adblocker nil) 
   :config
   (require 'eaf-browser)
   (require 'eaf-pdf-viewer))
@@ -448,14 +448,20 @@
   (setq typst-preview-open-browser-automatically t)
   :config
   (setq typst-preview-executable "tinymist")
+  
   (defun my/typst-preview-browser (url)
     (if (featurep 'eaf-browser)
         (eaf-open-browser url)
       (browse-url-firefox url)))
+      
   (setq typst-preview-browser 'my/typst-preview-browser)
-  (setq typst-preview-invert-colors "auto")
+  
+  (setq typst-preview-invert-colors "never")
   (setq typst-preview-partial-rendering t)
+  
+  ;; Hotkeys
   (define-key typst-ts-mode-map (kbd "C-c C-p") 'typst-preview-mode)
+  (define-key typst-ts-mode-map (kbd "C-c C-b") 'typst-preview-open-browser)
   (define-key typst-preview-mode-map (kbd "C-c C-j") 'typst-preview-send-position))
 
 ;; Org-Babel with Coq
