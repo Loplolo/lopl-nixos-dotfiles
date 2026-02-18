@@ -45,6 +45,7 @@
     serviceConfig.Type = "simple";
   };
 
+
   networking.hostName = "rachael";
 
   networking.networkmanager = {
@@ -160,7 +161,6 @@
     shell = pkgs.zsh;
   };
 
-
   # Flatpak
   services.flatpak.enable = true;
 
@@ -178,7 +178,6 @@
 	  localNetworkGameTransfers.openFirewall = true;
   };
 
-
   # libvirtd
   virtualisation.libvirtd = {
     enable = true;
@@ -189,6 +188,7 @@
       vhostUserPackages = [pkgs.virtiofsd];
     };
   };
+  
   # Virt-manager
   networking.firewall.trustedInterfaces = ["virbr0"];
   systemd.services.libvirt-default-network = {
@@ -211,6 +211,7 @@
     wget
     git
     curl
+    openssl
     pciutils
     usbutils
     wl-clipboard
@@ -222,7 +223,15 @@
     xfce.thunar
     playerctl
     pulseaudio
+    vial
+    libsecret
   ];
+  services.udev.packages = with pkgs; [ via ];
+  # Vial udev rules
+  services.udev.extraRules = ''
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
+  '';
+  hardware.keyboard.qmk.enable = true;
 
   # Garbage collection
   nix.gc = {
@@ -231,6 +240,9 @@
     options = "--delete-older-than 7d";
   };
 
+  # dbus enable
+  services.dbus.enable = true;
+  
   # This value determines the NixOS release from which the default
   # settings for stateful data were taken.
   system.stateVersion = "25.11";
