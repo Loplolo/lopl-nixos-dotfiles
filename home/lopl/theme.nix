@@ -4,7 +4,7 @@
 }: {
   stylix = {
     enable = true;
-    image = ./quake.png;
+    image = ./wallpaper.png;
     polarity = "dark";
 
     base16Scheme = {

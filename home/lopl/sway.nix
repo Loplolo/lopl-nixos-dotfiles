@@ -17,7 +17,7 @@ in {
 
       output = {
         "*" = {
-          bg = "${./quake.png} fill";
+          bg = "${./wallpaper.png} fill";
         };
         "Virtual-1" = {
           mode = "1920x1080@60Hz";
@@ -105,8 +105,8 @@ in {
         "${mod}+Shift+e" = "exec swaynag -t warning -m 'You pressed the exit shortcut.' -B 'Yes, exit sway' 'swaymsg exit'";
 
         # Custom Apps
-        "${sup}+f" = "exec nyxt --no-socket";
-        "${sup}+g" = "exec firefox";
+        "${sup}+g" = "exec nyxt";
+        "${sup}+f" = "exec firefox";
         "${sup}+t" = "exec Telegram";
         "${sup}+r" = "exec thunderbird";
         "${sup}+c" = "exec code";
