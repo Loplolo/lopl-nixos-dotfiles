@@ -26,6 +26,7 @@
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake .#${osConfig.networking.hostName}";
       cleanup = "nix-collect-garbage -d";
+      update = "nix flake update";
 
       grep = "rg";
       cat = "bat";
