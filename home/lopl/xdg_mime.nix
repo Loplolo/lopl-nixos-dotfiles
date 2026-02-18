@@ -69,14 +69,14 @@
       "application/x-shellscript" = ["emacsclient.desktop"];
 
       # Web
-      "text/html" = ["nyxt.desktop"];
-      "x-scheme-handler/http" = ["nyxt.desktop"];
-      "x-scheme-handler/https" = ["nyxt.desktop"];
-      "x-scheme-handler/about" = ["nyxt.desktop"];
-      "x-scheme-handler/unknown" = ["nyxt.desktop"]; 
+      "text/html" = ["firefox.desktop"];
+      "x-scheme-handler/http" = ["firefox.desktop"];
+      "x-scheme-handler/https" = ["firefox.desktop"];
+      "x-scheme-handler/about" = ["firefox.desktop"];
+      "x-scheme-handler/unknown" = ["firefox.desktop"]; 
 
       # PDF
-      "application/pdf" = ["nyxt.desktop"];
+      "application/pdf" = ["firefox.desktop"];
     };
   };
 }
