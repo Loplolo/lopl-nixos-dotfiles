@@ -19,6 +19,7 @@
     blender
     calibre
     chromium
+    claude-code
     vscode
     code-cursor
     cmus
@@ -27,6 +28,7 @@
     (coq.withPackages (coqPkgs: [
       coqPkgs.stdlib  
       coqPkgs.mathcomp
+      
     ]))
     # ----------------
     darkplaces

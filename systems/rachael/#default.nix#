@@ -118,7 +118,14 @@
   # GameMode
   programs.gamemode.enable = true; 
 
-  
+  # Install steam with firewall configs--
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; 
+    dedicatedServer.openFirewall = true; 
+    gamescopeSession.enable = true;
+  };
+    
   # Install all nerd fonts
   fonts.packages = builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 

@@ -1,54 +1,7 @@
+{ config, pkgs, lib, ... }:
+
 {
-  config,
-  pkgs,
-  lib,
-  ...
-}: {
-  imports = [
-    ./tuigreet.nix
-  ];
-  environment.variables = {
-    XDG_DATA_DIRS = [
-      "/usr/share"
-      "/var/lib/flatpak/exports/share"
-      "$HOME/.local/share/flatpak/exports/share"
-    ];
-  };
-
-  services.xserver.enable = true;
-
-  # Bootloader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.initrd.availableKernelModules = [
-    "ahci"
-    "xhci_pci"
-    "sd_mod"
-    "sr_mod"
-  ];
-
-
-
-  boot.initrd.kernelModules = ["pinctrl_alderlake"];
-
-  # OpenArena
-  networking.firewall.allowedUDPPorts = [ 27960 27961 27962 27963 ];
-  
-  # Tailscale
-  services.tailscale.enable = true;
-
-  # Fingerprint reader support
-  services.fprintd.enable = true;
-  security.pam.services.polkit-1.fprintAuth = true;
-  security.pam.services.sudo.fprintAuth = true;
-  services.fprintd.tod.driver = pkgs.libfprint-2-tod1-goodix;
-  systemd.services.fprintd = {
-    wantedBy = ["multi-user.target"];
-    serviceConfig.Type = "simple";
-  };
-
-
-  networking.hostName = "rachael";
+  networking.hostName = "pris";
 
   networking.networkmanager = {
     enable = true;
@@ -56,7 +9,15 @@
       networkmanager-openvpn
     ];
   };
-    
+
+  environment.variables = {
+    XDG_DATA_DIRS = [
+      "/usr/share"
+      "/var/lib/flatpak/exports/share"
+      "$HOME/.local/share/flatpak/exports/share"
+    ];
+  };
+  
   # Set your time zone.
   time.timeZone = "Europe/Rome";
 
@@ -74,6 +35,15 @@
     LC_TIME = "en_IE.UTF-8";
   };
 
+  programs.xfconf.enable = true;
+  programs.dconf.enable = true;
+
+  # OpenArena
+  networking.firewall.allowedUDPPorts = [ 27960 27961 27962 27963 ];
+
+  # Tailscale
+  services.tailscale.enable = true;
+  
   # XDG Portals
   xdg.portal = {
     enable = true;
@@ -81,54 +51,12 @@
     extraPortals = [pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr];
     config.common.default = "*";
   };
-  # Extra thunar stuff
-  programs.thunar.plugins = with pkgs.xfce; [
-    thunar-archive-plugin
-    thunar-volman
-  ];
-
-  services.gvfs.enable = true;
-  services.tumbler.enable = true;
-
-  programs.thunar.enable = true;
-  programs.xfconf.enable = true;
-  programs.dconf.enable = true;
-
-  # Enable Graphics and ipu6 webcam
-  # intel integrated graphics
-  hardware = {
-    graphics = {
-      enable = true;
-      enable32Bit = true;
-      extraPackages = with pkgs; [
-        vpl-gpu-rt
-        intel-media-driver
-      ];
-    };
-    firmware = [
-      pkgs.ipu6-camera-bins
-      pkgs.ivsc-firmware
-    ];
-    ipu6 = {
-      enable = true;
-      platform = "ipu6ep";
-    };
-  };
-
-  # GameMode
-  programs.gamemode.enable = true; 
-
   
   # Install all nerd fonts
   fonts.packages = builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
-
-  environment.sessionVariables = {
-    LIBVA_DRIVER_NAME = "iHD"; # Prefer the modern iHD backend
-    # VDPAU_DRIVER = "va_gl";      # Only if using libvdpau-va-gl
-  };
-
-  hardware.enableRedistributableFirmware = true;
-  boot.kernelParams = ["i915.enable_guc=3"];
+  
+  # Enable Flakes
+  nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # Enable Bluetooth
   hardware.bluetooth.enable = true;
@@ -151,11 +79,7 @@
 
   # Security / Polkit
   security.polkit.enable = true;
-
-  # Enable Flakes
-  nix.settings.experimental-features = ["nix-command" "flakes"];
-
-  # Allow unfree packages
+  
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowBroken = true;
 
@@ -167,14 +91,11 @@
     shell = pkgs.zsh;
   };
 
-  # Flatpak
-  services.flatpak.enable = true;
-
   # Docker
   virtualisation.docker = {
     enable = true;
   };
-
+ 
   # libvirtd
   virtualisation.libvirtd = {
     enable = true;
@@ -185,7 +106,7 @@
       vhostUserPackages = [pkgs.virtiofsd];
     };
   };
-  
+
   # Virt-manager
   networking.firewall.trustedInterfaces = ["virbr0"];
   systemd.services.libvirt-default-network = {
@@ -202,6 +123,47 @@
   };
   virtualisation.spiceUSBRedirection.enable = true;
 
+  `
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true;
+  services.desktopManager.plasma6.enable = true;
+
+  # Graphics
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true; 
+  };
+
+  # GameMode  
+  programs.gamemode.enable = true; 
+
+  # Install steam with firewall configs--
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; 
+    dedicatedServer.openFirewall = true; 
+    gamescopeSession.enable = true;
+  };
+
+  
+  services.xserver.videoDrivers =;
+
+  services.flatpak.enable=true;
+  
+  hardware.nvidia = {
+    modesetting.enable = true;
+
+    powerManagement.enable = true;
+    powerManagement.finegrained = false;
+
+    open = false;
+
+    nvidiaSettings = true;
+
+    # package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+
   environment.systemPackages = with pkgs; [
     distrobox
     vim
@@ -213,34 +175,19 @@
     usbutils
     wl-clipboard
     wayland-utils
-    brightnessctl
     pamixer
-    networkmanagerapplet
     busybox
-    xfce.thunar
     playerctl
     pulseaudio
-    vial
     libsecret
   ];
-  services.udev.packages = with pkgs; [ via ];
-  # Vial udev rules
-  services.udev.extraRules = ''
-    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
-  '';
-  hardware.keyboard.qmk.enable = true;
 
-  # Garbage collection
   nix.gc = {
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
-
-  # dbus enable
   services.dbus.enable = true;
-  
-  # This value determines the NixOS release from which the default
-  # settings for stateful data were taken.
+
   system.stateVersion = "25.11";
 }
