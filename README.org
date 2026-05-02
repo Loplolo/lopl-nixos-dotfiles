@@ -1,0 +1,23 @@
+#+TITLE: Personal NixOS Configuration
+#+AUTHOR: lopl
+#+DESCRIPTION: A unified NixOS configuration for multiple devices.
+
+This repository manages all my NixOS devices. It's designed to be a single source of truth, ensuring that whether 
+I am on my main workstation, laptop or home server, the environment is consistent, reproducible, and easy to update.
+** Multiple devices with one flake
+
+This setup uses nix flakes, every dependency is pinned in =flake.lock= and the same repository manages  multiple system configurations as defined inside =flake.nix=. Each machine is recognized by his hostname. Home Manager is used to handle the user level configuration.
+
+** How to Update
+Run =nix flake update= to pull the latest versions of NixOS and community modules.
+
+Run =rebuild= (local) or =remote-rebuild= (remote server) to apply changes made to the dotfiles.
+
+** Commit logic (wip)
+To avoid piling up useless commits, the rebuild scripts implement the following logic: 
+if the last commit is a =snapshot= the scripts amends it, this lets me tinker and sync 
+configuration without having to commit each small change. When I finish adding some component 
+then i manually amend latest snapshot to have a meaningful history.
+This comes at the price of having to run =git push --force=.
+
+If you know a better way to do that please let me know.
