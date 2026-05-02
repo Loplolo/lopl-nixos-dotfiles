@@ -24,6 +24,26 @@
           "https://dns.quad9.net/dns-query"
         ];
       };
+      filters = [
+        {
+          enabled = true;
+          url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt";
+          name = "AdGuard DNS filter";
+          id = 1;
+        }
+        {
+          enabled = true;
+          url = "https://adaway.org/hosts.txt";
+          name = "AdAway Default Blocklist";
+          id = 2;
+        }
+        {
+          enabled = true;
+          url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_11.txt";
+          name = "OISD Blocklist Basic";
+          id = 3;
+        }
+      ];
     };
   };
 }

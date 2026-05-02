@@ -109,11 +109,8 @@
   };
 
   networking.firewall.trustedInterfaces = ["tailscale0" "virbr0"];
-
-  # quad9 dns
-  networking.nameservers = ["9.9.9.9" "149.112.112.112"];
-
   networking.nftables.enable = true;
+  services.resolved.enable = true;
 
   # Mount HDD
   systemd.tmpfiles.rules = [
