@@ -1,0 +1,12 @@
+keys:
+  - &pris age1p5rcqds9luymvfp2zfpj3g5x4xtg54mrucgmmnh96hl3sz70wyzqsq8rwg 
+  - &rachael age1muxj4mcvuxhfrc7ytdcqdqvkm9l4kjh0xg0vgcp3000x80vd0s7qqt8rr7
+  - &leon age1lxdv79thgc0pgl5vusar7683e7tgzphv03a0t43xucy7vndfr3zsyk3j9c
+
+creation_rules:
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+    - age:
+      - *pris
+      - *rachael
+      - *leon
