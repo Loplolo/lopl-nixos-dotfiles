@@ -19,6 +19,7 @@
         ];
 
         upstream_dns = [
+          "[/lopl.dev/]127.0.0.1:5353"
           "https://dns.cloudflare.com/dns-query"
           "https://dns.quad9.net/dns-query"
         ];

@@ -28,19 +28,27 @@
   '';
 
   remote-rebuild = pkgs.writeShellScriptBin "remote-rebuild" ''
-      cd ~/dotfiles || exit 1
-      git add -A
+    cd ~/dotfiles || exit 1
+    ${pkgs.alejandra}/bin/alejandra .
+    git add -A
 
-      if ! nixos-rebuild switch --flake .#leon \
-        --target-host lopl@leon; then
-        exit 1
-      fi
+    if ! nixos-rebuild switch --flake .#leon \
+      --target-host lopl@leon \
+      --sudo --ask-sudo-password; then
+      exit 1
+    fi
 
-      gen_number=$(ssh lopl@leon "nix-env --list-generations -p /nix/var/nix/profiles/system | grep current | awk '{print \$1}'")
-      msg="[snapshot] host leon: gen $gen_number"
+    gen_number=$(ssh -q lopl@leon "readlink /nix/var/nix/profiles/system | cut -d'-' -f2")
+    msg="[snapshot] host leon: gen $gen_number"
 
-      last_msg=$(git log -1 --pretty=%s)
-'';
+    last_msg=$(git log -1 --pretty=%s)
+
+    if [[ "$last_msg" == "[snapshot]"* ]]; then
+      git commit --amend -m "$msg"
+    else
+      git commit -m "$msg"
+    fi
+  '';
 in {
   programs.zsh = {
     enable = true;
