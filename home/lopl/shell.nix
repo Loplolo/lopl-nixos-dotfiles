@@ -33,7 +33,7 @@
 
       if ! nixos-rebuild switch --flake .#leon \
         --target-host lopl@leon \
-        --sudo --ask-sudo-password; then
+        --ask-sudo-password; then
         exit 1
       fi
 
