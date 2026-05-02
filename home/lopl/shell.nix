@@ -32,8 +32,7 @@
       git add -A
 
       if ! nixos-rebuild switch --flake .#leon \
-        --target-host lopl@leon \
-        --ask-sudo-password; then
+        --target-host lopl@leon; then
         exit 1
       fi
 
@@ -41,13 +40,7 @@
       msg="[snapshot] host leon: gen $gen_number"
 
       last_msg=$(git log -1 --pretty=%s)
-
-      if ! nixos-rebuild switch --flake .#leon \
-      --target-host lopl@leon \
-      --use-remote-sudo \  # <--- Add this line
-      --sudo --ask-sudo-password; then
-      exit 1
-    fi  '';
+'';
 in {
   programs.zsh = {
     enable = true;
