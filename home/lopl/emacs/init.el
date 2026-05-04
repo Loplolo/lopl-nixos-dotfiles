@@ -88,10 +88,6 @@
 (global-hl-line-mode +1)
 (setq show-paren-delay 0)
 
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize))
-
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
@@ -103,7 +99,6 @@
 (use-package command-log-mode)
 (use-package hydra)
 (use-package general)
-
 
 ;; Nix direnv integration
 (use-package envrc
@@ -190,15 +185,16 @@
   :hook
   ((lsp-mode . lsp-enable-which-key-integration)
    (lsp-mode . yas-minor-mode)
-   (java-mode . lsp-deferred)
-   (latex-mode . lsp-deferred)
-   (gdscript-mode . lsp-deferred)
-   (css-mode . lsp-deferred)
-   (c-mode . lsp-deferred)
-   (c++-mode . lsp-deferred)
-   (csharp-mode . lsp-deferred)
-   (rust-mode . lsp-deferred)
-   (python-mode . lsp-deferred))
+   (java-ts-mode . lsp-deferred)
+   (latex-ts-mode . lsp-deferred)
+   (gdscript-ts-mode . lsp-deferred)
+   (css-ts-mode . lsp-deferred)
+   (c-ts-mode . lsp-deferred)
+   (c++-ts-mode . lsp-deferred)
+   (c-or-c++-ts-mode . lsp-deferred)
+   (csharp-ts-mode . lsp-deferred)
+   (rust-ts-mode . lsp-deferred)
+   (python-ts-mode . lsp-deferred))
   :init
   (setq lsp-keymap-prefix "C-c l"
         lsp-enable-file-watchers nil
@@ -321,8 +317,8 @@
   (setq c-basic-offset 4))
 
 (use-package clang-format
-  :hook ((c-mode . (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil 'local)))
-         (c++-mode . (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil 'local)))))
+  :hook ((c-ts-mode c++-ts-mode) . 
+         (lambda () (add-hook 'before-save-hook #'clang-format-buffer nil t))))
 
 (use-package cmake-mode
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)

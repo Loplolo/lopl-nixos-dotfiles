@@ -48,9 +48,7 @@ in {
     package = pkgs.emacs-gtk;
     extraPackages = epkgs:
       with epkgs; [
-        # System Integration
         envrc
-        exec-path-from-shell
 
         websocket
         # UI
@@ -182,9 +180,7 @@ in {
     noto-fonts
     emacs-all-the-icons-fonts
 
-    # Nix
     nil
-    direnv
 
     # Python tools (TODO: move in a better place)
     python3Packages.black
