@@ -87,6 +87,7 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    wireplumber.enable = true;
   };
 
   # OpenArena
@@ -147,7 +148,7 @@
 
   security.rtkit.enable = true;
 
-  # Security / Polkit
+  # Security Polkit
   security.polkit.enable = true;
 
   nixpkgs.config.allowUnfree = true;
@@ -210,7 +211,7 @@
   programs.gamemode.enable = true;
   programs.gamescope.enable = true;
 
-  # Install steam with firewall configs
+  # Steam with firewall configs
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
@@ -312,14 +313,4 @@
       size = 32768;
     }
   ];
-
-  nixpkgs.config.permittedInsecurePackages = [
-    "electron-38.8.4"
-  ];
-
-  nix.settings = {
-    max-jobs = "auto";
-    cores = 0;
-    http-connections = 50;
-  };
 }
