@@ -11,6 +11,22 @@
     };
   };
 
+  # Mount HDD
+  systemd.tmpfiles.rules = [
+    "d /mnt/hdd0 0777 lopl users -"
+  ];
+
+  fileSystems."/mnt/hdd0" = {
+    device = "/dev/disk/by-uuid/77DB-F28C";
+    fsType = "btrfs";
+    options = [
+      "defaults"
+      "nofail"
+      "x-systemd.automount"
+      "compress=zstd"
+    ];
+  };
+
   virtualisation.podman = {
     enable = true;
     dockerCompat = true;
@@ -25,7 +41,7 @@
 
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [22 80 443 53 3001 3000 25565 8123];
+    allowedTCPPorts = [22 80 443 53 3001 3000 25565 8123 8096];
     allowedUDPPorts = [53 25565 5353];
     trustedInterfaces = ["tailscale0"];
     checkReversePath = "loose";
@@ -72,7 +88,6 @@
     btrfs-progs
     lnav
     caddy
-    matrix-conduit
     mcrcon
   ];
 }

@@ -36,11 +36,6 @@
         sopsFile = ../../secrets/secrets.yaml;
         key = "caddy-cf-token";
       };
-      turn-secret = {
-        sopsFile = ../../secrets/secrets.yaml;
-        key = "turn-secret";
-        owner = "turnserver";
-      };
       steam-api-key = {
         sopsFile = ../../secrets/secrets.yaml;
       };

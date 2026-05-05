@@ -21,9 +21,9 @@
     ./services/homeassistant.nix
     ./services/microbin.nix
     ./services/forgejo.nix
-    ./services/matrix.nix
     ./services/minecraft-server.nix
     ./services/tg-captcha-bot.nix
+    ./services/jellyfin.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

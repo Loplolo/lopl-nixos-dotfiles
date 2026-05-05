@@ -63,6 +63,7 @@
     kdePackages.kdenlive
     libreoffice-still
     mpv
+    nethack
     nicotine-plus
     python3
     networkmanagerapplet
@@ -81,6 +82,7 @@
     prismlauncher
     qbittorrent
     qemu
+    qgis
     qmmp
     quakespasm
     quickemu
@@ -96,6 +98,7 @@
         dosbox
         mesen
         snes9x
+        pcsx2
       ]))
     (pkgs.rstudioWrapper.override {packages = with pkgs.rPackages; [ggplot2 dplyr xts];})
     slurp

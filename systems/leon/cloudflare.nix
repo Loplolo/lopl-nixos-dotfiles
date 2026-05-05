@@ -11,7 +11,6 @@
         credentialsFile = "${config.sops.secrets.cloudflared-creds.path}";
         ingress = {
           "forgejo.lopl.dev" = "http://127.0.0.1:3000";
-          "matrix.lopl.dev" = "http://127.0.0.1:6167";
           "blog.lopl.dev" = "http://127.0.0.1:8081";
         };
         default = "http_status:404";
