@@ -8,45 +8,20 @@
   rebuild = pkgs.writeShellScriptBin "rebuild" ''
     cd ~/dotfiles || exit 1
     ${pkgs.alejandra}/bin/alejandra .
-    git add -A
 
     if ! sudo nixos-rebuild switch --flake .#${osConfig.networking.hostName}; then
       exit 1
-    fi
-
-    gen_number=$(sudo nix-env --list-generations -p /nix/var/nix/profiles/system | grep current | awk '{print $1}')
-    msg="[snapshot] host ${osConfig.networking.hostName}: gen $gen_number"
-
-    # Check if the last commit was a snapshot
-    last_msg=$(git log -1 --pretty=%s)
-
-    if [[ "$last_msg" == "[snapshot]"* ]]; then
-      git commit --amend -m "$msg"
-    else
-      git commit -m "$msg"
     fi
   '';
 
   remote-rebuild = pkgs.writeShellScriptBin "remote-rebuild" ''
     cd ~/dotfiles || exit 1
     ${pkgs.alejandra}/bin/alejandra .
-    git add -A
 
     if ! nixos-rebuild switch --flake .#leon \
       --target-host lopl@leon \
       --sudo --ask-sudo-password; then
       exit 1
-    fi
-
-    gen_number=$(ssh -q lopl@leon "readlink /nix/var/nix/profiles/system | cut -d'-' -f2")
-    msg="[snapshot] host leon: gen $gen_number"
-
-    last_msg=$(git log -1 --pretty=%s)
-
-    if [[ "$last_msg" == "[snapshot]"* ]]; then
-      git commit --amend -m "$msg"
-    else
-      git commit -m "$msg"
     fi
   '';
 in {
