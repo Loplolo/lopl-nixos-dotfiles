@@ -111,6 +111,7 @@
     tmux
     tree
     typst
+    localsend
     umu-launcher
     unityhub
     unrar
