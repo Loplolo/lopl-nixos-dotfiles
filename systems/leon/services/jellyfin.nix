@@ -9,7 +9,7 @@
         isSystemUser = true;
         createHome = true;
         group = "jellyfin";
-        home = "/var/jellyfin";
+        home = "/var/lib/jellyfin";
       };
     };
   };
