@@ -17,12 +17,14 @@
     appimage-run
     android-tools
     anki
+    bambu-studio
     blockbench
     blueman
     blender
     bottles
     calibre
     chromium
+    claude-code
     distrobox
     drawio
     vscode
@@ -34,6 +36,7 @@
     fastfetch
     ffmpeg
     flameshot
+    freenect
     element-desktop
     gcc
     gimp
@@ -87,6 +90,7 @@
     quakespasm
     quickemu
     r2mod_cli
+    rtabmap
     reaper
     (retroarch.withCores (cores:
       with cores; [
@@ -134,6 +138,7 @@
     tumbler
     xonotic-glx
     xournalpp
+    xsel
     xz
     zip
     zotero
