@@ -42,6 +42,13 @@
     package = pkgs.wivrn.override {cudaSupport = true;};
   };
 
+  # for kinect
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02b0", MODE="0666", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ad", MODE="0666", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ae", MODE="0666", TAG+="uaccess"
+  '';
+
   # nix-ld
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
