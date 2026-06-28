@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  pkgs-stable,
+  ...
+}: {
   programs.alacritty.enable = true;
 
   programs.obs-studio = {
@@ -17,11 +21,9 @@
     appimage-run
     android-tools
     anki
-    bambu-studio
     blockbench
     blueman
     blender
-    bottles
     calibre
     chromium
     claude-code
@@ -34,9 +36,11 @@
     dbeaver-bin
     ericw-tools
     fastfetch
+    faugus-launcher
     ffmpeg
     flameshot
     freenect
+    fuzzel
     element-desktop
     gcc
     gimp
@@ -51,6 +55,7 @@
     guile-hall
     guile-commonmark
     guix
+    gurobi
     haunt
     gzdoom
     htop
@@ -68,6 +73,7 @@
     mpv
     nethack
     nicotine-plus
+    p7zip
     python3
     networkmanagerapplet
     obsidian
@@ -76,10 +82,16 @@
     openarena
     openttd
     openvpn
+    orca-slicer
     packwiz
     pandoc
     pavucontrol
     pkg-config
+    pkgs-stable.bottles
+    pkgs-stable.wineWow64Packages.staging
+    pkgs-stable.winetricks
+    umu-launcher
+    pkgs-stable.steam-run
     playerctl
     ppsspp
     prismlauncher
@@ -106,8 +118,8 @@
       ]))
     (pkgs.rstudioWrapper.override {packages = with pkgs.rPackages; [ggplot2 dplyr xts];})
     slurp
-    steam-run
     ssh-to-age
+    strawberry
     sops
     teams-for-linux
     telegram-desktop
@@ -116,7 +128,6 @@
     tree
     typst
     localsend
-    umu-launcher
     unityhub
     unrar
     unzip
@@ -124,8 +135,6 @@
     vscode
     wdisplays
     wike
-    wineWow64Packages.staging
-    winetricks
     wl-clipboard
     xarchiver
     (thunar.override {
@@ -146,6 +155,7 @@
 
   programs.vesktop = {
     enable = true;
+
     vencord.settings = {
       autoUpdate = true;
       autoUpdateNotification = true;
