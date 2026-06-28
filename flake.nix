@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.11";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -27,6 +28,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-stable,
     home-manager,
     nix-flatpak,
     stylix,
@@ -36,24 +38,19 @@
     ...
   } @ inputs: let
     system = "x86_64-linux";
+    pkgs-stable = import nixpkgs-stable {
+      inherit system;
+      config.allowUnfree = true;
+    };
   in {
     nixosConfigurations = {
       rachael = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = {inherit inputs;};
+        specialArgs = {
+          inherit inputs;
+          inherit pkgs-stable;
+        };
         modules = [
-          {
-            nixpkgs.overlays = [
-              # Temporary fix for openldap build checks
-              # https://github.com/NixOS/nixpkgs/issues/513245#issuecomment-4317696552
-              (final: prev: {
-                openldap = prev.openldap.overrideAttrs (_: {
-                  doCheck = false;
-                });
-              })
-            ];
-          }
-
           disko.nixosModules.disko
           sops-nix.nixosModules.sops
           stylix.nixosModules.stylix
@@ -65,7 +62,10 @@
           }
           home-manager.nixosModules.home-manager
           {
-            home-manager.extraSpecialArgs = {inherit inputs;};
+            home-manager.extraSpecialArgs = {
+              inherit inputs;
+              inherit pkgs-stable;
+            };
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "hm-bak";
@@ -76,19 +76,11 @@
 
       pris = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = {inherit inputs;};
+        specialArgs = {
+          inherit inputs;
+          inherit pkgs-stable;
+        };
         modules = [
-          {
-            nixpkgs.overlays = [
-              # Temporary fix for openldap build checks
-              # https://github.com/NixOS/nixpkgs/issues/513245#issuecomment-4317696552
-              (final: prev: {
-                openldap = prev.openldap.overrideAttrs (_: {
-                  doCheck = false;
-                });
-              })
-            ];
-          }
           disko.nixosModules.disko
           sops-nix.nixosModules.sops
           stylix.nixosModules.stylix
@@ -100,7 +92,10 @@
           }
           home-manager.nixosModules.home-manager
           {
-            home-manager.extraSpecialArgs = {inherit inputs;};
+            home-manager.extraSpecialArgs = {
+              inherit inputs;
+              inherit pkgs-stable;
+            };
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "hm-bak";
@@ -111,7 +106,10 @@
 
       roy = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = {inherit inputs;};
+        specialArgs = {
+          inherit inputs;
+          inherit pkgs-stable;
+        };
         modules = [
           disko.nixosModules.disko
           sops-nix.nixosModules.sops
@@ -121,7 +119,10 @@
           ./systems/roy/disko.nix
           home-manager.nixosModules.home-manager
           {
-            home-manager.extraSpecialArgs = {inherit inputs;};
+            home-manager.extraSpecialArgs = {
+              inherit inputs;
+              inherit pkgs-stable;
+            };
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
@@ -132,7 +133,10 @@
 
       leon = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = {inherit inputs;};
+        specialArgs = {
+          inherit inputs;
+          inherit pkgs-stable;
+        };
         modules = [
           disko.nixosModules.disko
           sops-nix.nixosModules.sops
