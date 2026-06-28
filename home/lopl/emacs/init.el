@@ -413,7 +413,7 @@
         org-hide-emphasis-markers t)
   (require 'org-faces)
   (require 'org-indent)
-
+  (require 'ox-haunt)
   (dolist (face '((org-level-1 . 1.2)
                   (org-level-2 . 1.1)
                   (org-level-3 . 1.05)

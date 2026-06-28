@@ -18,6 +18,7 @@
         "/bin.lopl.dev/100.87.157.78"
         "/ha.lopl.dev/100.87.157.78"
         "/movies.lopl.dev/100.87.157.78"
+        "/cloud.lopl.dev/100.87.157.78"
 
         "/forgejo.lopl.dev/188.114.96.7"
         "/forgejo.lopl.dev/188.114.97.7"

@@ -17,7 +17,7 @@
 
     settings = {
       trusted_domains = ["cloud.lopl.dev"];
-      trusted_proxies = ["127.0.0.1"];
+      trusted_proxies = ["127.0.0.1" "::1"];
       overwriteprotocol = "https";
     };
 

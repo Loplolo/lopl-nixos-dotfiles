@@ -68,7 +68,6 @@
     };
   };
 
-  gtk.gtk4.theme = null;
   gtk = {
     enable = true;
     iconTheme = {

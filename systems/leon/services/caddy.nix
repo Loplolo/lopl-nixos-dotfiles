@@ -15,11 +15,12 @@
     "bin.lopl.dev" = "127.0.0.1:8125";
     "ha.lopl.dev" = "127.0.0.1:8123";
     "movies.lopl.dev" = "127.0.0.1:8096";
+    "cloud.lopl.dev" = "127.0.0.1:8081";
   };
 
   caddyWithCloudflare = pkgs.caddy.withPlugins {
     plugins = ["github.com/caddy-dns/cloudflare@v0.2.4"];
-    hash = "sha256-J0HWjCPoOoARAxDpG2bS9c0x5Wv4Q23qWZbTjd8nW84=";
+    hash = "sha256-VHm9POg2KixGsMsAcfFFDMK9x6niRJ1iJV9kkSwkSjc=";
   };
 in {
   services.caddy = {
