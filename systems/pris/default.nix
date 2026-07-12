@@ -242,11 +242,6 @@
     gamescopeSession.enable = true;
   };
 
-  services.ollama = {
-    enable = true;
-    loadModels = ["deepseek-r1:8b" "qwen3:8b"];
-  };
-
   services.xserver.videoDrivers = ["nvidia"];
 
   services.flatpak.enable = true;
