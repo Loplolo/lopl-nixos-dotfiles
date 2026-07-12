@@ -124,7 +124,7 @@ in {
         "${sup}+w" = "exec wike";
         "${sup}+x" = "exec xournalpp";
         "${sup}+o" = "exec obsidian";
-
+        "${sup}+p" = "exec super-productivity";
         # Screenshots
         "--release ${mod}+Shift+s" = "exec grim -g \"$(slurp)\" - | wl-copy";
 

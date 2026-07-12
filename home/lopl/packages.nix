@@ -26,7 +26,6 @@
     blender
     calibre
     chromium
-    claude-code
     vesktop
     distrobox
     drawio
@@ -41,7 +40,6 @@
     ffmpeg
     flameshot
     freenect
-    fuzzel
     element-desktop
     gcc
     gimp
@@ -117,16 +115,17 @@
         snes9x
         pcsx2
       ]))
-    (pkgs.rstudioWrapper.override {packages = with pkgs.rPackages; [ggplot2 dplyr xts];})
     slurp
     ssh-to-age
     strawberry
     sops
+    super-productivity
     teams-for-linux
     telegram-desktop
     thunderbird
     tmux
     tree
+    ttyper
     typst
     localsend
     unityhub
@@ -145,7 +144,6 @@
         thunar-media-tags-plugin
       ];
     })
-    tumbler
     xonotic-glx
     xournalpp
     xsel
