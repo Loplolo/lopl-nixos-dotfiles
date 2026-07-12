@@ -21,7 +21,7 @@
     ./services/homeassistant.nix
     ./services/microbin.nix
     ./services/forgejo.nix
-    ./services/minecraft-server.nix
+    #./services/minecraft-server.nix
     ./services/tg-captcha-bot.nix
     ./services/jellyfin.nix
   ];
