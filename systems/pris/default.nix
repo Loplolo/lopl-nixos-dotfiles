@@ -220,9 +220,16 @@
   boot.kernelParams = [
     "nvidia-drm.modeset=1"
     "nvidia-drm.fbdev=1"
+    "btusb.enable_autosuspend=0"
   ];
   hardware.nvidia.modesetting.enable = true;
-
+  hardware.bluetooth.settings = {
+    General = {
+      FastConnectable = true;
+      Experimental = true;
+      JustWorksRepairing = "always";
+    };
+  };
   # GameMode
   programs.gamemode.enable = true;
   programs.gamescope.enable = true;
