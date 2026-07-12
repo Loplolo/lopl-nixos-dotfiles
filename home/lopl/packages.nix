@@ -27,6 +27,7 @@
     calibre
     chromium
     claude-code
+    vesktop
     distrobox
     drawio
     vscode
@@ -152,14 +153,4 @@
     zip
     zotero
   ];
-
-  programs.vesktop = {
-    enable = true;
-
-    vencord.settings = {
-      autoUpdate = true;
-      autoUpdateNotification = true;
-      notifyAboutUpdates = true;
-    };
-  };
 }
