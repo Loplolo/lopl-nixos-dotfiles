@@ -99,8 +99,8 @@
     jack.enable = true;
   };
 
-  # OpenArena
-  networking.firewall.allowedUDPPorts = [27960 27961 27962 27963];
+  networking.firewall.allowedUDPPorts = [27960 27961 27962 27963 9757];
+  networking.firewall.allowedTCPPorts = [9757];
   # Syncthing
   services.syncthing.openDefaultPorts = true;
 
@@ -153,13 +153,20 @@
   services.blueman.enable = true;
 
   # Enable Printing
-  services.printing.enable = true;
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [
+      cups-filters
+      cups-browsed
+      epson-escpr
+    ];
+  };
 
+  services.ipp-usb.enable = true;
   security.rtkit.enable = true;
 
   # Security Polkit
   security.polkit.enable = true;
-
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowBroken = true;
 
@@ -167,7 +174,7 @@
   users.users.lopl = {
     isNormalUser = true;
     description = "lopl";
-    extraGroups = ["networkmanager" "wheel" "video" "audio" "input" "greeter" "libvirtd" "podman" "docker" "nm-openvpn" "adbusers" "render"];
+    extraGroups = ["networkmanager" "wheel" "video" "audio" "input" "greeter" "libvirtd" "podman" "docker" "nm-openvpn" "adbusers" "render" "lp"];
     shell = pkgs.zsh;
   };
 
