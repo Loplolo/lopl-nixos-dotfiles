@@ -67,9 +67,11 @@
   # XDG Portals
   xdg.portal = {
     enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr];
+    xdgOpenUsePortal = true;
+    extraPortals = [pkgs.xdg-desktop-portal-hyprland];
     config.common.default = "*";
   };
+
   # Extra thunar stuff
   programs.thunar.plugins = with pkgs; [
     thunar-archive-plugin
@@ -287,6 +289,7 @@
     networkmanagerapplet
     brightnessctl
     thunar
+    xdg-utils
   ];
 
   nix.gc = {

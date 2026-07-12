@@ -5,13 +5,6 @@
 }: {
   xdg.enable = true;
 
-  xdg.configFile."guix/channels.scm".text = ''
-    (list (channel
-            (name 'guix)
-            (url "https://git.savannah.gnu.org/git/guix.git")
-            (branch "master")))
-  '';
-
   xdg.systemDirs.data = [
     "${config.home.homeDirectory}/.guix-profile/share"
   ];
