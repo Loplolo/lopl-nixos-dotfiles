@@ -33,6 +33,13 @@
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode t)
 
+;; Use system clipboard
+(setq select-enable-clipboard t)
+(setq select-enable-primary nil)
+(setq select-active-regions nil)
+(setq interprogram-cut-function #'gui-select-text)
+(setq interprogram-paste-function #'gui-selection-value)
+
 ;; Fonts
 (set-face-attribute 'default nil :font "Fira Code" :height efs/default-font-size)
 (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height efs/default-font-size)
