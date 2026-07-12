@@ -147,7 +147,7 @@ in {
       # Emacs annoying hotkey fix
       unbindsym Mod1+w
 
-
+      include /etc/sway/config.d/*
     '';
   };
 }
