@@ -308,7 +308,7 @@
   };
   services.dbus.enable = true;
 
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
   boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" "sr_mod"];
