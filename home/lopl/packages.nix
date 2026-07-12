@@ -96,12 +96,10 @@
     prismlauncher
     qbittorrent
     qemu
-    qgis
     qmmp
     quakespasm
     quickemu
     r2mod_cli
-    rtabmap
     reaper
     (retroarch.withCores (cores:
       with cores; [
