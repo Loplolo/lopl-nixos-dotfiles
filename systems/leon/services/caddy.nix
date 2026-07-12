@@ -34,6 +34,7 @@ in {
     virtualHosts =
       lib.mapAttrs (host: upstream: {
         extraConfig = ''
+          header Strict-Transport-Security "max-age=31536000; includeSubDomains"
           reverse_proxy ${upstream}
           tls {
             dns cloudflare {env.CF_API_TOKEN}
