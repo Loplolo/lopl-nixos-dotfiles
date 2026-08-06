@@ -163,6 +163,8 @@ in {
         eterm-256color
         base16-theme
         ement
+
+        multiple-cursors
       ];
 
     extraConfig = builtins.readFile ./init.el;

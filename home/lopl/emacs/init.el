@@ -11,7 +11,7 @@
                   gc-cons-percentage 0.1)))
 
 ;; Variables
-(defvar efs/default-font-size 135)
+(defvar efs/default-font-size 115)
 (defvar efs/default-variable-font-size 135)
 
 ;; Use Stylix color scheme if on NixOs
@@ -39,6 +39,13 @@
 (setq select-active-regions nil)
 (setq interprogram-cut-function #'gui-select-text)
 (setq interprogram-paste-function #'gui-selection-value)
+
+;; Multiple cursors
+(use-package multiple-cursors
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+         ("C->"         . mc/mark-next-like-this)
+         ("C-<"         . mc/mark-previous-like-this)
+         ("C-c C-<"     . mc/mark-all-like-this)))
 
 ;; Fonts
 (set-face-attribute 'default nil :font "Fira Code" :height efs/default-font-size)
@@ -151,7 +158,7 @@
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump)
          :map dired-mode-map
-         ("RET" . dired-find-alternate-file)
+          ("RET" . dired-find-alternate-file)
          ("^"   . (lambda () (interactive) (find-alternate-file ".."))))
   :custom (dired-listing-switches "-agho --group-directories-first"))
 
@@ -270,8 +277,16 @@
 
 (use-package helm-swoop
   :bind (("C-s" . helm-swoop)
-         ("M-s o" . helm-swoop)
-         ("C-c s s" . helm-swoop)))
+		 ("C-c C-s" . helm-multi-swoop)
+		 )
+  :init
+  (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+  (define-key helm-swoop-map (kbd "C-r") 'helm-previous-line)
+  (define-key helm-swoop-map (kbd "C-s") 'helm-next-line)
+  (define-key helm-multi-swoop-map (kbd "C-r") 'helm-previous-line)
+  (define-key helm-multi-swoop-map (kbd "C-s") 'helm-next-line)
+)
+
 
 (use-package helm-projectile
   :config (helm-projectile-on))
@@ -575,15 +590,14 @@
   :config
   (require 'eaf-pdf-viewer))
 
+;; Typst
 (use-package typst-ts-mode
-  :config
-  (defun lopl/typst-live-browser-preview ()
-    "Start the tinymist preview server for the current file."
-    (interactive)
-    (start-process "typst-live" "*typst-live*" 
-                   "tinymist" "preview" (buffer-file-name)))
+  :hook (typst-ts-mode . lsp-deferred))
+
+(use-package typst-preview
+  :after typst-ts-mode
   :bind (:map typst-ts-mode-map
-              ("C-c C-p" . lopl/typst-live-browser-preview)))
+              ("C-c C-p" . typst-preview-start)))
 
 (use-package websocket)
 
