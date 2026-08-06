@@ -3,15 +3,15 @@
   lib,
   ...
 }: let
-  mod = "Mod1";
-  sup = "Mod4";
+  mod = "Mod4";
   menu = "tofi-run | xargs swaymsg exec --";
   drun = "tofi-drun | xargs swaymsg exec --";
+  app = "${mod}+Control";
 in {
   wayland.windowManager.sway = {
-    # TODO: set sway configs entirely in system settings
-    #       so every machine can have his desktop preferences
     enable = true;
+    systemd.enable = true;
+    wrapperFeatures.gtk = true;
     config = {
       modifier = mod;
       terminal = "alacritty";
@@ -27,7 +27,11 @@ in {
           };
 
           "DP-1" = {position = "0 0";};
-          "HDMI-A-1" = {position = "1920 0";};
+          "HDMI-A-1" = {
+            position = "1920 0";
+            transform = "270";
+            subpixel = "vrgb";
+          };
         }
       ];
 
@@ -98,7 +102,6 @@ in {
         {command = "swaymsg workspace 1";}
       ];
       keybindings = lib.mkOptionDefault {
-        # Unbind default layout tabbed bind (annoying for emacs)
         "${mod}+w" = "null";
 
         # Basics
@@ -111,20 +114,21 @@ in {
         "${mod}+Shift+r" = "reload";
         "${mod}+Shift+e" = "exec swaynag -t warning -m 'You pressed the exit shortcut.' -B 'Yes, exit sway' 'swaymsg exit'";
 
-        # Custom Apps
-        "${sup}+g" = "exec nyxt";
-        "${sup}+f" = "exec firefox";
-        "${sup}+t" = "exec Telegram";
-        "${sup}+r" = "exec thunderbird";
-        "${sup}+c" = "exec code";
-        "${sup}+m" = "exec alacritty -e cmus";
-        "${sup}+s" = "exec steam";
-        "${sup}+e" = "exec emacsclient -c";
-        "${sup}+q" = "exec ironwail -basedir ~/.q1/";
-        "${sup}+w" = "exec wike";
-        "${sup}+x" = "exec xournalpp";
-        "${sup}+o" = "exec obsidian";
-        "${sup}+p" = "exec super-productivity";
+        # Custom Apps (Now using Super + Control)
+        "${app}+g" = "exec nyxt";
+        "${app}+f" = "exec firefox";
+        "${app}+t" = "exec Telegram";
+        "${app}+r" = "exec thunderbird";
+        "${app}+c" = "exec code";
+        "${app}+m" = "exec alacritty -e cmus";
+        "${app}+s" = "exec steam";
+        "${app}+e" = "exec emacsclient -c";
+        "${app}+q" = "exec qss-m -basedir /home/lopl/.q1/";
+        "${app}+w" = "exec wike";
+        "${app}+x" = "exec xournalpp";
+        "${app}+o" = "exec obsidian";
+        "${app}+p" = "exec super-productivity";
+
         # Screenshots
         "--release ${mod}+Shift+s" = "exec grim -g \"$(slurp)\" - | wl-copy";
 
@@ -137,6 +141,9 @@ in {
     };
 
     extraConfig = ''
+
+      default_orientation horizontal
+
       # Passthrough mode
       mode "passthrough" {
           bindsym Pause mode default
@@ -144,8 +151,9 @@ in {
       }
       bindsym ${mod}+Escape mode passthrough
 
-      # Emacs annoying hotkey fix
-      unbindsym Mod1+w
+      # Screen sharing fix
+      exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP WAYLAND_DISPLAY SWAYSOCK
+      exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
 
       include /etc/sway/config.d/*
     '';
