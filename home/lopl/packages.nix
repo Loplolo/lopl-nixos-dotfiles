@@ -160,7 +160,6 @@ in {
     xournalpp
     xsel
     xwiimote
-    xwiimote-mouse-driver
     xz
     zip
     zotero
