@@ -45,5 +45,15 @@
     ];
   };
 
+  fileSystems."/mnt/storage" = {
+    device = "/dev/disk/by-uuid/77DB-F28C";
+    fsType = "exfat";
+    options = [
+      "defaults"
+      "nofail"
+      "uid=1000"
+      "gid=100"
+    ];
+  };
   system.stateVersion = "25.11";
 }

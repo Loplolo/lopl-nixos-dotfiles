@@ -5,7 +5,7 @@
 }: {
   services.nextcloud = {
     enable = true;
-    package = pkgs.nextcloud33;
+    package = pkgs.nextcloud34;
     hostName = "cloud.lopl.dev";
 
     config.dbtype = "pgsql";
@@ -57,5 +57,8 @@
     "d /mnt/media/music 0775 root media -"
     "d /mnt/media/photos 0775 root media -"
     "d /var/lib/syncthing 0750 syncthing syncthing -"
+    "d /home/lopl/.q1 0750 lopl lopl -"
+    "d /home/lopl/Pictures 0750 lopl lopl -"
+    "d /home/lopl/Documents/ 0750 lopl lopl -"
   ];
 }
