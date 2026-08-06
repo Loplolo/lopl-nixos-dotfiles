@@ -66,12 +66,20 @@
     openssl
   ];
 
-  # XDG Portals
+  # xdg portals
   xdg.portal = {
     enable = true;
-    xdgOpenUsePortal = true;
-    extraPortals = [pkgs.xdg-desktop-portal-hyprland];
-    config.common.default = "*";
+    config = {
+      sway = {
+        default = ["gtk"];
+        "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+        "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
+      };
+    };
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
+    ];
   };
 
   # Extra thunar stuff
@@ -150,8 +158,16 @@
   };
 
   # Enable Bluetooth
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings.General = {
+      Experimental = true;
+      KernelExperimental = true;
+      FastConnectable = true;
+      Enable = "Source,Sink,Media,Socket";
+    };
+  };
   services.blueman.enable = true;
 
   # Enable Printing
@@ -176,7 +192,7 @@
   users.users.lopl = {
     isNormalUser = true;
     description = "lopl";
-    extraGroups = ["networkmanager" "wheel" "video" "audio" "input" "greeter" "libvirtd" "podman" "docker" "nm-openvpn" "adbusers" "render" "lp"];
+    extraGroups = ["networkmanager" "wheel" "video" "audio" "input" "greeter" "libvirtd" "podman" "docker" "nm-openvpn" "adbusers" "render" "lp" "uinput"];
     shell = pkgs.zsh;
   };
 
@@ -218,6 +234,9 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
+    extraPackages = with pkgs; [
+      nvidia-vaapi-driver
+    ];
   };
   boot.kernelParams = [
     "nvidia-drm.modeset=1"
@@ -225,13 +244,8 @@
     "btusb.enable_autosuspend=0"
   ];
   hardware.nvidia.modesetting.enable = true;
-  hardware.bluetooth.settings = {
-    General = {
-      FastConnectable = true;
-      Experimental = true;
-      JustWorksRepairing = "always";
-    };
-  };
+  hardware.nvidia-container-toolkit.enable = true;
+
   # GameMode
   programs.gamemode.enable = true;
   programs.gamescope.enable = true;
@@ -250,7 +264,7 @@
   hardware.cpu.amd.updateMicrocode = true;
 
   hardware.nvidia = {
-    powerManagement.enable = true;
+    powerManagement.enable = false;
     powerManagement.finegrained = false;
     open = true;
     nvidiaSettings = true;
@@ -260,7 +274,8 @@
   environment.variables = {
     GBM_BACKEND = "nvidia-drm";
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    NIXOS_OZONE_WL = 1;
+    NIXOS_OZONE_WL = "1";
+    MOZ_ENABLE_WAYLAND = "1";
     __GL_GSYNC_ALLOWED = 1;
     __GL_VRR_ALLOWED = 1;
   };
@@ -316,7 +331,7 @@
   boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" "sr_mod"];
   boot.initrd.kernelModules = ["nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
 
-  boot.kernelModules = ["kvm-amd" "binder_linux"];
+  boot.kernelModules = ["kvm-amd" "binder_linux" "hid-wiimote" "uinput"];
   boot.extraModulePackages = with config.boot.kernelPackages; [
     v4l2loopback
   ];
