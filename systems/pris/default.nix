@@ -49,6 +49,8 @@
     SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ae", MODE="0666", TAG+="uaccess"
   '';
 
+  services.udev.packages = [pkgs.game-devices-udev-rules pkgs.xwiimote];
+
   # nix-ld
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
