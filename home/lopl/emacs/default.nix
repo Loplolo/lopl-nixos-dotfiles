@@ -5,11 +5,11 @@
 }: let
   ampl-mode = pkgs.emacsPackages.trivialBuild {
     pname = "ampl-mode";
-    version = "master";
+    version = "unstable-2017-08-08";
     src = pkgs.fetchFromGitHub {
       owner = "dpo";
       repo = "ampl-mode";
-      rev = "master";
+      rev = "f9f996993adb467e014cdab92ed30aab0697f293";
       sha256 = "18ck61a98d86130snym5ykbi5hnn18nikqzvhwwg2w3iv1fd16lv";
     };
     preBuild = ''
@@ -19,22 +19,22 @@
 
   quakec-mode = pkgs.emacsPackages.trivialBuild {
     pname = "quakec-mode";
-    version = "master";
+    version = "unstable-2023-06-19";
     src = pkgs.fetchFromGitHub {
       owner = "vkazanov";
       repo = "quakec-mode";
-      rev = "master";
+      rev = "7b5d13fbdd9dfdc319ee8db1f1e954e00bdfce54";
       sha256 = "0xb43s4641xxfbj6ybssp7aj09apw47qz2wlabv12wmsyf63db1x";
     };
   };
 
   helm-swoop = pkgs.emacsPackages.trivialBuild {
     pname = "helm-swoop";
-    version = "master";
+    version = "unstable-2024-01-05";
     src = pkgs.fetchFromGitHub {
       owner = "emacsattic";
       repo = "helm-swoop";
-      rev = "master";
+      rev = "df90efd4476dec61186d80cace69276a95b834d2";
       sha256 = "01nrak72inmic9n30dval6608cfzsbv5izwzykbim46ifjhcipag";
     };
     packageRequires = [pkgs.emacsPackages.helm];
