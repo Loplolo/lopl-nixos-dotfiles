@@ -2,7 +2,13 @@
   pkgs,
   pkgs-stable,
   ...
-}: {
+}: let
+  trenchbroom-appimage = pkgs.callPackage ./packages/trenchbroom.nix {};
+  paktool = pkgs.callPackage ./packages/paktool.nix {};
+  qss-m = pkgs.callPackage ./packages/qss-m.nix {};
+  slade = pkgs.callPackage ./packages/slade.nix {};
+  xwiimote-mouse-driver = pkgs.callPackage ./packages/xwiimote-mouse-driver.nix {};
+in {
   programs.alacritty.enable = true;
 
   programs.obs-studio = {
@@ -29,17 +35,21 @@
     vesktop
     distrobox
     drawio
+    ericw-tools
     vscode
     cmus
-    direnv
     darkplaces
+    direnv
     dbeaver-bin
-    ericw-tools
     fastfetch
     faugus-launcher
+    fd
     ffmpeg
     flameshot
+    freecad
     freenect
+    fteqcc
+    fteqw
     element-desktop
     gcc
     gimp
@@ -64,11 +74,10 @@
     inkscape
     ironwail
     jack2
-    jetbrains.idea-oss
-    jetbrains.pycharm-oss
-    jetbrains.webstorm
+    krita
     kdePackages.kdenlive
     libreoffice-still
+    libresprite
     mpv
     nethack
     nicotine-plus
@@ -77,13 +86,14 @@
     networkmanagerapplet
     obsidian
     octave
+    (olympus.override {celesteWrapper = "steam-run";})
     openal
     openarena
     openttd
     openvpn
     orca-slicer
-    packwiz
     pandoc
+    paktool
     pavucontrol
     pkg-config
     pkgs-stable.bottles
@@ -97,6 +107,7 @@
     qbittorrent
     qemu
     qmmp
+    qss-m
     quakespasm
     quickemu
     r2mod_cli
@@ -113,6 +124,7 @@
         snes9x
         pcsx2
       ]))
+    slade
     slurp
     ssh-to-age
     strawberry
@@ -123,12 +135,14 @@
     thunderbird
     tmux
     tree
+    trenchbroom-appimage
     ttyper
     typst
     localsend
     unityhub
     unrar
     unzip
+    update-nix-fetchgit
     virt-manager
     vscode
     wdisplays
@@ -145,6 +159,8 @@
     xonotic-glx
     xournalpp
     xsel
+    xwiimote
+    xwiimote-mouse-driver
     xz
     zip
     zotero

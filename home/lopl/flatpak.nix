@@ -10,7 +10,6 @@
     ];
 
     packages = [
-      "com.kristianduske.TrenchBroom"
     ];
 
     update.auto = {
