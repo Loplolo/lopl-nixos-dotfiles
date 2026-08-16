@@ -7,6 +7,9 @@
   imports = [
     ./tuigreet.nix
   ];
+  nixpkgs.overlays = [
+    inputs.vintagestory-nix.overlays.default
+  ];
 
   services.guix.enable = true;
 

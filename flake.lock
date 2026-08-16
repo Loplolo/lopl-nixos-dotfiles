@@ -358,7 +358,8 @@
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable",
         "sops-nix": "sops-nix",
-        "stylix": "stylix"
+        "stylix": "stylix",
+        "vintagestory-nix": "vintagestory-nix"
       }
     },
     "rust-analyzer-src": {
@@ -508,6 +509,26 @@
         "owner": "tinted-theming",
         "repo": "base16-zed",
         "type": "github"
+      }
+    },
+    "vintagestory-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785539684,
+        "narHash": "sha256-7XGFLO9UFr2SZLK0PkjH3oubL5lrpWNBPFuYFJQWB2c=",
+        "ref": "refs/heads/master",
+        "rev": "4bcae16723da126cbb0cec2b0c1790b75cc0449b",
+        "revCount": 159,
+        "type": "git",
+        "url": "https://codeberg.org/PierreBorine/vintagestory-nix"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/PierreBorine/vintagestory-nix"
       }
     }
   },

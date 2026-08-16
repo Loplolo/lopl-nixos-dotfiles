@@ -2,10 +2,14 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }: {
   imports = [
     ./tuigreet.nix
+  ];
+  nixpkgs.overlays = [
+    inputs.vintagestory-nix.overlays.default
   ];
 
   networking.hostName = "pris";

@@ -36,6 +36,7 @@ in {
     distrobox
     drawio
     ericw-tools
+    vintagestoryPackages.latest
     vscode
     cmus
     darkplaces
