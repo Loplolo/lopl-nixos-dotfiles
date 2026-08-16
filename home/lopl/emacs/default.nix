@@ -66,6 +66,9 @@ in {
         general
         hydra
 
+        expand-region
+        smartparens
+
         # EAF
         (eaf.withApplications [eaf-browser eaf-pdf-viewer])
 
@@ -114,14 +117,18 @@ in {
         # Nix
         nix-mode
 
-        # Python
+        # Python and R
         lsp-pyright
         python-black
         py-isort
         pyvenv
         python-pytest
+        ess
         jupyter
         zmq
+
+        # UML
+        plantuml-mode
 
         # Java
         lsp-java

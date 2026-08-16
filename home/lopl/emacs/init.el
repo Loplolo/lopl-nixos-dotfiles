@@ -33,6 +33,8 @@
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode t)
 
+(global-set-key (kbd "C-c C-r") 'repeat-complex-command)
+
 ;; Use system clipboard
 (setq select-enable-clipboard t)
 (setq select-enable-primary nil)
@@ -40,12 +42,19 @@
 (setq interprogram-cut-function #'gui-select-text)
 (setq interprogram-paste-function #'gui-selection-value)
 
-;; Multiple cursors
 (use-package multiple-cursors
-  :bind (("C-S-c C-S-c" . mc/edit-lines)
-         ("C->"         . mc/mark-next-like-this)
-         ("C-<"         . mc/mark-previous-like-this)
-         ("C-c C-<"     . mc/mark-all-like-this)))
+  :init
+  (add-hook 'after-change-major-mode-hook #'multiple-cursors-mode)
+  :bind (("C-S-l"   . mc/edit-lines)
+         ("C->"     . mc/mark-next-like-this)
+         ("C-<"     . mc/mark-previous-like-this)
+         ("C-S-a"   . mc/mark-all-like-this)
+         ("C-M->"   . mc/skip-to-next-like-this)
+         ("C-M-<"   . mc/skip-to-previous-like-this)
+         ("C-c C->" . mc/unmark-next-like-this)
+         ("C-c C-<" . mc/unmark-previous-like-this)
+         ("C-c m m" . multiple-cursors-mode)))
+
 
 ;; Fonts
 (set-face-attribute 'default nil :font "Fira Code" :height efs/default-font-size)
@@ -118,13 +127,14 @@
 (use-package hydra)
 (use-package general)
 
-
 ;; Nix direnv integration
 (use-package envrc
   :hook (after-init . envrc-global-mode))
 
 ;; Helm
 (use-package helm
+  :init
+  (helm-mode 1)  
   :bind
   (("C-c h" . helm-command-prefix)
    ("M-x" . helm-M-x)
@@ -469,7 +479,46 @@
 ;; gpg/epa
 (require 'epa-file)
 (epa-file-enable)
+
 (setq epa-pinentry-mode 'loopback)
+
+(require 'ob-awk)
+(require 'ob-calc)
+(use-package org
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python     . t)
+     (shell      . t)   
+     (sql        . t)   
+     (sqlite     . t)   
+     (R          . t)   
+     (C          . t)   
+     (awk        . t)
+     (calc       . t)
+     (plantuml   . t)
+     (jupyter    . t))))
+
+;; smartparens
+(use-package smartparens
+  :ensure t
+  :hook (prog-mode . smartparens-mode)
+  :config
+  (require 'smartparens-config)
+
+  :bind
+  (:map smartparens-mode-map
+
+        ("C-c s r"       . sp-raise-sexp)    
+        ("C-c s s"       . sp-splice-sexp)   
+        ("C-c s u"       . sp-unwrap-sexp)   
+        ("C-c s k"       . sp-kill-sexp)     
+        ("C-c s w"       . sp-rewrap-sexp)   
+
+        ("C-c s ("       . sp-wrap-round)    
+        ("C-c s {"       . sp-wrap-curly)    
+        ("C-c s ["       . sp-wrap-square))) 
 
 (use-package org-journal
   :bind ("C-c j" . org-journal-new-entry)
@@ -485,6 +534,7 @@
     (make-directory org-journal-dir t))) 
 
 (use-package org-roam
+  :demand t
   :init
   (setq org-roam-v2-ack t)
   :custom
@@ -602,22 +652,11 @@
 (use-package websocket)
 
 ;; Jupyter
-;; depends on `emacs-zmq`, which requires native C libraries (ZeroMQ) to compile. 
-;; MELPA/package.el will fail to build this on NixOS. You must install it declaratively 
-;; using `emacsPackages.jupyter` in your NixOS or home-manager configuration.
 (use-package jupyter
   :ensure nil
   :demand t
   :config
   (setq jupyter-eval-use-overlays t))
-
-;; Load org-babel languages only after org is properly loaded
-(with-eval-after-load 'org
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (python     . t)
-     (jupyter    . t))))
 
 (setq org-babel-python-command "python3")
 
