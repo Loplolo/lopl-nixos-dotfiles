@@ -2,11 +2,30 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }: {
   imports = [
     ./tuigreet.nix
   ];
+
+  # XDG Portals
+  xdg.portal = {
+    enable = true;
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    config.sway = {
+      default = ["gtk"];
+      "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+      "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
+    };
+    wlr = {
+      enable = true;
+      settings.screencast = {
+        chooser_type = "dmenu";
+        chooser_cmd = "${pkgs.tofi}/bin/tofi";
+      };
+    };
+  };
   nixpkgs.overlays = [
     inputs.vintagestory-nix.overlays.default
   ];
@@ -85,13 +104,6 @@
     LC_TIME = "en_IE.UTF-8";
   };
 
-  # XDG Portals
-  xdg.portal = {
-    enable = true;
-    wlr.enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr];
-    config.common.default = "*";
-  };
   # Extra thunar stuff
   programs.thunar.plugins = with pkgs.xfce; [
     thunar-archive-plugin

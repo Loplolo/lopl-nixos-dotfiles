@@ -8,6 +8,24 @@
     ./tuigreet.nix
   ];
 
+  # XDG Portals
+  xdg.portal = {
+    enable = true;
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    config.sway = {
+      default = ["gtk"];
+      "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+      "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
+    };
+    wlr = {
+      enable = true;
+      settings.screencast = {
+        chooser_type = "dmenu";
+        chooser_cmd = "${pkgs.tofi}/bin/tofi";
+      };
+    };
+  };
+
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -44,13 +62,6 @@
 
   # Fingerprint reader support
   #services.fprintd.enable = true;
-
-  # XDG Portals
-  xdg.portal = {
-    enable = true;
-    wlr.enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gtk];
-  };
 
   # Extra thunar stuff
   programs.thunar.plugins = with pkgs.xfce; [

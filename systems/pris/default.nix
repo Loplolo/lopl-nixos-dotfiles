@@ -8,6 +8,24 @@
   imports = [
     ./tuigreet.nix
   ];
+
+  # XDG Portals
+  xdg.portal = {
+    enable = true;
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    config.sway = {
+      default = ["gtk"];
+      "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+      "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
+    };
+    wlr = {
+      enable = true;
+      settings.screencast = {
+        chooser_type = "dmenu";
+        chooser_cmd = "${pkgs.tofi}/bin/tofi";
+      };
+    };
+  };
   nixpkgs.overlays = [
     inputs.vintagestory-nix.overlays.default
   ];
@@ -69,22 +87,6 @@
     zlib
     openssl
   ];
-
-  # xdg portals
-  xdg.portal = {
-    enable = true;
-    config = {
-      sway = {
-        default = ["gtk"];
-        "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
-        "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
-      };
-    };
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-hyprland
-      xdg-desktop-portal-gtk
-    ];
-  };
 
   # Extra thunar stuff
   programs.thunar.plugins = with pkgs; [
