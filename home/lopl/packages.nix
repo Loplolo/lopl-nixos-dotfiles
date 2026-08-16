@@ -75,6 +75,7 @@ in {
     inkscape
     ironwail
     jack2
+    jq
     krita
     kdePackages.kdenlive
     libreoffice-still
@@ -103,6 +104,7 @@ in {
     umu-launcher
     pkgs-stable.steam-run
     playerctl
+    plantuml
     ppsspp
     prismlauncher
     qbittorrent
@@ -162,6 +164,7 @@ in {
     xsel
     xwiimote
     xz
+    yt-dlp
     zip
     zotero
   ];
