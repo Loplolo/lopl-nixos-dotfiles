@@ -8,6 +8,7 @@
   qss-m = pkgs.callPackage ./packages/qss-m.nix {};
   slade = pkgs.callPackage ./packages/slade.nix {};
   xwiimote-mouse-driver = pkgs.callPackage ./packages/xwiimote-mouse-driver.nix {};
+  sicp-info = pkgs.callPackage ./packages/sicp-info.nix {};
 in {
   programs.alacritty.enable = true;
 
@@ -127,6 +128,7 @@ in {
         snes9x
         pcsx2
       ]))
+    sicp-info
     slade
     slurp
     ssh-to-age

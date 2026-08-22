@@ -484,12 +484,14 @@
 
 (require 'ob-awk)
 (require 'ob-calc)
+(require 'ob-scheme)
 (use-package org
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python     . t)
+	 (scheme     . t)
      (shell      . t)   
      (sql        . t)   
      (sqlite     . t)   

@@ -30,6 +30,6 @@
   home.homeDirectory = "/home/lopl";
   home.stateVersion = "25.11";
   programs.home-manager.enable = true;
-
+  programs.info.enable = true;
   systemd.user.services.emacs.Service.Environment = "COLORTERM=truecolor";
 }
