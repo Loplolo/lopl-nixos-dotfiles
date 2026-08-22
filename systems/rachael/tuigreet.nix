@@ -29,7 +29,7 @@ in {
           "--prompt-padding 2"
           "--remember"
           "--remember-session"
-          "--greeting \"$(cat ${quake})\""
+          "--greeting placeholder for quake logo"
           "--theme 'border=#8f5332;text=#8f5332;prompt=#e69c65;time=#8f5332;action=#e69c65;button=#0a0a0a;container=#0a0a0a;input=#e69c65;selection=#3b2216'"
           "--cmd ${pkgs.sway}/bin/sway"
         ];
