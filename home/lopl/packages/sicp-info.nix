@@ -1,24 +1,28 @@
-{ stdenv, lib, fetchFromGitHub, texinfo }:
-
-stdenv.mkDerivation {
+{
+  stdenv,
+  lib,
+  fetchurl,
+  gzip,
+}:
+stdenv.mkDerivation rec {
   pname = "sicp-info";
-  version = "master";
+  version = "2021.0";
 
-  src = fetchFromGitHub {
-    owner = "pwiecz";
-    repo = "sicp.texi";
-    rev = "master";
-    hash = lib.fakeHash; 
+  src = fetchurl {
+    url = "http://www.neilvandyke.org/sicp-texi/sicp.info.gz";
+    hash = "sha256-erfHjk1M3xaJ6wxo+i58kuUejWav8WiJLYgSsT4rC2M=";
   };
 
-  nativeBuildInputs = [ texinfo ];
+  dontUnpack = true;
 
-  buildPhase = ''
-    makeinfo sicp.texi
-  '';
+  nativeBuildInputs = [gzip];
 
   installPhase = ''
+    runHook preInstall
+
     mkdir -p $out/share/info
-    cp sicp.info* $out/share/info/
+    gzip -d -c $src > $out/share/info/sicp.info
+
+    runHook postInstall
   '';
 }
