@@ -3,12 +3,16 @@
   pkgs-stable,
   ...
 }: let
+  # Custom packages
   trenchbroom-appimage = pkgs.callPackage ./packages/trenchbroom.nix {};
   paktool = pkgs.callPackage ./packages/paktool.nix {};
   qss-m = pkgs.callPackage ./packages/qss-m.nix {};
   slade = pkgs.callPackage ./packages/slade.nix {};
   xwiimote-mouse-driver = pkgs.callPackage ./packages/xwiimote-mouse-driver.nix {};
+
+  # Texinfo Manuals
   sicp-info = pkgs.callPackage ./packages/sicp-info.nix {};
+  nix-pills-info = pkgs.callPackage ./packages/nix-pills-info.nix {};
 in {
   programs.alacritty.enable = true;
 
@@ -87,6 +91,7 @@ in {
     p7zip
     python3
     networkmanagerapplet
+    nix-pills-info
     obsidian
     octave
     (olympus.override {celesteWrapper = "steam-run";})
