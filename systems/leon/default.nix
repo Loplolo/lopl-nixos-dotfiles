@@ -24,6 +24,7 @@
     #./services/minecraft-server.nix
     ./services/tg-captcha-bot.nix
     ./services/jellyfin.nix
+    #./services/vintagestory.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

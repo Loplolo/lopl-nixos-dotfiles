@@ -42,6 +42,7 @@ in {
     drawio
     ericw-tools
     vintagestoryPackages.latest
+    vintagestoryPackages.rustique
     vscode
     cmus
     darkplaces
