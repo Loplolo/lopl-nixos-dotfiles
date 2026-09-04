@@ -201,9 +201,9 @@
   (global-ligature-mode 't))
 
 (use-package yasnippet
-  :demand t
+  :ensure t
+  :hook (prog-mode . yas-minor-mode)
   :config
-  (setq yas-snippet-dirs '())
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
@@ -286,6 +286,7 @@
   :init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
 
 (use-package helm-swoop
+  :ensure t
   :bind (("C-s" . helm-swoop)
 		 ("C-c C-s" . helm-multi-swoop)
 		 )
@@ -476,6 +477,10 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
+;; presentations
+(use-package org-tree-slide
+  :custom (org-image-actual-width nil))
+
 ;; gpg/epa
 (require 'epa-file)
 (epa-file-enable)
@@ -600,40 +605,40 @@
 (eval-after-load "auto-complete"
   '(add-to-list 'ac-modes 'geiser-repl-mode))
 
-;; LaTeX
+;; Latex
+(use-package auctex
+  :ensure t
+  :defer t
+  :init
+  (load "tex-site" nil t)
+  :config
+  (setq TeX-PDF-mode t
+        TeX-source-correlate-mode t
+        TeX-auto-save t
+        TeX-parse-self t
+        TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-source-correlate-start-server t)
+  
+  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+
+  (setq-default preview-scale-function 1.2)
+  (setq preview-auto-reveal t))
+
 (use-package auctex-latexmk
   :after auctex
-  :init (auctex-latexmk-setup)
+  :init
+  (auctex-latexmk-setup)
   :config
   (setq auctex-latexmk-inherit-TeX-PDF-mode t))
 
-(use-package auctex
-  :defer t
-  :hook (LaTeX-mode . (lambda ()
-                        (setq TeX-PDF-mode t)
-                        (TeX-source-correlate-mode 1)
-                        
-                        (setq TeX-auto-save t)
-                        (setq TeX-parse-self t)
-                        
-                        (add-hook 'after-save-hook 
-                                  (lambda () 
-                                    (TeX-command-run-all nil)) 
-                                  nil t)
-                        
-                        (local-set-key (kbd "C-c C-a") 'TeX-command-run-all)))
-  :config
-  (setq TeX-view-program-selection '((output-pdf "PDF Tools")))
-  (setq TeX-source-correlate-start-server t)
-  
-  (add-hook 'TeX-after-compilation-finished-functions
-            #'TeX-revert-document-buffer)
-
-  (setq-default preview-scale-function 1.2) 
-  (setq preview-auto-reveal t)              
-
-  (define-key LaTeX-mode-map (kbd "C-c C-p C-b") 'preview-buffer)
-  (define-key LaTeX-mode-map (kbd "C-c C-p C-p") 'preview-at-point))
+;; Explicitly map .tex files to AUCTeX's LaTeX-mode
+(use-package latex
+  :after auctex
+  :mode ("\\.tex\\'" . LaTeX-mode)
+  :hook ((LaTeX-mode . (lambda ()
+                         (TeX-source-correlate-mode 1)
+                         (local-set-key (kbd "C-c C-a") 'TeX-command-run-all)))
+         (LaTeX-mode . outline-minor-mode)))
 
 (use-package eaf
   :custom

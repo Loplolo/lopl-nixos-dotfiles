@@ -156,7 +156,11 @@ in {
         org-bullets
         org-journal
         org-roam
+        org-tree-slide
         ox-haunt
+
+        # eBooks
+        nov
 
         # Custom Builds
         ampl-mode
