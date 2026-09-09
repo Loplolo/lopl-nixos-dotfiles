@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t; -*-
+;;; -*- Lexical-binding: t; -*-
 ;;; lopl's chaothic init.el
 
 ;; Optimization & Startup
@@ -209,13 +209,55 @@
 (use-package yasnippet-snippets
   :after yasnippet)
 
+
+;; PDF Tools
+(use-package pdf-tools
+  :magic ("%PDF" . pdf-view-mode)
+  :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :config
+  (pdf-tools-install :no-query)
+  (setq-default pdf-view-display-size 'fit-page)
+  (with-eval-after-load 'with-editor
+    (add-to-list 'with-editor-file-name-history-exclude "%PDF")))
+
+;; LaTeX
+(use-package tex-mode
+  :ensure nil
+  :hook ((tex-mode . lsp)
+         (latex-mode . lsp))
+  :config
+  (setq tex-default-mode 'latex-mode)
+  (setq tex-print-file-extension ".pdf")
+  (setq tex-view-program-list '(("pdf-tools" "emacsclient %s")))
+  (setq tex-view-program-selection '((output-pdf "pdf-tools"))))
+
+(with-eval-after-load 'lsp-mode
+  (setq lsp-texlab-viewer "pdf-tools")
+  (add-hook 'latex-mode-hook
+            (lambda ()
+              (add-hook 'after-save-hook #'lsp-texlab-build nil t)
+              (local-set-key (kbd "C-c C-c") #'lsp-texlab-build)
+              (local-set-key (kbd "C-c C-v") #'pdf-sync-forward-search))))
+
+(use-package xenops
+  :ensure nil
+  :hook ((tex-mode . xenops-mode)
+         (latex-mode . xenops-mode))
+  :config
+  (setq xenops-math-auto-render 'always
+        xenops-reveal-on-entry t)
+    (setq xenops-math-image-generator 'dvipng  
+        xenops-image-scale-factor 1.5)            
+    (add-hook 'xenops-mode-hook #'xenops-render-buffer))
+
 ;; LSP
 (use-package lsp-mode
   :hook
   ((lsp-mode . lsp-enable-which-key-integration)
    (lsp-mode . yas-minor-mode)
    (java-mode . lsp-deferred)
-   (latex-mode . lsp-deferred)
+   (latex-mode . lsp)
+   (tex-mode . lsp)
    (gdscript-mode . lsp-deferred)
    (css-mode . lsp-deferred)
    (c-mode . lsp-deferred)
@@ -225,6 +267,8 @@
    (python-mode . lsp-deferred))
   :init
   (setq lsp-keymap-prefix "C-c l"
+		lsp-texlab-executable "texlab"
+		lsp-texlab-build-on-save t
         lsp-enable-file-watchers nil
         read-process-output-max (* 1024 1024)
         lsp-completion-provider :capf
@@ -272,13 +316,9 @@
   (setq dap-python-executable "python3"))
 
 (use-package lsp-ui
-  :after (lsp-mode)
-  :bind (:map lsp-ui-mode-map
-              ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-              ([remap xref-find-references] . lsp-ui-peek-find-references))
-  :init (setq lsp-ui-doc-delay 1.5
-              lsp-ui-doc-position 'bottom
-              lsp-ui-doc-max-width 100))
+  :ensure nil
+  :commands lsp-ui-mode
+  :hook (lsp-mode . lsp-ui-mode))
 
 (use-package helm-lsp
   :after (lsp-mode)
@@ -288,15 +328,17 @@
 (use-package helm-swoop
   :ensure t
   :bind (("C-s" . helm-swoop)
-		 ("C-c C-s" . helm-multi-swoop)
-		 )
-  :init
-  (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-  (define-key helm-swoop-map (kbd "C-r") 'helm-previous-line)
-  (define-key helm-swoop-map (kbd "C-s") 'helm-next-line)
-  (define-key helm-multi-swoop-map (kbd "C-r") 'helm-previous-line)
-  (define-key helm-multi-swoop-map (kbd "C-s") 'helm-next-line)
-)
+         ("C-c C-s" . helm-multi-swoop)
+         :map helm-swoop-map
+         ("C-r" . helm-previous-line)
+         ("C-s" . helm-next-line)
+         :map helm-multi-swoop-map
+         ("C-r" . helm-previous-line)
+         ("C-s" . helm-next-line))
+
+  :config
+  ;; This is safe here because isearch-mode-map is always loaded by default Emacs
+  (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch))
 
 
 (use-package helm-projectile
@@ -372,8 +414,9 @@
 
 (use-package treesit-auto
   :config 
-  (setq treesit-auto-opt-out-list '())
+  (setq treesit-auto-opt-out-list '(latex)) 
   (global-treesit-auto-mode))
+
 
 (use-package python
   :ensure nil
@@ -591,61 +634,12 @@
 (use-package quickrun
   :bind ("C-c r" . quickrun))
 
-;; PDF Tools
-(use-package pdf-tools
-  :magic ("%PDF" . pdf-view-mode)
-  :config
-  (pdf-tools-install :no-query)
-  (setq-default pdf-view-display-size 'fit-page))
-
 ;; Guile
 (require 'ac-geiser)
 (add-hook 'geiser-mode-hook 'ac-geiser-setup)
 (add-hook 'geiser-repl-mode-hook 'ac-geiser-setup)
 (eval-after-load "auto-complete"
   '(add-to-list 'ac-modes 'geiser-repl-mode))
-
-;; Latex
-(use-package auctex
-  :ensure t
-  :defer t
-  :init
-  (load "tex-site" nil t)
-  :config
-  (setq TeX-PDF-mode t
-        TeX-source-correlate-mode t
-        TeX-auto-save t
-        TeX-parse-self t
-        TeX-view-program-selection '((output-pdf "PDF Tools"))
-        TeX-source-correlate-start-server t)
-  
-  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
-
-  (setq-default preview-scale-function 1.2)
-  (setq preview-auto-reveal t))
-
-(use-package auctex-latexmk
-  :after auctex
-  :init
-  (auctex-latexmk-setup)
-  :config
-  (setq auctex-latexmk-inherit-TeX-PDF-mode t))
-
-;; Explicitly map .tex files to AUCTeX's LaTeX-mode
-(use-package latex
-  :after auctex
-  :mode ("\\.tex\\'" . LaTeX-mode)
-  :hook ((LaTeX-mode . (lambda ()
-                         (TeX-source-correlate-mode 1)
-                         (local-set-key (kbd "C-c C-a") 'TeX-command-run-all)))
-         (LaTeX-mode . outline-minor-mode)))
-
-(use-package eaf
-  :custom
-  (eaf-browser-continue-where-left-off t)
-  (eaf-browser-enable-adblocker nil)
-  :config
-  (require 'eaf-pdf-viewer))
 
 ;; Typst
 (use-package typst-ts-mode

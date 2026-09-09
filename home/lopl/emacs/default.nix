@@ -45,13 +45,12 @@ in {
   services.emacs.enable = true;
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs-gtk;
+    package = pkgs.emacs;
     extraPackages = epkgs:
       with epkgs; [
         # System Integration
         envrc
         exec-path-from-shell
-
         websocket
         # UI
         doom-modeline
@@ -68,9 +67,6 @@ in {
 
         expand-region
         smartparens
-
-        # EAF
-        (eaf.withApplications [eaf-browser eaf-pdf-viewer])
 
         # Project Navigation
         helm
@@ -151,8 +147,7 @@ in {
         geiser-guile
 
         # Latex/Org
-        auctex
-        auctex-latexmk
+        xenops
         org-bullets
         org-journal
         org-roam
@@ -216,7 +211,7 @@ in {
     python3
 
     # Latex/Typst
-    auctex
+    texlab
     texlive.combined.scheme-full
     tinymist
     websocat
