@@ -281,9 +281,11 @@
     GBM_BACKEND = "nvidia-drm";
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     NIXOS_OZONE_WL = "1";
+    __GL_GSYNC_ALLOWED = "1";
+    __GL_VRR_ALLOWED = "1";
+    LIBVA_DRIVER_NAME = "nvidia";
     MOZ_ENABLE_WAYLAND = "1";
-    __GL_GSYNC_ALLOWED = 1;
-    __GL_VRR_ALLOWED = 1;
+    EGL_PLATFORM = "wayland";
   };
 
   # xserver

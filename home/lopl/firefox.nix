@@ -16,6 +16,8 @@
         "extensions.pocket.enabled" = false;
         "dom.disable_beforeunload" = true;
         "privacy.trackingprotection.enabled" = true;
+        "widget.wayland.fractional-scale.enabled" = false;
+        "widget.use-aspect-ratio" = false;
       };
     };
   };
