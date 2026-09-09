@@ -721,23 +721,6 @@
                 }
               ];
             }
-            {
-              size = "small";
-              widgets = [
-                {
-                  type = "reddit";
-                  title = "r/quake";
-                  subreddit = "quake";
-                  collapse-after = 5;
-                }
-                {
-                  type = "reddit";
-                  title = "Deadlock News";
-                  subreddit = "DeadlockTheGame";
-                  collapse-after = 5;
-                }
-              ];
-            }
           ];
         }
         {
@@ -808,7 +791,7 @@
               widgets = [
                 {
                   type = "server-stats";
-                  title = "Resource Usage (Btop Style)";
+                  title = "Resource Usage";
                 }
                 {
                   type = "monitor";
@@ -825,10 +808,6 @@
                     {
                       title = "Home Assistant";
                       url = "https://ha.lopl.dev";
-                    }
-                    {
-                      title = "Matrix";
-                      url = "https://matrix.lopl.dev";
                     }
                     {
                       title = "AdGuard";

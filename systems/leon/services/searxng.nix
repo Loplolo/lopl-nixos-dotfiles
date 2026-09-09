@@ -28,7 +28,9 @@
 
       search = {
         safe_search = 0;
-        autocomplete = "duckduckgo";
+        autocomplete = "";
+        ban_time_on_fail = 5;
+        max_ban_time_on_fail = 120;
       };
 
       engines = [
