@@ -62,12 +62,4 @@ stdenv.mkDerivation rec {
 
     runHook postInstall
   '';
-
-  meta = with lib; {
-    description = "QSS-M, a port of ID Software's original Quake, evolved from Quake 1.09 to Fitzquake, Quakespasm, Quakespasm Spiked, and now Quakespasm Spiked Multiplayer. NetQuake competitive multiplayer clients began with ProQuake, progressed to Qrack or Mark V, and arrived at QSS-M, thanks to voluntary contributions";
-    homepage = "qssm.quakeone.com";
-    license = licenses.gpl2Plus;
-    platforms = platforms.linux;
-    maintainers = [lopl];
-  };
 }

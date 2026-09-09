@@ -14,14 +14,4 @@
 in
   appimageTools.wrapType2 rec {
     inherit pname version src;
-
-    meta = {
-      description = "It's a Doom editor";
-      homepage = "https://slade.mancubus.net/";
-      downloadPage = "https://github.com/sirjuddington/SLADE/releases";
-      license = lib.licenses.gpl2;
-      sourceProvenance = with lib.sourceTypes; [binaryNativeCode];
-      maintainers = with lib.maintainers; [lopl];
-      platforms = ["x86_64-linux"];
-    };
   }

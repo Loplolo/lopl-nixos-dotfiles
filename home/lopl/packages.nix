@@ -10,6 +10,7 @@
   slade = pkgs.callPackage ./packages/slade.nix {};
   xwiimote-mouse-driver = pkgs.callPackage ./packages/xwiimote-mouse-driver.nix {};
 
+  fteqw-latest = pkgs.callPackage ./packages/fteqw.nix {};
   # Texinfo Manuals
   sicp-info = pkgs.callPackage ./packages/sicp-info.nix {};
   nix-pills-info = pkgs.callPackage ./packages/nix-pills-info.nix {};
@@ -56,7 +57,7 @@ in {
     freecad
     freenect
     fteqcc
-    fteqw
+    fteqw-latest
     element-desktop
     gcc
     gimp

@@ -1,42 +1,69 @@
 {
   lib,
-  fetchFromGitHub,
   stdenv,
+  fetchFromGitHub,
+  pkg-config,
+  makeWrapper,
   libopus,
+  libvorbis,
+  speex,
   libxrandr,
-  pname,
-  releaseFile ? pname,
-  buildFlags,
-  buildInputs,
-  nativeBuildInputs ? [],
-  postFixup ? "",
-  description,
-  ...
+  libpng,
+  libjpeg,
+  alsa-lib,
+  libGL,
+  zlib,
+  gnutls,
+  xorg,
 }:
-stdenv.mkDerivation {
-  inherit
-    pname
-    buildFlags
-    buildInputs
-    nativeBuildInputs
-    postFixup
-    ;
+stdenv.mkDerivation rec {
+  pname = "fteqw";
   version = "2025-09-27";
 
   src = fetchFromGitHub {
     owner = "fte-team";
     repo = "fteqw";
     rev = "c781d13255ce72fcd24e47567244f970e1ba7c50";
-    hash = lib.fakeHash;
+    sha256 = "sha256-C6v7lxuqsqX/Wo6oKi5yeD8QNYTg5wFxWo03qGszkQ8=";
   };
+
+  nativeBuildInputs = [
+    pkg-config
+    makeWrapper
+  ];
+
+  buildInputs = [
+    libopus
+    libvorbis
+    speex
+    libxrandr
+    libpng
+    libjpeg
+    alsa-lib
+    libGL
+    zlib
+    gnutls
+    xorg.libX11
+    xorg.libXext
+    xorg.libXScrnSaver
+    xorg.libXxf86vm
+    xorg.libXcursor
+    xorg.libXinerama
+    xorg.libXi
+  ];
+
+  hardeningDisable = ["fortify" "format"];
+
+  buildFlags = ["gl-rel"];
 
   makeFlags = [
     "PKGCONFIG=$(PKG_CONFIG)"
     "-C"
     "engine"
-  ]; 
+  ];
 
-  enableParallelBuilding = true;
+  enableParallelBuilding = false;
+
   postPatch = ''
     substituteInPlace ./engine/Makefile \
       --replace "I/usr/include/opus" "I${libopus.dev}/include/opus"
@@ -47,23 +74,18 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
 
-    install -Dm755 engine/release/${releaseFile} $out/bin/${pname}
+    mkdir -p $out/bin
+    if [ -f engine/release/fteqw-gl ]; then
+      cp engine/release/fteqw-gl $out/bin/${pname}
+    else
+      cp engine/release/fteqw* $out/bin/${pname}
+    fi
 
     runHook postInstall
   '';
 
-  meta = {
-    inherit description;
-    homepage = "https://fteqw.org";
-    longDescription = ''
-      FTE is a game engine baed on QuakeWorld able to
-      play games such as Quake 1, 2, 3, and Hexen 2.
-      It includes various features such as extended map
-      limits, vulkan and OpenGL renderers, a dedicated
-      server, and fteqcc, for easier QuakeC development
-    '';
-    maintainers = with lib.maintainers; [necrophcodr lopl];
-    license = lib.licenses.gpl2Plus;
-    platforms = lib.platforms.linux;
-  };
+  postFixup = ''
+    wrapProgram $out/bin/${pname} \
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs}
+  '';
 }
