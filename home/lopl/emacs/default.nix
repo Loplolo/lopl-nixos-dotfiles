@@ -148,11 +148,14 @@ in {
 
         # Latex/Org
         xenops
+        cdlatex
+        lsp-latex
         org-bullets
         org-journal
         org-roam
         org-tree-slide
         ox-haunt
+        auctex
 
         # eBooks
         nov

@@ -221,34 +221,62 @@
     (add-to-list 'with-editor-file-name-history-exclude "%PDF")))
 
 ;; LaTeX
-(use-package tex-mode
+(use-package pdf-tools
   :ensure nil
-  :hook ((tex-mode . lsp)
-         (latex-mode . lsp))
+  :mode ("\\.pdf\\'" . pdf-view-mode)
   :config
-  (setq tex-default-mode 'latex-mode)
-  (setq tex-print-file-extension ".pdf")
-  (setq tex-view-program-list '(("pdf-tools" "emacsclient %s")))
-  (setq tex-view-program-selection '((output-pdf "pdf-tools"))))
+  (pdf-loader-install))
 
-(with-eval-after-load 'lsp-mode
-  (setq lsp-texlab-viewer "pdf-tools")
-  (add-hook 'latex-mode-hook
-            (lambda ()
-              (add-hook 'after-save-hook #'lsp-texlab-build nil t)
-              (local-set-key (kbd "C-c C-c") #'lsp-texlab-build)
-              (local-set-key (kbd "C-c C-v") #'pdf-sync-forward-search))))
+(use-package latex
+  :ensure nil
+  :mode ("\\.tex\\'" . LaTeX-mode)
+  :hook ((LaTeX-mode . turn-on-cdlatex)
+         (LaTeX-mode . xenops-mode)
+         (LaTeX-mode . prettify-symbols-mode)
+         (LaTeX-mode . TeX-fold-mode)
+         (LaTeX-mode . TeX-source-correlate-mode)
+         (LaTeX-mode . lsp-deferred))
+  :init
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-electric-sub-and-superscript t
+        TeX-source-correlate-start-server t)
+  (setq-default TeX-master nil)
+  :config
+  (add-to-list 'TeX-command-list
+               '("LatexMk" "latexmk -pdf -synctex=1 %s"
+                 TeX-run-TeX nil t :help "Run latexmk"))
+  (setq TeX-command-default "LatexMk"
+        TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-after-compilation-finished-functions #'TeX-revert-document-buffer))
+
+(use-package cdlatex
+  :ensure nil
+  :after latex
+  :bind (:map cdlatex-mode-map
+              ("TAB" . cdlatex-tab)))
 
 (use-package xenops
   :ensure nil
-  :hook ((tex-mode . xenops-mode)
-         (latex-mode . xenops-mode))
+  :after latex
+  :hook (xenops-mode . xenops-render)
   :config
-  (setq xenops-math-auto-render 'always
-        xenops-reveal-on-entry t)
-    (setq xenops-math-image-generator 'dvipng  
-        xenops-image-scale-factor 1.5)            
-    (add-hook 'xenops-mode-hook #'xenops-render-buffer))
+  (setq xenops-math-latex-process 'dvisvgm
+        xenops-math-image-scale-factor 1.5
+        xenops-reveal-on-entry t))
+
+(use-package lsp-latex
+  :ensure nil
+  :after lsp-mode
+  :bind (:map LaTeX-mode-map
+              ("C-c b" . lsp-latex-build)
+              ("C-c v" . lsp-latex-forward-search))
+  :init
+  (setq lsp-latex-build-on-save t
+        lsp-latex-build-forward-search-after t
+        lsp-latex-forward-search-executable "emacsclient"
+        lsp-latex-forward-search-args
+        '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
 
 ;; LSP
 (use-package lsp-mode
@@ -256,8 +284,6 @@
   ((lsp-mode . lsp-enable-which-key-integration)
    (lsp-mode . yas-minor-mode)
    (java-mode . lsp-deferred)
-   (latex-mode . lsp)
-   (tex-mode . lsp)
    (gdscript-mode . lsp-deferred)
    (css-mode . lsp-deferred)
    (c-mode . lsp-deferred)
@@ -267,8 +293,6 @@
    (python-mode . lsp-deferred))
   :init
   (setq lsp-keymap-prefix "C-c l"
-		lsp-texlab-executable "texlab"
-		lsp-texlab-build-on-save t
         lsp-enable-file-watchers nil
         read-process-output-max (* 1024 1024)
         lsp-completion-provider :capf
@@ -280,6 +304,7 @@
   :config
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   (add-hook 'lsp-mode-hook #'lsp-inlay-hints-mode))
+
 
 (use-package company
   :hook (prog-mode . company-mode)
