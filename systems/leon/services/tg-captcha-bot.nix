@@ -22,6 +22,7 @@
   };
 
   sops.templates."captcha-bot-env" = {
+    mode = "0444";
     content = ''
       TGTOKEN=${config.sops.placeholder.tg-captcha-bot-token}
     '';

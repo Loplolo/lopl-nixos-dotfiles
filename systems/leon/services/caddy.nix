@@ -19,8 +19,11 @@
   };
 
   caddyWithCloudflare = pkgs.caddy.withPlugins {
-    plugins = ["github.com/caddy-dns/cloudflare@v0.2.4"];
-    hash = "sha256-dQvk6ezY6TQ1J7PjhCXnThF/SqVgPwBO8/RXzHCY+js=";
+    plugins = [
+      "github.com/caddy-dns/cloudflare@v0.2.4"
+      "github.com/mholt/caddy-l4@v0.1.2"
+    ];
+    hash = "sha256-EWpo+POYSfxsAE4W4T9ngK+n1bmJPzLS8A1+JGvoJvE=";
   };
 in {
   services.caddy = {
@@ -29,6 +32,22 @@ in {
 
     globalConfig = ''
       acme_dns cloudflare {env.CF_API_TOKEN}
+
+      {
+      	log {
+        		output stdout
+      		level DEBUG
+       }
+      }
+
+      layer4 {
+        :25565 {
+          route {
+            proxy 100.92.106.16:25565
+          }
+        }
+      }
+
     '';
 
     virtualHosts =
