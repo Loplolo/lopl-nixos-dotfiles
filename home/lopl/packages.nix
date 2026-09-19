@@ -38,7 +38,7 @@ in {
     blender
     calibre
     chromium
-    vesktop
+    discord
     distrobox
     drawio
     ericw-tools
@@ -54,7 +54,7 @@ in {
     fd
     ffmpeg
     flameshot
-    freecad
+    pkgs-stable.freecad
     freenect
     fteqcc
     fteqw-latest
@@ -115,9 +115,11 @@ in {
     plantuml
     ppsspp
     prismlauncher
+    pv
     qbittorrent
     qemu
     qmmp
+    qgis
     qss-m
     quakespasm
     quickemu
