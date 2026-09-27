@@ -13,6 +13,7 @@
     ./gpg.nix
     ./shell.nix
     ./packages.nix
+    ./programming.nix
     ./firefox.nix
     ./theme.nix
     ./xdg_mime.nix

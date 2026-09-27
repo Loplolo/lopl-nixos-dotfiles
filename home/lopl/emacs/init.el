@@ -1,4 +1,4 @@
-;;; -*- Lexical-binding: t; -*-
+;;; -*- lexical-binding: t; -*-
 ;;; lopl's chaothic init.el
 
 ;; Optimization & Startup
@@ -33,8 +33,6 @@
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode t)
 
-(global-set-key (kbd "C-c C-r") 'repeat-complex-command)
-
 ;; Use system clipboard
 (setq select-enable-clipboard t)
 (setq select-enable-primary nil)
@@ -42,18 +40,8 @@
 (setq interprogram-cut-function #'gui-select-text)
 (setq interprogram-paste-function #'gui-selection-value)
 
-(use-package multiple-cursors
-  :init
-  (add-hook 'after-change-major-mode-hook #'multiple-cursors-mode)
-  :bind (("C-S-l"   . mc/edit-lines)
-         ("C->"     . mc/mark-next-like-this)
-         ("C-<"     . mc/mark-previous-like-this)
-         ("C-S-a"   . mc/mark-all-like-this)
-         ("C-M->"   . mc/skip-to-next-like-this)
-         ("C-M-<"   . mc/skip-to-previous-like-this)
-         ("C-c C->" . mc/unmark-next-like-this)
-         ("C-c C-<" . mc/unmark-previous-like-this)
-         ("C-c m m" . multiple-cursors-mode)))
+(use-package iedit
+  :bind ("C-;" . iedit-mode))
 
 
 ;; Fonts
@@ -62,10 +50,11 @@
 (set-face-attribute 'variable-pitch nil :font "Fira Code" :height efs/default-variable-font-size :weight 'regular)
 
 ;; Icons
-(use-package all-the-icons)
+(use-package nerd-icons)
 
 ;; Modeline
 (use-package doom-modeline
+  :init (doom-modeline-mode 1)
   :custom (doom-modeline-height 15))
 
 ;; Visual Fill
@@ -96,7 +85,7 @@
         dashboard-display-icons-p t
         dashboard-vertically-center-content t
         dashboard-navigation-cycle t
-        dashboard-icon-type 'all-the-icons
+        dashboard-icon-type 'nerd-icons
         dashboard-set-heading-icons nil
         dashboard-set-file-icons t))
 
@@ -105,11 +94,73 @@
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; General Editing
-(electric-pair-mode 1)
+
+(setq-default indent-tabs-mode nil)
 (show-paren-mode 1)
 (setq-default tab-width 4)
 (global-hl-line-mode +1)
 (setq show-paren-delay 0)
+
+(use-package smartparens
+  :ensure nil
+  :demand t
+  :bind
+  (:map prog-mode-map
+        ("C-c s r"       . sp-raise-sexp)    
+        ("C-c s s"       . sp-splice-sexp)   
+        ("C-c s u"       . sp-unwrap-sexp)   
+        ("C-c s k"       . sp-kill-sexp)     
+        ("C-c s w"       . sp-rewrap-sexp)   
+        ("C-c s ("       . sp-wrap-round)    
+        ("C-c s {"       . sp-wrap-curly)    
+        ("C-c s ["       . sp-wrap-square))
+  :config
+  (require 'smartparens-config)
+  (dolist (brace '("(" "[" "{"))
+    (sp-pair brace nil :post-handlers '(("||\n[i]" "RET"))))
+  (smartparens-global-mode 1))
+
+(use-package apheleia
+  :hook ((python-base-mode nix-ts-mode rust-ts-mode c-ts-base-mode c-mode c++-mode) . apheleia-mode)
+  :config
+  (setf (alist-get 'python-mode apheleia-mode-alist) '(ruff-isort ruff)
+        (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)
+        (alist-get 'nix-ts-mode apheleia-mode-alist) 'nixfmt))
+
+(save-place-mode 1)
+
+(use-package avy
+  :bind (("M-j" . avy-goto-char-timer))
+  :custom (avy-timeout-seconds 0.3))
+
+(use-package goto-chg
+  :bind (("C-." . goto-last-change)
+         ("C-," . goto-last-change-reverse)))
+
+(use-package mwim
+  :bind (([remap move-beginning-of-line] . mwim-beginning-of-code-or-line)
+         ([remap move-end-of-line] . mwim-end-of-code-or-line)))
+
+(use-package crux
+  :bind (("S-<return>" . crux-smart-open-line)
+         ("C-S-<return>" . crux-smart-open-line-above)))
+
+(global-set-key (kbd "C-S-d") #'duplicate-dwim)
+
+(use-package move-text
+  :config (move-text-default-bindings))
+
+(use-package expreg
+  :bind (("C-=" . expreg-expand)
+         ("C-+" . expreg-contract)))
+
+(defun lopl/indent-yanked (&rest _)
+  (when (and (derived-mode-p 'prog-mode)
+             (not (derived-mode-p 'python-base-mode)))
+    (let ((mark-even-if-inactive t))
+      (indent-region (min (point) (mark t)) (max (point) (mark t))))))
+(advice-add 'yank :after #'lopl/indent-yanked)
+(advice-add 'yank-pop :after #'lopl/indent-yanked)
 
 (use-package exec-path-from-shell
   :config
@@ -142,7 +193,14 @@
    ("C-x b" . helm-buffers-list)
    ("C-c b" . helm-bookmarks)
    ("C-c f" . helm-recentf)
-   ("C-c g" . helm-grep-do-git-grep)))
+   ("C-c g" . helm-grep-do-git-grep)
+   ("C-s" . helm-occur)
+   ("C-c o" . helm-occur-visible-buffers))
+  :config
+  (define-key isearch-mode-map (kbd "M-i") #'helm-occur-from-isearch)
+  (with-eval-after-load 'helm-occur
+    (define-key helm-occur-map (kbd "C-s") #'helm-next-line)
+    (define-key helm-occur-map (kbd "C-r") #'helm-previous-line)))
 
 (use-package helm-tramp)
 (use-package helm-descbinds
@@ -172,8 +230,8 @@
          ("^"   . (lambda () (interactive) (find-alternate-file ".."))))
   :custom (dired-listing-switches "-agho --group-directories-first"))
 
-(use-package all-the-icons-dired
-  :hook (dired-mode . all-the-icons-dired-mode))
+(use-package nerd-icons-dired
+  :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package dired-open
   :config
@@ -201,10 +259,11 @@
   (global-ligature-mode 't))
 
 (use-package yasnippet
-  :ensure t
+  :ensure nil
   :hook (prog-mode . yas-minor-mode)
   :config
-  (yas-global-mode 1))
+  (unless noninteractive 
+    (yas-global-mode 1)))
 
 (use-package yasnippet-snippets
   :after yasnippet)
@@ -213,6 +272,7 @@
 ;; PDF Tools
 (use-package pdf-tools
   :magic ("%PDF" . pdf-view-mode)
+  :mode ("\\.pdf\\'" . pdf-view-mode)
   :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
   (pdf-tools-install :no-query)
@@ -221,12 +281,6 @@
     (add-to-list 'with-editor-file-name-history-exclude "%PDF")))
 
 ;; LaTeX
-(use-package pdf-tools
-  :ensure nil
-  :mode ("\\.pdf\\'" . pdf-view-mode)
-  :config
-  (pdf-loader-install))
-
 (use-package latex
   :ensure nil
   :mode ("\\.tex\\'" . LaTeX-mode)
@@ -283,14 +337,16 @@
   :hook
   ((lsp-mode . lsp-enable-which-key-integration)
    (lsp-mode . yas-minor-mode)
-   (java-mode . lsp-deferred)
-   (gdscript-mode . lsp-deferred)
-   (css-mode . lsp-deferred)
-   (c-mode . lsp-deferred)
-   (c++-mode . lsp-deferred)
-   (csharp-mode . lsp-deferred)
-   (rust-mode . lsp-deferred)
-   (python-mode . lsp-deferred))
+   ((c-mode c++-mode objc-mode c-ts-base-mode
+     java-mode java-ts-mode
+     rust-ts-mode
+     css-mode css-ts-mode
+     csharp-mode csharp-ts-mode
+     cmake-ts-mode
+     gdscript-mode
+     nix-ts-mode) . lsp-deferred))
+  :bind (:map prog-mode-map
+              ("M-RET" . lsp-execute-code-action))
   :init
   (setq lsp-keymap-prefix "C-c l"
         lsp-enable-file-watchers nil
@@ -302,17 +358,19 @@
         lsp-semantic-tokens-enable t
         lsp-enable-snippet t)
   :config
+  (add-to-list 'lsp-language-id-configuration '(nix-ts-mode . "nix"))
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   (add-hook 'lsp-mode-hook #'lsp-inlay-hints-mode))
 
 
 (use-package company
-  :hook (prog-mode . company-mode)
+  :hook ((prog-mode geiser-repl-mode) . company-mode)
   :custom
   (company-minimum-prefix-length 1)   
   (company-idle-delay 0.0)            
   (company-selection-wrap-around t)
   (company-tooltip-align-annotations t)
+  (company-show-quick-access t)
   :bind
   (:map company-active-map
         ("C-n" . company-select-next)
@@ -322,7 +380,10 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
-(use-package flycheck)
+(use-package flycheck
+  :bind (:map flycheck-mode-map
+              ("M-n" . flycheck-next-error)
+              ("M-p" . flycheck-previous-error)))
 
 (use-package dap-mode
   :after (lsp-mode)
@@ -343,35 +404,23 @@
 (use-package lsp-ui
   :ensure nil
   :commands lsp-ui-mode
-  :hook (lsp-mode . lsp-ui-mode))
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-sideline-show-code-actions t)
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-delay 0.5))
 
 (use-package helm-lsp
   :after (lsp-mode)
   :commands (helm-lsp-workspace-symbol)
   :init (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol))
 
-(use-package helm-swoop
-  :ensure t
-  :bind (("C-s" . helm-swoop)
-         ("C-c C-s" . helm-multi-swoop)
-         :map helm-swoop-map
-         ("C-r" . helm-previous-line)
-         ("C-s" . helm-next-line)
-         :map helm-multi-swoop-map
-         ("C-r" . helm-previous-line)
-         ("C-s" . helm-next-line))
-
-  :config
-  ;; This is safe here because isearch-mode-map is always loaded by default Emacs
-  (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch))
-
-
 (use-package helm-projectile
   :config (helm-projectile-on))
 
 (use-package treemacs
   :commands (treemacs)
-  :bind (("M-<tab>" . treemacs))
+  :bind (("C-c e" . treemacs))
   :hook (treemacs-mode . (lambda () (display-line-numbers-mode -1)))
   :config
   (treemacs-follow-mode t)
@@ -381,7 +430,9 @@
 
 (use-package treemacs-projectile :after (treemacs projectile))
 (use-package treemacs-magit :after (treemacs magit))
-(use-package treemacs-all-the-icons :after (treemacs))
+(use-package treemacs-nerd-icons
+  :after (treemacs)
+  :config (treemacs-load-theme "nerd-icons"))
 (use-package lsp-treemacs
   :after (lsp-mode treemacs)
   :commands lsp-treemacs-errors-list
@@ -391,7 +442,7 @@
 
 ;; Java
 (use-package lsp-java
-  :hook (java-mode . lsp))
+  :after lsp-mode)
 
 ;; Web
 (use-package impatient-mode)
@@ -399,11 +450,9 @@
   :hook (web-mode . impatient-mode))
 
 ;; Rust
-(use-package rustic
-  :config
-  (setq rustic-format-on-save t)
-  :custom
-  (rustic-cargo-use-last-stored-arguments t))
+(use-package rust-ts-mode
+  :ensure nil
+  :mode "\\.rs\\'")
 
 (use-package cargo-mode)
 (use-package cargo-transient)
@@ -414,15 +463,12 @@
 ;; C/C++
 (use-package cc-mode
   :ensure nil
-  :hook ((c-mode . lsp-deferred)
-         (c++-mode . lsp-deferred)
-         (objc-mode . lsp-deferred))
   :config
   (setq c-basic-offset 4))
 
-(use-package clang-format
-  :hook ((c-mode . (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil 'local)))
-         (c++-mode . (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil 'local)))))
+(use-package c-ts-mode
+  :ensure nil
+  :custom (c-ts-mode-indent-offset 4))
 
 (use-package cmake-mode
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
@@ -439,7 +485,7 @@
 
 (use-package treesit-auto
   :config 
-  (setq treesit-auto-opt-out-list '(latex)) 
+  (setq treesit-auto-langs (delq 'latex treesit-auto-langs))
   (global-treesit-auto-mode))
 
 
@@ -453,31 +499,29 @@
   :custom
   (lsp-pyright-auto-import-completions t)
   (lsp-pyright-typechecking-mode "strict") 
-  :hook (python-ts-mode . (lambda ()
-                             (require 'lsp-pyright)
-                             (lsp-deferred))))
+  :hook (python-base-mode . (lambda ()
+                              (require 'lsp-pyright)
+                              (lsp-deferred))))
 
 (use-package pyvenv
   :config
   (pyvenv-mode t)
-  (setq pyvenv-post-activate-hooks
-        (list (lambda () (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python")))))
-  (setq pyvenv-post-deactivate-hooks
-        (list (lambda () (setq python-shell-interpreter "python3")))))
-
-(use-package python-black
-  :after python
-  :hook (python-ts-mode . python-black-on-save-mode))
-
-(use-package py-isort
-  :after python
-  :hook (python-ts-mode . py-isort-on-save-mode))
+  (add-hook 'pyvenv-post-activate-hooks
+            (lambda ()
+              (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python")
+                    org-babel-python-command (concat pyvenv-virtual-env "bin/python"))))
+  (add-hook 'pyvenv-post-deactivate-hooks
+            (lambda ()
+              (setq python-shell-interpreter "python3"
+                    org-babel-python-command "python3"))))
 
 (use-package python-pytest
-  :bind (:map python-ts-mode-map
-              ("C-c t t" . python-pytest)           
-              ("C-c t f" . python-pytest-file)      
-              ("C-c t F" . python-pytest-function)))
+  :after python
+  :config
+  (dolist (map (list python-mode-map python-ts-mode-map))
+    (keymap-set map "C-c t t" #'python-pytest)
+    (keymap-set map "C-c t f" #'python-pytest-file)
+    (keymap-set map "C-c t F" #'python-pytest-function)))
 
 ;; AMPL 
 (use-package ampl-mode
@@ -502,7 +546,7 @@
                       (visual-line-mode 1)
                       (visual-fill-column-mode 1)
                       (variable-pitch-mode 1)
-                      (org-bullets-mode 1)
+                      (org-superstar-mode 1)
                       (display-line-numbers-mode -1)))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
@@ -540,10 +584,10 @@
                           '(("^ *\\([-]\\) "
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
 
-(use-package org-bullets
+(use-package org-superstar
   :after org
   :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 ;; presentations
 (use-package org-tree-slide
@@ -564,7 +608,7 @@
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python     . t)
-	 (scheme     . t)
+     (scheme     . t)
      (shell      . t)   
      (sql        . t)   
      (sqlite     . t)   
@@ -574,26 +618,6 @@
      (calc       . t)
      (plantuml   . t)
      (jupyter    . t))))
-
-;; smartparens
-(use-package smartparens
-  :ensure t
-  :hook (prog-mode . smartparens-mode)
-  :config
-  (require 'smartparens-config)
-
-  :bind
-  (:map smartparens-mode-map
-
-        ("C-c s r"       . sp-raise-sexp)    
-        ("C-c s s"       . sp-splice-sexp)   
-        ("C-c s u"       . sp-unwrap-sexp)   
-        ("C-c s k"       . sp-kill-sexp)     
-        ("C-c s w"       . sp-rewrap-sexp)   
-
-        ("C-c s ("       . sp-wrap-round)    
-        ("C-c s {"       . sp-wrap-curly)    
-        ("C-c s ["       . sp-wrap-square))) 
 
 (use-package org-journal
   :bind ("C-c j" . org-journal-new-entry)
@@ -616,16 +640,16 @@
   (org-roam-directory "~/Documents/Notes/")
   (org-roam-db-location "~/Documents/org-roam.db")
   :bind (("C-c n f" . org-roam-node-find)
-		 ("C-c n i" . org-roam-node-insert)
-		 ("C-c n l" . org-roam-buffer-toggle)
-		 ("C-c n c" . org-roam-capture)
-		 ("C-c n g" . org-roam-graph)
-		 ("C-c n a" . org-roam-alias-add)
-		 ("C-c n d" . org-roam-dailies-goto-today))
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n a" . org-roam-alias-add)
+         ("C-c n d" . org-roam-dailies-goto-today))
   :config
   (org-roam-db-autosync-mode))
 
-(use-package nix-mode
+(use-package nix-ts-mode
   :mode "\\.nix\\'")
 
 ;; Terminal
@@ -648,7 +672,8 @@
   (vterm-toggle-fullscreen-p nil)
   (vterm-toggle-reset-window-configration-after-exit t)
   :config
-  (global-set-key (kbd "C-<return>") 'vterm-toggle)
+  (global-set-key (kbd "C-`") #'vterm-toggle)
+  (define-key vterm-mode-map (kbd "C-`") #'vterm-toggle)
   (add-to-list 'display-buffer-alist '("^vterm-toggle.*"
                                        (display-buffer-reuse-window display-buffer-at-bottom)
                                        (dedicated . t)
@@ -660,11 +685,8 @@
   :bind ("C-c r" . quickrun))
 
 ;; Guile
-(require 'ac-geiser)
-(add-hook 'geiser-mode-hook 'ac-geiser-setup)
-(add-hook 'geiser-repl-mode-hook 'ac-geiser-setup)
-(eval-after-load "auto-complete"
-  '(add-to-list 'ac-modes 'geiser-repl-mode))
+(use-package geiser-guile
+  :defer t)
 
 ;; Typst
 (use-package typst-ts-mode
@@ -685,14 +707,6 @@
   (setq jupyter-eval-use-overlays t))
 
 (setq org-babel-python-command "python3")
-
-(add-hook 'pyvenv-post-activate-hooks
-          (lambda ()
-            (setq org-babel-python-command
-                  (concat pyvenv-virtual-env "bin/python"))))
-(add-hook 'pyvenv-post-deactivate-hooks
-          (lambda ()
-            (setq org-babel-python-command "python3")))
 
 (defun my-org-confirm-babel-evaluate (lang body)
   (not (member lang '("python" "jupyter" "jupyter-python"

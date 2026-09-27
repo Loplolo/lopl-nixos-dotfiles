@@ -27,18 +27,6 @@
       sha256 = "0xb43s4641xxfbj6ybssp7aj09apw47qz2wlabv12wmsyf63db1x";
     };
   };
-
-  helm-swoop = pkgs.emacsPackages.trivialBuild {
-    pname = "helm-swoop";
-    version = "unstable-2024-01-05";
-    src = pkgs.fetchFromGitHub {
-      owner = "emacsattic";
-      repo = "helm-swoop";
-      rev = "df90efd4476dec61186d80cace69276a95b834d2";
-      sha256 = "01nrak72inmic9n30dval6608cfzsbv5izwzykbim46ifjhcipag";
-    };
-    packageRequires = [pkgs.emacsPackages.helm];
-  };
 in {
   home.file.".emacs.d/logo.png".source = ./logo.png;
 
@@ -51,192 +39,146 @@ in {
         # System Integration
         envrc
         exec-path-from-shell
-        websocket
+
         # UI
-        doom-modeline
+        base16-theme
         doom-themes
-        all-the-icons
+        doom-modeline
+        nerd-icons
         dashboard
         page-break-lines
         visual-fill-column
         rainbow-delimiters
-        which-key
+        ligature
+
+        # Help
+        helpful
         command-log-mode
         general
         hydra
 
-        expand-region
+        # Editing
         smartparens
-
-        # Project Navigation
-        helm
-        helm-tramp
-        helm-descbinds
-        helm-projectile
-        helm-lsp
-        helm-swoop
-        projectile
-        treemacs
-        treemacs-projectile
-        treemacs-magit
-        treemacs-all-the-icons
-
-        # Tools
-        magit
-        all-the-icons-dired
-        dired-open
-        ibuffer-project
-        pdf-tools
-        vterm
-        vterm-toggle
-        eshell-vterm
-        quickrun
-        editorconfig
+        apheleia
+        avy
+        goto-chg
+        mwim
+        crux
+        move-text
+        expreg
+        iedit
 
         # Completion
         company
         company-box
         yasnippet
         yasnippet-snippets
-        auto-complete
 
-        # General Programming
-        flycheck
-        ligature
+        # Helm
+        helm
+        helm-tramp
+        helm-descbinds
+        helm-projectile
+        helm-lsp
+
+        # Files
+        projectile
+        magit
+        treemacs
+        treemacs-projectile
+        treemacs-magit
+        treemacs-nerd-icons
+        nerd-icons-dired
+        dired-open
+        ibuffer-project
+
+        # Terminal
+        vterm
+        vterm-toggle
+        eshell-vterm
+        eterm-256color
+        quickrun
+
+        # LSP & Debugging
         lsp-mode
         lsp-ui
         lsp-treemacs
+        flycheck
         dap-mode
+
+        # Tree-sitter
         treesit-auto
         (treesit-grammars.with-all-grammars)
 
         # Nix
-        nix-mode
+        nix-ts-mode
 
-        # Python and R
+        # Python
         lsp-pyright
-        python-black
-        py-isort
         pyvenv
         python-pytest
-        ess
+
+        # Jupyter
         jupyter
         zmq
+        websocket
 
-        # UML
-        plantuml-mode
+        # R
+        ess
 
         # Java
         lsp-java
 
         # Rust
-        rustic
         cargo-mode
         cargo-transient
 
-        # Web/Godot/C++
-        gdscript-mode
+        # C/C++
+        cmake-mode
+
+        # Web
         web-mode
         impatient-mode
-        cmake-mode
-        clang-format
+
+        # Godot
+        gdscript-mode
 
         # Scheme/Guile
-        ac-geiser
         geiser
         geiser-guile
-
-        # Latex/Org
-        xenops
-        cdlatex
-        lsp-latex
-        org-bullets
-        org-journal
-        org-roam
-        org-tree-slide
-        ox-haunt
-        auctex
-
-        # eBooks
-        nov
-
-        # Custom Builds
-        ampl-mode
-        quakec-mode
 
         # Typst
         typst-ts-mode
         typst-preview
 
-        helpful
-        eterm-256color
-        base16-theme
-        ement
+        # AMPL
+        ampl-mode
 
-        multiple-cursors
+        # QuakeC
+        quakec-mode
+
+        # UML
+        plantuml-mode
+
+        # LaTeX
+        auctex
+        cdlatex
+        xenops
+        lsp-latex
+        pdf-tools
+
+        # Org
+        org-superstar
+        org-journal
+        org-roam
+        org-tree-slide
+        ox-haunt
+
+        # eBooks
+        nov
       ];
 
     extraConfig = builtins.readFile ./init.el;
-  };
-
-  home.packages = with pkgs; [
-    # System
-    wmctrl
-    xdotool
-    ripgrep
-    fd
-    feh
-    mpv
-
-    # Fonts
-    fira-code
-    noto-fonts
-    emacs-all-the-icons-fonts
-
-    # Nix
-    nil
-    direnv
-
-    # Python tools (TODO: move in a better place)
-    python3Packages.black
-    python3Packages.isort
-    python3Packages.debugpy
-    python3Packages.pytest
-    python3Packages.virtualenv
-    python3Packages.pip
-    python3Packages.ipython
-    python3Packages.jupyter
-    python3Packages.jupyter-client
-    python3Packages.ipykernel
-    python3Packages.pandas
-    python3Packages.numpy
-    python3Packages.matplotlib
-    python3
-
-    # Latex/Typst
-    texlab
-    texlive.combined.scheme-full
-    tinymist
-    websocat
-    ghostscript
-
-    # Programming languages
-    cargo
-    rustc
-    rust-analyzer
-    rustfmt
-    clippy
-    clang-tools
-    jdt-language-server
-    jdk17
-    nodejs
-    gnumake
-    cmake
-    gcc
-  ];
-
-  home.sessionVariables = {
-    JAVA_HOME = "${pkgs.jdk17}";
   };
 
   home.file."Documents/Notes/.keep".text = "";

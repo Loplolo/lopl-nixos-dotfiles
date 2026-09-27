@@ -26,7 +26,9 @@ in {
             mode = "1920x1080@60Hz";
           };
 
-          "DP-1" = {position = "0 0";};
+          "DP-1" = {
+            position = "0 0";
+          };
           "HDMI-A-1" = {
             position = "1920 0";
             transform = "270";
@@ -60,7 +62,9 @@ in {
         commands = [
           # Flameshot fix for multiple screens
           {
-            criteria = {app_id = "flameshot";};
+            criteria = {
+              app_id = "flameshot";
+            };
             command = "border pixel 0, floating enable, fullscreen disable, move absolute position 0 0";
           }
         ];
@@ -91,18 +95,12 @@ in {
 
       # Startup programs
       startup = [
-        {
-          command = "blueman-applet";
-          always = true;
-        }
-        {
-          command = "nm-applet --indicator";
-          always = true;
-        }
+        {command = "blueman-applet";}
+        {command = "nm-applet --indicator";}
         {command = "swaymsg workspace 1";}
       ];
       keybindings = lib.mkOptionDefault {
-        "${mod}+w" = "null";
+        "${mod}+w" = null;
 
         # Basics
         "${mod}+Return" = "exec alacritty";
@@ -114,7 +112,7 @@ in {
         "${mod}+Shift+r" = "reload";
         "${mod}+Shift+e" = "exec swaynag -t warning -m 'You pressed the exit shortcut.' -B 'Yes, exit sway' 'swaymsg exit'";
 
-        # Custom Apps (Now using Super + Control)
+        # Custom Apps
         "${app}+g" = "exec nyxt";
         "${app}+f" = "exec firefox";
         "${app}+t" = "exec Telegram";
@@ -151,11 +149,25 @@ in {
       }
       bindsym ${mod}+Escape mode passthrough
 
-      # Screen sharing fix
-      exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP WAYLAND_DISPLAY SWAYSOCK
-      exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
-
       include /etc/sway/config.d/*
     '';
   };
+
+  home.packages = with pkgs; [
+    # Tray
+    blueman
+    networkmanagerapplet
+
+    # Desktop
+    flameshot
+    grim
+    playerctl
+    quickshell
+    slurp
+    wdisplays
+    wl-clipboard
+    wmctrl
+    xdotool
+    xsel
+  ];
 }
