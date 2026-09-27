@@ -180,7 +180,4 @@ in {
 
     extraConfig = builtins.readFile ./init.el;
   };
-
-  home.file."Documents/Notes/.keep".text = "";
-  home.file."Documents/Journal/.keep".text = "";
 }

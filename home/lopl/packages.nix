@@ -8,7 +8,6 @@
   paktool = pkgs.callPackage ./packages/paktool.nix {};
   qss-m = pkgs.callPackage ./packages/qss-m.nix {};
   slade = pkgs.callPackage ./packages/slade.nix {};
-  xwiimote-mouse-driver = pkgs.callPackage ./packages/xwiimote-mouse-driver.nix {};
   fteqw-latest = pkgs.callPackage ./packages/fteqw.nix {};
 
   # Texinfo Manuals

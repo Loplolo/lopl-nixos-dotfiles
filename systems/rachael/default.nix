@@ -81,7 +81,7 @@
     authKeyFile = config.sops.secrets.tailscale-authkey.path;
   };
 
-  networking.firewall.trustedInterfaces = ["tailscale0" "virbr0 "];
+  networking.firewall.trustedInterfaces = ["tailscale0" "virbr0"];
 
   # Fingerprint reader support
   services.fprintd.enable = true;
