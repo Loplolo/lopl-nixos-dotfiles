@@ -32,6 +32,8 @@
     allowedUDPPorts = [22000 21027];
   };
 
+  zramSwap.enable = true;
+
   hardware.graphics.enable = true;
   security.polkit.enable = true;
   services.dbus.enable = true;

@@ -168,11 +168,4 @@
   '';
 
   system.stateVersion = "25.11";
-
-  swapDevices = [
-    {
-      device = "/var/lib/swapfile";
-      size = 32768;
-    }
-  ];
 }

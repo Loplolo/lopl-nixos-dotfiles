@@ -331,9 +331,22 @@
         lsp-latex-build-forward-search-after t
         lsp-latex-forward-search-executable "emacsclient"
         lsp-latex-forward-search-args
-        '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
+        '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")"))
+  :config
+  (defun lopl/ignore-unmapped-forward-search (orig &rest args)
+    (condition-case err
+        (apply orig args)
+      (error
+       (unless (string-prefix-p "No such page" (error-message-string err))
+         (signal (car err) (cdr err))))))
+  (advice-add 'lsp-latex-forward-search-with-pdf-tools
+              :around #'lopl/ignore-unmapped-forward-search))
 
 ;; LSP
+(defun lopl/lsp-deferred ()
+  (unless (derived-mode-p 'quakec-mode)
+    (lsp-deferred)))
+
 (use-package lsp-mode
   :hook
   ((lsp-mode . lsp-enable-which-key-integration)
@@ -345,7 +358,7 @@
      csharp-mode csharp-ts-mode
      cmake-ts-mode
      gdscript-mode
-     nix-ts-mode) . lsp-deferred))
+     nix-ts-mode) . lopl/lsp-deferred))
   :bind (:map prog-mode-map
               ("M-RET" . lsp-execute-code-action))
   :init
