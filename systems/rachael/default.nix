@@ -1,34 +1,11 @@
-{
-  config,
-  pkgs,
-  lib,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
-    ./tuigreet.nix
+    ../../modules/common/tailscale.nix
+    ../../modules/desktop/nix-ld.nix
+    ../../modules/desktop/virtualisation.nix
   ];
 
-  # XDG Portals
-  xdg.portal = {
-    enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gtk];
-    config.sway = {
-      default = ["gtk"];
-      "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
-      "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
-    };
-    wlr = {
-      enable = true;
-      settings.screencast = {
-        chooser_type = "dmenu";
-        chooser_cmd = "${pkgs.tofi}/bin/tofi";
-      };
-    };
-  };
-  nixpkgs.overlays = [
-    inputs.vintagestory-nix.overlays.default
-  ];
+  networking.hostName = "rachael";
 
   services.guix.enable = true;
 
@@ -36,8 +13,6 @@
   services.xserver.enable = true;
 
   # Bootloader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
   boot.initrd.availableKernelModules = [
     "ahci"
     "xhci_pci"
@@ -47,41 +22,8 @@
 
   boot.initrd.kernelModules = ["pinctrl_alderlake"];
 
-  # nix-ld
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    libGL
-    libGLU
-    libX11
-    libXcursor
-    libXrandr
-    libXi
-    alsa-lib
-    stdenv.cc.cc.lib
-    zlib
-    openssl
-  ];
-
   # OpenArena
   networking.firewall.allowedUDPPorts = [27960 27961 27962 27963];
-  # Syncthing
-  services.syncthing.openDefaultPorts = true;
-
-  # Sops
-  sops = {
-    defaultSopsFile = ../../secrets/secrets.yaml;
-    validateSopsFiles = false;
-    age.keyFile = "/var/lib/sops-nix/key.txt";
-    secrets.tailscale-authkey = {};
-  };
-
-  # Tailscale
-  services.tailscale = {
-    enable = true;
-    authKeyFile = config.sops.secrets.tailscale-authkey.path;
-  };
-
-  networking.firewall.trustedInterfaces = ["tailscale0" "virbr0"];
 
   # Fingerprint reader support
   services.fprintd.enable = true;
@@ -93,50 +35,10 @@
     serviceConfig.Type = "simple";
   };
 
-  networking.hostName = "rachael";
-
-  networking.networkmanager = {
-    enable = true;
-    plugins = with pkgs; [
-      networkmanager-openvpn
-    ];
-  };
-
-  # Set your time zone.
-  time.timeZone = "Europe/Rome";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_IE.UTF-8";
-    LC_IDENTIFICATION = "en_IE.UTF-8";
-    LC_MEASUREMENT = "en_IE.UTF-8";
-    LC_MONETARY = "en_IE.UTF-8";
-    LC_NAME = "en_IE.UTF-8";
-    LC_NUMERIC = "en_IE.UTF-8";
-    LC_PAPER = "en_IE.UTF-8";
-    LC_TELEPHONE = "en_IE.UTF-8";
-    LC_TIME = "en_IE.UTF-8";
-  };
-
-  # Extra thunar stuff
-  programs.thunar.plugins = with pkgs.xfce; [
-    thunar-archive-plugin
-    thunar-volman
-  ];
-
-  services.gvfs.enable = true;
-  services.tumbler.enable = true;
-
-  programs.thunar.enable = true;
-  programs.xfconf.enable = true;
-  programs.dconf.enable = true;
-
   # Enable Graphics and ipu6 webcam
   # intel integrated graphics
   hardware = {
     graphics = {
-      enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
         vpl-gpu-rt
@@ -156,9 +58,6 @@
   # GameMode
   programs.gamemode.enable = true;
 
-  # Install all nerd fonts
-  fonts.packages = builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
-
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "iHD"; # Prefer the modern iHD backend
     # VDPAU_DRIVER = "va_gl";      # Only if using libvdpau-va-gl
@@ -167,61 +66,7 @@
   hardware.enableRedistributableFirmware = true;
   boot.kernelParams = ["i915.enable_guc=3"];
 
-  # Enable Bluetooth
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
-  services.blueman.enable = true;
-
-  # Enable Printing
-  services.printing.enable = true;
-
-  # Sound with Pipewire
-  services.pulseaudio.enable = false;
-
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
-
-  # Security / Polkit
-  security.polkit.enable = true;
-
-  # Enable Flakes
-  nix.settings.experimental-features = ["nix-command" "flakes"];
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowBroken = true;
-
-  programs.zsh.enable = true;
-  users.users.lopl = {
-    isNormalUser = true;
-    description = "lopl";
-    extraGroups = ["networkmanager" "wheel" "video" "audio" "input" "greeter" "libvirtd" "podman" "docker" "nm-openvpn"];
-    shell = pkgs.zsh;
-  };
-
-  # Flatpak
-  services.flatpak.enable = true;
-
-  # Docker
-  virtualisation.docker = {
-    enable = true;
-  };
-
-  # libvirtd
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      runAsRoot = true;
-      swtpm.enable = true;
-      vhostUserPackages = [pkgs.virtiofsd];
-    };
-  };
+  users.users.lopl.extraGroups = ["podman"];
 
   # Prefer IPv4
   networking.getaddrinfo.enable = true;
@@ -229,42 +74,9 @@
     "::ffff:0:0/96" = 100;
   };
 
-  # Virt-manager
-
-  systemd.services.libvirt-default-network = {
-    description = "Start libvirt default network";
-    after = ["libvirtd.service"];
-    wantedBy = ["multi-user.target"];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.libvirt}/bin/virsh net-start default";
-      ExecStop = "${pkgs.libvirt}/bin/virsh net-destroy default";
-      User = "root";
-    };
-  };
-  virtualisation.spiceUSBRedirection.enable = true;
-
   environment.systemPackages = with pkgs; [
     distrobox
-    vim
-    wget
-    git
-    curl
-    openssl
-    pciutils
-    usbutils
-    wl-clipboard
-    wayland-utils
-    brightnessctl
-    pamixer
-    networkmanagerapplet
-    busybox
-    xfce.thunar
-    playerctl
-    pulseaudio
     vial
-    libsecret
     tofi
   ];
   services.udev.packages = with pkgs; [via];
@@ -273,16 +85,6 @@
     KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
   '';
   hardware.keyboard.qmk.enable = true;
-
-  # Garbage collection
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
-
-  # dbus enable
-  services.dbus.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data were taken.

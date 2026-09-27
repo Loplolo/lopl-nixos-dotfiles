@@ -2,59 +2,15 @@
   config,
   pkgs,
   lib,
-  inputs,
   ...
 }: {
   imports = [
-    ./tuigreet.nix
-  ];
-
-  # XDG Portals
-  xdg.portal = {
-    enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gtk];
-    config.sway = {
-      default = ["gtk"];
-      "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
-      "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
-    };
-    wlr = {
-      enable = true;
-      settings.screencast = {
-        chooser_type = "dmenu";
-        chooser_cmd = "${pkgs.tofi}/bin/tofi";
-      };
-    };
-  };
-  nixpkgs.overlays = [
-    inputs.vintagestory-nix.overlays.default
+    ../../modules/common/tailscale.nix
+    ../../modules/desktop/nix-ld.nix
+    ../../modules/desktop/virtualisation.nix
   ];
 
   networking.hostName = "pris";
-
-  networking.networkmanager = {
-    enable = true;
-    plugins = with pkgs; [
-      networkmanager-openvpn
-    ];
-  };
-
-  # Set your time zone.
-  time.timeZone = "Europe/Rome";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_IE.UTF-8";
-    LC_IDENTIFICATION = "en_IE.UTF-8";
-    LC_MEASUREMENT = "en_IE.UTF-8";
-    LC_MONETARY = "en_IE.UTF-8";
-    LC_NAME = "en_IE.UTF-8";
-    LC_NUMERIC = "en_IE.UTF-8";
-    LC_PAPER = "en_IE.UTF-8";
-    LC_TELEPHONE = "en_IE.UTF-8";
-    LC_TIME = "en_IE.UTF-8";
-  };
 
   # VR
   services.wivrn = {
@@ -73,68 +29,17 @@
 
   services.udev.packages = [pkgs.game-devices-udev-rules pkgs.xwiimote];
 
-  # nix-ld
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    libGL
-    libGLU
-    libX11
-    libXcursor
-    libXrandr
-    libXi
-    alsa-lib
-    stdenv.cc.cc.lib
-    zlib
-    openssl
-  ];
-
-  # Extra thunar stuff
-  programs.thunar.plugins = with pkgs; [
-    thunar-archive-plugin
-    thunar-volman
-  ];
-
   services.guix.enable = true;
 
-  services.gvfs.enable = true;
-  services.tumbler.enable = true;
-
-  programs.thunar.enable = true;
-  programs.xfconf.enable = true;
-  programs.dconf.enable = true;
-
   # Sound with Pipewire
-  services.pulseaudio.enable = false;
-
   services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
     wireplumber.enable = true;
     jack.enable = true;
   };
 
   networking.firewall.allowedUDPPorts = [27960 27961 27962 27963 9757];
   networking.firewall.allowedTCPPorts = [9757];
-  # Syncthing
-  services.syncthing.openDefaultPorts = true;
 
-  # Sops
-  sops = {
-    defaultSopsFile = ../../secrets/secrets.yaml;
-    validateSopsFiles = false;
-    age.keyFile = "/var/lib/sops-nix/key.txt";
-    secrets.tailscale-authkey = {};
-  };
-
-  # Tailscale
-  services.tailscale = {
-    enable = true;
-    authKeyFile = config.sops.secrets.tailscale-authkey.path;
-  };
-
-  networking.firewall.trustedInterfaces = ["tailscale0" "virbr0"];
   networking.nftables.enable = true;
   services.resolved.enable = true;
 
@@ -154,91 +59,30 @@
     ];
   };
 
-  # Install all nerd fonts
-  fonts.packages = builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
-
-  # Enable Flakes
-  nix.settings = {
-    experimental-features = ["nix-command" "flakes"];
-    auto-optimise-store = true;
-  };
-
   # Enable Bluetooth
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    settings.General = {
-      Experimental = true;
-      KernelExperimental = true;
-      FastConnectable = true;
-      Enable = "Source,Sink,Media,Socket";
-    };
+  hardware.bluetooth.settings.General = {
+    Experimental = true;
+    KernelExperimental = true;
+    FastConnectable = true;
+    Enable = "Source,Sink,Media,Socket";
   };
-  services.blueman.enable = true;
 
   # Enable Printing
-  services.printing = {
-    enable = true;
-    drivers = with pkgs; [
-      cups-filters
-      cups-browsed
-      epson-escpr
-    ];
-  };
+  services.printing.drivers = with pkgs; [
+    cups-filters
+    cups-browsed
+    epson-escpr
+  ];
 
   services.ipp-usb.enable = true;
-  security.rtkit.enable = true;
 
-  # Security Polkit
-  security.polkit.enable = true;
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowBroken = true;
-
-  programs.zsh.enable = true;
-  users.users.lopl = {
-    isNormalUser = true;
-    description = "lopl";
-    extraGroups = ["networkmanager" "wheel" "video" "audio" "input" "greeter" "libvirtd" "podman" "docker" "nm-openvpn" "adbusers" "render" "lp" "uinput"];
-    shell = pkgs.zsh;
-  };
+  users.users.lopl.extraGroups = ["podman" "adbusers" "render" "lp" "uinput"];
 
   # WayDroid
   virtualisation.waydroid.enable = true;
 
-  # Docker
-  virtualisation.docker = {
-    enable = true;
-  };
-
-  # libvirtd
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      runAsRoot = true;
-      swtpm.enable = true;
-      vhostUserPackages = [pkgs.virtiofsd];
-    };
-  };
-
-  # Virt-manager
-  systemd.services.libvirt-default-network = {
-    description = "Start libvirt default network";
-    after = ["libvirtd.service"];
-    wantedBy = ["multi-user.target"];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.libvirt}/bin/virsh net-start default";
-      ExecStop = "${pkgs.libvirt}/bin/virsh net-destroy default";
-      User = "root";
-    };
-  };
-  virtualisation.spiceUSBRedirection.enable = true;
-
   # Graphics
   hardware.graphics = {
-    enable = true;
     enable32Bit = true;
     extraPackages = with pkgs; [
       nvidia-vaapi-driver
@@ -266,7 +110,6 @@
 
   services.xserver.videoDrivers = ["nvidia"];
 
-  services.flatpak.enable = true;
   hardware.cpu.amd.updateMicrocode = true;
 
   hardware.nvidia = {
@@ -292,23 +135,7 @@
   services.xserver.enable = true;
 
   environment.systemPackages = with pkgs; [
-    vim
-    wget
-    git
-    curl
-    openssl
-    pciutils
-    usbutils
-    wl-clipboard
     wayvr
-    wayland-utils
-    pamixer
-    busybox
-    playerctl
-    pulseaudio
-    libsecret
-    usbutils
-    pciutils
 
     libX11
 
@@ -320,18 +147,8 @@
     mangohud
 
     mako
-    networkmanagerapplet
-    brightnessctl
-    thunar
     xdg-utils
   ];
-
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
-  services.dbus.enable = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
@@ -347,7 +164,6 @@
     options v4l2loopback devices=1 video_nr=9 card_label="OBS Virtual Camera" exclusive_caps=1 max_buffers=8
   '';
 
-  boot.loader.systemd-boot.enable = true;
   boot.initrd.supportedFilesystems = ["btrfs"];
   system.stateVersion = "25.11";
 
