@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}: let
+{config, ...}: let
   tunnelId = "4863ed27-ae19-40f1-b839-7e7f958b56e4";
 in {
   services.cloudflared = {
@@ -21,4 +16,6 @@ in {
       };
     };
   };
+
+  sops.secrets.cloudflared-creds = {};
 }

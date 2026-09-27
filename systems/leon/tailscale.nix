@@ -1,12 +1,12 @@
 {
-  config,
-  pkgs,
-  ...
-}: {
+  imports = [../../modules/common/tailscale.nix];
+
   services.tailscale = {
-    enable = true;
-    authKeyFile = config.sops.secrets.tailscale-authkey.path;
     useRoutingFeatures = "both";
     extraUpFlags = ["--accept-dns=true" "--ssh"];
   };
+
+  systemd.services.tailscaled.serviceConfig.Environment = [
+    "TS_DEBUG_FIREWALL_MODE=nftables"
+  ];
 }

@@ -1,33 +1,23 @@
 {
   config,
-  pkgs,
+  lib,
   ...
 }: {
   services.dnsmasq = {
     enable = true;
 
     settings = {
-      address = [
-        "/home.lopl.dev/100.87.157.78"
-        "/adguard.lopl.dev/100.87.157.78"
-        "/pdf.lopl.dev/100.87.157.78"
-        "/immich.lopl.dev/100.87.157.78"
-        "/music.lopl.dev/100.87.157.78"
-        "/search.lopl.dev/100.87.157.78"
-        "/syncthing.lopl.dev/100.87.157.78"
-        "/bin.lopl.dev/100.87.157.78"
-        "/ha.lopl.dev/100.87.157.78"
-        "/movies.lopl.dev/100.87.157.78"
-        "/cloud.lopl.dev/100.87.157.78"
+      address =
+        lib.mapAttrsToList (name: _: "/${name}.lopl.dev/100.87.157.78") config.lopl.proxies
+        ++ [
+          "/forgejo.lopl.dev/188.114.96.7"
+          "/forgejo.lopl.dev/188.114.97.7"
 
-        "/forgejo.lopl.dev/188.114.96.7"
-        "/forgejo.lopl.dev/188.114.97.7"
+          "/blog.lopl.dev/188.114.96.7"
+          "/blog.lopl.dev/188.114.97.7"
 
-        "/blog.lopl.dev/188.114.96.7"
-        "/blog.lopl.dev/188.114.97.7"
-
-        "/mc.lopl.dev/100.87.157.78"
-      ];
+          "/mc.lopl.dev/100.87.157.78"
+        ];
 
       port = 5353;
 
@@ -51,4 +41,6 @@
       ];
     };
   };
+
+  networking.firewall.allowedUDPPorts = [5353];
 }

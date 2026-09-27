@@ -19,4 +19,6 @@
     enable = true;
     openFirewall = true;
   };
+
+  lopl.proxies.movies = 8096;
 }

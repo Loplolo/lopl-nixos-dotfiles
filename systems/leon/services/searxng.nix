@@ -56,4 +56,8 @@
       ];
     };
   };
+
+  lopl.proxies.search = config.services.searx.settings.server.port;
+
+  sops.secrets.searxng-secret = {};
 }

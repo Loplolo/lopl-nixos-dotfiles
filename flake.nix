@@ -80,7 +80,7 @@
       rachael = mkHost "rachael" desktopModules;
       pris = mkHost "pris" desktopModules;
       roy = mkHost "roy" desktopModules;
-      leon = mkHost "leon" [];
+      leon = mkHost "leon" [./modules/server];
     };
   };
 }

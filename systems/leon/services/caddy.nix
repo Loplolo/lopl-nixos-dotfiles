@@ -4,20 +4,6 @@
   lib,
   ...
 }: let
-  tsProxies = {
-    "home.lopl.dev" = "127.0.0.1:8280";
-    "adguard.lopl.dev" = "127.0.0.1:3001";
-    "pdf.lopl.dev" = "127.0.0.1:2000";
-    "immich.lopl.dev" = "127.0.0.1:2283";
-    "music.lopl.dev" = "127.0.0.1:4533";
-    "search.lopl.dev" = "127.0.0.1:8082";
-    "syncthing.lopl.dev" = "127.0.0.1:8384";
-    "bin.lopl.dev" = "127.0.0.1:8125";
-    "ha.lopl.dev" = "127.0.0.1:8123";
-    "movies.lopl.dev" = "127.0.0.1:8096";
-    "cloud.lopl.dev" = "127.0.0.1:8081";
-  };
-
   caddyWithCloudflare = pkgs.caddy.withPlugins {
     plugins = [
       "github.com/caddy-dns/cloudflare@v0.2.4"
@@ -49,19 +35,26 @@ in {
         }
     '';
 
-    virtualHosts =
-      lib.mapAttrs (host: upstream: {
+    virtualHosts = lib.mapAttrs' (name: port:
+      lib.nameValuePair "${name}.lopl.dev" {
         extraConfig = ''
           header Strict-Transport-Security "max-age=31536000; includeSubDomains"
-          reverse_proxy ${upstream}
+          reverse_proxy 127.0.0.1:${toString port}
           tls {
             dns cloudflare {env.CF_API_TOKEN}
           }
         '';
       })
-      tsProxies;
+    config.lopl.proxies;
   };
 
   systemd.services.caddy.serviceConfig.EnvironmentFile =
     config.sops.secrets.caddy-cf-token.path;
+
+  sops.secrets.caddy-cf-token = {};
+
+  networking.firewall = {
+    allowedTCPPorts = [80 443 25565];
+    allowedUDPPorts = [25565];
+  };
 }

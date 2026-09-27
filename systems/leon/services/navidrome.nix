@@ -11,4 +11,6 @@
       Port = 4533;
     };
   };
+
+  lopl.proxies.music = config.services.navidrome.settings.Port;
 }

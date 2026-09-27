@@ -15,4 +15,8 @@
       "--network=host"
     ];
   };
+
+  lopl.proxies.ha = 8123;
+
+  networking.firewall.allowedTCPPorts = [8123];
 }

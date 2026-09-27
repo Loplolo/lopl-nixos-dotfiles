@@ -18,4 +18,6 @@
       MICROBIN_ADMIN_USERNAME = "lopl";
     };
   };
+
+  lopl.proxies.bin = config.services.microbin.settings.MICROBIN_PORT;
 }

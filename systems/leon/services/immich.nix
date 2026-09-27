@@ -9,4 +9,6 @@
     openFirewall = true;
     port = 2283;
   };
+
+  lopl.proxies.immich = config.services.immich.port;
 }

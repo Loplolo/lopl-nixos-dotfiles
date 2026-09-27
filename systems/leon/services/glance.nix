@@ -870,4 +870,11 @@
       ];
     };
   };
+
+  lopl.proxies.home = config.services.glance.settings.server.port;
+
+  sops.secrets = {
+    steam-api-key = {};
+    tailscale-api-key = {};
+  };
 }

@@ -41,7 +41,7 @@
       listen = [
         {
           addr = "127.0.0.1";
-          port = 8081;
+          port = config.lopl.proxies.cloud;
         }
       ];
       addSSL = false;
@@ -58,4 +58,8 @@
     "d /mnt/media/photos 0775 root media -"
     "d /var/lib/syncthing 0750 syncthing syncthing -"
   ];
+
+  lopl.proxies.cloud = 8081;
+
+  sops.secrets.nextcloud-admin-pass.key = "nextcloud-admin-password";
 }

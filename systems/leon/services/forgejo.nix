@@ -22,4 +22,6 @@
       log.LEVEL = "Warn";
     };
   };
+
+  networking.firewall.allowedTCPPorts = [3000];
 }

@@ -59,9 +59,11 @@
 
       gui = {
         enabled = true;
-        address = "127.0.0.1:8384";
+        address = "127.0.0.1:${toString config.lopl.proxies.syncthing}";
         insecureSkipHostcheck = true;
       };
     };
   };
+
+  lopl.proxies.syncthing = 8384;
 }
