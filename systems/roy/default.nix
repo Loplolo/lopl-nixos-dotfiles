@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }: {
   imports = [
@@ -25,6 +26,9 @@
       };
     };
   };
+  nixpkgs.overlays = [
+    inputs.vintagestory-nix.overlays.default
+  ];
 
   # Bootloader
   boot.loader.systemd-boot.enable = true;
@@ -105,6 +109,7 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowBroken = true;
 
   programs.zsh.enable = true;
   users.users.lopl = {
