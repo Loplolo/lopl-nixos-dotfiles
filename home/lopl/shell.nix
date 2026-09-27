@@ -8,7 +8,7 @@
     cd ~/dotfiles || exit 1
     ${pkgs.alejandra}/bin/alejandra .
 
-    if ! sudo nixos-rebuild switch --flake .#${osConfig.networking.hostName}; then
+    if ! nixos-rebuild switch --flake .#${osConfig.networking.hostName} --sudo; then
       exit 1
     fi
   '';
