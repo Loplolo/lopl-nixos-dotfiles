@@ -8,6 +8,6 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-bak";
-    users.lopl = import ../../home/lopl;
+    users.lopl = import ../home/lopl;
   };
 }

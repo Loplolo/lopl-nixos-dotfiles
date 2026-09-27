@@ -70,7 +70,8 @@
       nix-flatpak.nixosModules.nix-flatpak
       vintagestory-nix.nixosModules.default
       home-manager.nixosModules.home-manager
-      ./modules/nixos/home-manager.nix
+      ./modules/home-manager.nix
+      ./modules/desktop
     ];
   in {
     formatter.${system} = alejandra.defaultPackage.${system};
