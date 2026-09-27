@@ -49,113 +49,37 @@
       inherit system;
       config.allowUnfree = true;
     };
+
+    mkHost = name: extraModules:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {inherit inputs pkgs-stable;};
+        modules =
+          [
+            disko.nixosModules.disko
+            sops-nix.nixosModules.sops
+            ./systems/${name}
+            ./systems/${name}/disko.nix
+            {environment.systemPackages = [alejandra.defaultPackage.${system}];}
+          ]
+          ++ extraModules;
+      };
+
+    desktopModules = [
+      stylix.nixosModules.stylix
+      nix-flatpak.nixosModules.nix-flatpak
+      vintagestory-nix.nixosModules.default
+      home-manager.nixosModules.home-manager
+      ./modules/nixos/home-manager.nix
+    ];
   in {
+    formatter.${system} = alejandra.defaultPackage.${system};
+
     nixosConfigurations = {
-      rachael = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit inputs;
-          inherit pkgs-stable;
-        };
-        modules = [
-          disko.nixosModules.disko
-          sops-nix.nixosModules.sops
-          stylix.nixosModules.stylix
-          nix-flatpak.nixosModules.nix-flatpak
-          vintagestory-nix.nixosModules.default
-          ./systems/rachael/default.nix
-          ./systems/rachael/disko.nix
-          {
-            environment.systemPackages = [alejandra.defaultPackage.${system}];
-          }
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-              inherit pkgs-stable;
-            };
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "hm-bak";
-            home-manager.users.lopl = import ./home/lopl/default.nix;
-          }
-        ];
-      };
-
-      pris = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit inputs;
-          inherit pkgs-stable;
-        };
-        modules = [
-          disko.nixosModules.disko
-          sops-nix.nixosModules.sops
-          stylix.nixosModules.stylix
-          nix-flatpak.nixosModules.nix-flatpak
-          vintagestory-nix.nixosModules.default
-          ./systems/pris/default.nix
-          ./systems/pris/disko.nix
-          {
-            environment.systemPackages = [alejandra.defaultPackage.${system}];
-          }
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-              inherit pkgs-stable;
-            };
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "hm-bak";
-            home-manager.users.lopl = import ./home/lopl/default.nix;
-          }
-        ];
-      };
-
-      roy = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit inputs;
-          inherit pkgs-stable;
-        };
-        modules = [
-          disko.nixosModules.disko
-          sops-nix.nixosModules.sops
-          stylix.nixosModules.stylix
-          nix-flatpak.nixosModules.nix-flatpak
-          ./systems/roy/default.nix
-          ./systems/roy/disko.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-              inherit pkgs-stable;
-            };
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.users.lopl = import ./home/lopl/default.nix;
-          }
-        ];
-      };
-
-      leon = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit inputs;
-          inherit pkgs-stable;
-        };
-        modules = [
-          disko.nixosModules.disko
-          sops-nix.nixosModules.sops
-          ./systems/leon/default.nix
-          ./systems/leon/disko.nix
-          {
-            environment.systemPackages = [alejandra.defaultPackage.${system}];
-          }
-        ];
-      };
+      rachael = mkHost "rachael" desktopModules;
+      pris = mkHost "pris" desktopModules;
+      roy = mkHost "roy" desktopModules;
+      leon = mkHost "leon" [];
     };
   };
 }
