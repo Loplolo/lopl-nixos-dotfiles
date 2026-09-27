@@ -13,3 +13,108 @@ Run =nix flake update= to pull the latest versions of NixOS and community module
 
 Run =rebuild= (local) or =remote-rebuild= (remote server) to apply changes made to the dotfiles.
 
+#+begin_src 
+.
+├── flake.lock
+├── flake.nix
+├── home
+│   └── lopl
+│       ├── default.nix
+│       ├── desktop
+│       │   ├── default.nix
+│       │   ├── i3.nix
+│       │   ├── i3status-rust.nix
+│       │   ├── theme.nix
+│       │   ├── thunar.nix
+│       │   ├── wallpaper.png
+│       │   └── xdg-mime.nix
+│       ├── dev
+│       │   ├── default.nix
+│       │   ├── emacs
+│       │   │   ├── default.nix
+│       │   │   ├── init.el
+│       │   │   ├── init.el~
+│       │   │   └── logo.png
+│       │   ├── guix.nix
+│       │   └── programming.nix
+│       ├── firefox.nix
+│       ├── flatpak.nix
+│       ├── git.nix
+│       ├── gpg.nix
+│       ├── nyxt.nix
+│       ├── packages.nix
+│       ├── secret-service.nix
+│       ├── shell.nix
+│       └── syncthing.nix
+├── modules
+│   ├── common
+│   │   ├── boot.nix
+│   │   ├── default.nix
+│   │   ├── locale.nix
+│   │   ├── nix.nix
+│   │   ├── sops.nix
+│   │   ├── tailscale.nix
+│   │   └── users.nix
+│   ├── desktop
+│   │   ├── audio.nix
+│   │   ├── bluetooth.nix
+│   │   ├── default.nix
+│   │   ├── fonts.nix
+│   │   ├── nix-ld.nix
+│   │   ├── portals.nix
+│   │   ├── printing.nix
+│   │   ├── thunar.nix
+│   │   ├── virtualisation.nix
+│   │   └── xserver.nix
+│   ├── home-manager.nix
+│   └── server
+│       ├── default.nix
+│       ├── proxies.nix
+│       └── ssh.nix
+├── pkgs
+│   ├── default.nix
+│   ├── fteqw.nix
+│   ├── nix-pills-info.nix
+│   ├── paktool.nix
+│   ├── qss-m.nix
+│   ├── sicp-info.nix
+│   ├── slade.nix
+│   └── trenchbroom.nix
+├── README.org
+├── secrets
+│   └── secrets.yaml
+└── systems
+    ├── leon
+    │   ├── default.nix
+    │   ├── disko.nix
+    │   ├── services
+    │   │   ├── adguard.nix
+    │   │   ├── blog.nix
+    │   │   ├── caddy.nix
+    │   │   ├── cloudflared.nix
+    │   │   ├── dnsmasq.nix
+    │   │   ├── forgejo.nix
+    │   │   ├── glance.nix
+    │   │   ├── homeassistant.nix
+    │   │   ├── immich.nix
+    │   │   ├── jellyfin.nix
+    │   │   ├── microbin.nix
+    │   │   ├── minecraft-server.nix
+    │   │   ├── navidrome.nix
+    │   │   ├── nextcloud.nix
+    │   │   ├── searxng.nix
+    │   │   ├── stirling-pdf.nix
+    │   │   ├── syncthing.nix
+    │   │   ├── tg-captcha-bot.nix
+    │   │   └── vintagestory.nix
+    │   └── tailscale.nix
+    ├── pris
+    │   ├── default.nix
+    │   └── disko.nix
+    ├── rachael
+    │   ├── default.nix
+    │   └── disko.nix
+    └── roy
+        ├── default.nix
+        └── disko.nix
+#+end_src
