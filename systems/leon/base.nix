@@ -11,22 +11,6 @@
     };
   };
 
-  # Mount HDD
-  systemd.tmpfiles.rules = [
-    "d /mnt/hdd0 0777 lopl users -"
-  ];
-
-  fileSystems."/mnt/hdd0" = {
-    device = "/dev/disk/by-uuid/77DB-F28C";
-    fsType = "btrfs";
-    options = [
-      "defaults"
-      "nofail"
-      "x-systemd.automount"
-      "compress=zstd"
-    ];
-  };
-
   virtualisation.podman = {
     enable = true;
     dockerCompat = true;

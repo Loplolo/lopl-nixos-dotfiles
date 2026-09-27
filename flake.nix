@@ -149,7 +149,6 @@
         modules = [
           disko.nixosModules.disko
           sops-nix.nixosModules.sops
-          vintagestory-nix.nixosModules.default
           ./systems/leon/default.nix
           ./systems/leon/disko.nix
           {
