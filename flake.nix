@@ -21,9 +21,6 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    alejandra.url = "github:kamadorueda/alejandra/4.0.0";
-    alejandra.inputs.nixpkgs.follows = "nixpkgs";
-
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -39,7 +36,6 @@
     nix-flatpak,
     stylix,
     disko,
-    alejandra,
     sops-nix,
     vintagestory-nix,
     ...
@@ -60,7 +56,6 @@
             sops-nix.nixosModules.sops
             ./systems/${name}
             ./systems/${name}/disko.nix
-            {environment.systemPackages = [alejandra.defaultPackage.${system}];}
           ]
           ++ extraModules;
       };
@@ -74,7 +69,7 @@
       ./modules/desktop
     ];
   in {
-    formatter.${system} = alejandra.defaultPackage.${system};
+    formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
 
     nixosConfigurations = {
       rachael = mkHost "rachael" desktopModules;

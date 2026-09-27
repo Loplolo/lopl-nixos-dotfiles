@@ -123,9 +123,10 @@
 (use-package apheleia
   :hook ((python-base-mode nix-ts-mode rust-ts-mode c-ts-base-mode c-mode c++-mode) . apheleia-mode)
   :config
-  (setf (alist-get 'python-mode apheleia-mode-alist) '(ruff-isort ruff)
+  (setf (alist-get 'alejandra apheleia-formatters) '("alejandra" "-q" "-")
+        (alist-get 'python-mode apheleia-mode-alist) '(ruff-isort ruff)
         (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)
-        (alist-get 'nix-ts-mode apheleia-mode-alist) 'nixfmt))
+        (alist-get 'nix-ts-mode apheleia-mode-alist) 'alejandra))
 
 (save-place-mode 1)
 

@@ -2,7 +2,7 @@
   home.packages = with pkgs; [
     # Nix
     nil
-    nixfmt
+    alejandra
 
     # Python
     pyright
