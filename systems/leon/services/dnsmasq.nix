@@ -13,9 +13,6 @@
           "/forgejo.lopl.dev/188.114.96.7"
           "/forgejo.lopl.dev/188.114.97.7"
 
-          "/blog.lopl.dev/188.114.96.7"
-          "/blog.lopl.dev/188.114.97.7"
-
           "/mc.lopl.dev/100.87.157.78"
         ];
 

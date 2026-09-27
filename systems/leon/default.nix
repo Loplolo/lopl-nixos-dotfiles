@@ -19,6 +19,7 @@
     ./services/tg-captcha-bot.nix
     ./services/jellyfin.nix
     #./services/vintagestory.nix
+    #./services/blog.nix
   ];
 
   networking.hostName = "leon";

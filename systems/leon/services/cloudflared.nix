@@ -9,7 +9,6 @@ in {
 
         ingress = {
           "forgejo.lopl.dev" = "http://127.0.0.1:3000";
-          "blog.lopl.dev" = "http://127.0.0.1:8081";
         };
 
         default = "http_status:404";
