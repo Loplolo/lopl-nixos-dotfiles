@@ -30,13 +30,14 @@
   };
 
   # for kinect
-  services.udev.extraRules = ''
-    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02b0", MODE="0666", TAG+="uaccess"
-    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ad", MODE="0666", TAG+="uaccess"
-    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ae", MODE="0666", TAG+="uaccess"
-  '';
-
-  services.udev.packages = [pkgs.game-devices-udev-rules pkgs.xwiimote];
+  services.udev = {
+    extraRules = ''
+      SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02b0", MODE="0666", TAG+="uaccess"
+      SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ad", MODE="0666", TAG+="uaccess"
+      SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ae", MODE="0666", TAG+="uaccess"
+    '';
+    packages = [pkgs.game-devices-udev-rules pkgs.xwiimote];
+  };
 
   services.guix.enable = true;
 
@@ -46,8 +47,10 @@
     jack.enable = true;
   };
 
-  networking.firewall.allowedUDPPorts = [27960 27961 27962 27963 9757];
-  networking.firewall.allowedTCPPorts = [9757];
+  networking.firewall = {
+    allowedUDPPorts = [27960 27961 27962 27963 9757];
+    allowedTCPPorts = [9757];
+  };
 
   networking.nftables.enable = true;
   services.resolved.enable = true;
@@ -102,7 +105,6 @@
     "nvidia-drm.fbdev=1"
     "btusb.enable_autosuspend=0"
   ];
-  hardware.nvidia.modesetting.enable = true;
   hardware.nvidia-container-toolkit.enable = true;
 
   # GameMode
@@ -117,11 +119,10 @@
     gamescopeSession.enable = true;
   };
 
-  services.xserver.videoDrivers = ["nvidia"];
-
   hardware.cpu.amd.updateMicrocode = true;
 
   hardware.nvidia = {
+    modesetting.enable = true;
     powerManagement.enable = false;
     powerManagement.finegrained = false;
     open = true;
@@ -141,7 +142,10 @@
   };
 
   # xserver
-  services.xserver.enable = true;
+  services.xserver = {
+    enable = true;
+    videoDrivers = ["nvidia"];
+  };
 
   environment.systemPackages = with pkgs; [
     wayvr
@@ -162,8 +166,11 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
-  boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" "sr_mod"];
-  boot.initrd.kernelModules = ["nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
+  boot.initrd = {
+    availableKernelModules = ["xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" "sr_mod"];
+    kernelModules = ["nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
+    supportedFilesystems = ["btrfs"];
+  };
 
   boot.kernelModules = ["kvm-amd" "binder_linux" "hid-wiimote" "uinput"];
   boot.extraModulePackages = with config.boot.kernelPackages; [
@@ -173,7 +180,6 @@
     options v4l2loopback devices=1 video_nr=9 card_label="OBS Virtual Camera" exclusive_caps=1 max_buffers=8
   '';
 
-  boot.initrd.supportedFilesystems = ["btrfs"];
   system.stateVersion = "25.11";
 
   swapDevices = [

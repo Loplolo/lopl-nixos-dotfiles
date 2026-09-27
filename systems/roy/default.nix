@@ -8,15 +8,10 @@
     "sd_mod"
     "sr_mod"
   ];
-  #boot.loader.grub.enable = true;
-  #boot.loader.grub.device = "/dev/vda";
 
   networking.hostName = "roy";
 
   home-manager.users.lopl.wayland.windowManager.sway.config.output."Virtual-1".mode = "1920x1080@60Hz";
-
-  # Fingerprint reader support
-  #services.fprintd.enable = true;
 
   # VM specific guest additions
   services.qemuGuest.enable = true;

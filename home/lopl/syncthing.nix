@@ -1,6 +1,9 @@
-{config, ...}: {
-  home.file."Documents/Notes/.keep".text = "";
-  home.file."Documents/Journal/.keep".text = "";
+{
+  home.file = {
+    "Documents/Notes/.keep".text = "";
+    "Documents/Journal/.keep".text = "";
+  };
+
   services.syncthing = {
     enable = true;
 

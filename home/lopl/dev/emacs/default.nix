@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: let
+{pkgs, ...}: let
   ampl-mode = pkgs.emacsPackages.trivialBuild {
     pname = "ampl-mode";
     version = "unstable-2017-08-08";
@@ -109,7 +105,7 @@ in {
 
         # Tree-sitter
         treesit-auto
-        (treesit-grammars.with-all-grammars)
+        treesit-grammars.with-all-grammars
 
         # Nix
         nix-ts-mode

@@ -50,8 +50,10 @@
     };
   };
 
-  users.groups.media.members = ["nextcloud" "navidrome" "immich" "lopl"];
-  users.groups.syncthing.members = ["nextcloud" "lopl"];
+  users.groups = {
+    media.members = ["nextcloud" "navidrome" "immich" "lopl"];
+    syncthing.members = ["nextcloud" "lopl"];
+  };
 
   systemd.tmpfiles.rules = [
     "d /mnt/media/music 0775 root media -"

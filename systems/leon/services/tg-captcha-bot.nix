@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }: let
   shieldy = pkgs.fetchFromGitHub {
@@ -34,33 +33,36 @@ in {
     };
   };
 
-  systemd.services."podman-build-shieldy" = {
-    wants = ["network-online.target"];
-    after = ["network-online.target"];
-    path = [pkgs.podman];
-    script = ''
-      set -euo pipefail
-      builddir=$(mktemp -d)
-      trap 'rm -rf "$builddir"' EXIT
-      cp -r ${shieldy}/. "$builddir"
-      chmod -R u+w "$builddir"
-      podman build -t localhost/shieldy:latest "$builddir"
-    '';
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      TimeoutStartSec = "15m";
+  systemd.services = {
+    podman-build-shieldy = {
+      wants = ["network-online.target"];
+      after = ["network-online.target"];
+      path = [pkgs.podman];
+      script = ''
+        set -euo pipefail
+        builddir=$(mktemp -d)
+        trap 'rm -rf "$builddir"' EXIT
+        cp -r ${shieldy}/. "$builddir"
+        chmod -R u+w "$builddir"
+        podman build -t localhost/shieldy:latest "$builddir"
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        TimeoutStartSec = "15m";
+      };
+    };
+
+    podman-shieldy-bot = {
+      requires = ["podman-build-shieldy.service"];
+      after = ["podman-build-shieldy.service"];
     };
   };
 
-  systemd.services."podman-shieldy-bot" = {
-    requires = ["podman-build-shieldy.service"];
-    after = ["podman-build-shieldy.service"];
+  sops.secrets = {
+    tg-shieldy-bot-token = {};
+    tg-bot-owner = {};
   };
-
-  sops.defaultSopsFile = ../../../secrets/secrets.yaml;
-  sops.secrets."tg-shieldy-bot-token" = {};
-  sops.secrets."tg-bot-owner" = {};
 
   sops.templates."shieldy-env" = {
     mode = "0400";

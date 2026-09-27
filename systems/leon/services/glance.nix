@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}: {
+{config, ...}: {
   systemd.services.glance.serviceConfig.EnvironmentFile = [
     config.sops.secrets.steam-api-key.path
     config.sops.secrets.tailscale-api-key.path

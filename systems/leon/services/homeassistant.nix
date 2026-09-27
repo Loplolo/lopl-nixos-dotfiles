@@ -1,8 +1,4 @@
 {
-  config,
-  pkgs,
-  ...
-}: {
   virtualisation.oci-containers.containers."homeassistant" = {
     image = "ghcr.io/home-assistant/home-assistant:stable";
     volumes = [

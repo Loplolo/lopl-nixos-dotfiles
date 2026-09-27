@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{
   programs.keepassxc = {
     autostart = true;
     enable = true;

@@ -63,16 +63,6 @@ in {
         {
           command = "waybar";
           position = "bottom";
-          #          colors = {
-          #            background = "#000000";
-          #            statusline = "#FFFFFF";
-          #            separator  = "#666666";
-          #            focusedWorkspace  = { border = "#83CAFA"; background = "#51A2DA"; text = "#FFFFFF"; };
-          #            activeWorkspace   = { border = "#3C6EB4"; background = "#294172"; text = "#FFFFFF"; };
-          #            inactiveWorkspace = { border = "#8C8C8C"; background = "#4C4C4C"; text = "#888888"; };
-          #            urgentWorkspace   = { border = "#EC69A0"; background = "#DB3279"; text = "#FFFFFF"; };
-          #            bindingMode       = { border = "#b691d3"; background = "#A07CBC"; text = "#FFFFFF"; };
-          #         };
         }
       ];
 

@@ -1,8 +1,4 @@
 {
-  config,
-  pkgs,
-  ...
-}: {
   services.forgejo = {
     enable = true;
     stateDir = "/var/lib/forgejo";

@@ -1,9 +1,4 @@
-{
-  pkgs,
-  osConfig,
-  lib,
-  ...
-}: {
+{pkgs, ...}: {
   stylix = {
     enable = true;
 
@@ -75,5 +70,4 @@
       package = pkgs.adwaita-icon-theme;
     };
   };
-
 }

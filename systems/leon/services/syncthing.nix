@@ -1,8 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}: {
+{config, ...}: {
   services.syncthing = {
     user = "lopl";
     dataDir = "/home/lopl";

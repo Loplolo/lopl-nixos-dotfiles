@@ -2,7 +2,6 @@
   pkgs,
   osConfig,
   config,
-  lib,
   ...
 }: let
   rebuild = pkgs.writeShellScriptBin "rebuild" ''

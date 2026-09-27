@@ -13,23 +13,28 @@
   services.xserver.enable = true;
 
   # Bootloader
-  boot.initrd.availableKernelModules = [
-    "ahci"
-    "xhci_pci"
-    "sd_mod"
-    "sr_mod"
-  ];
-
-  boot.initrd.kernelModules = ["pinctrl_alderlake"];
+  boot.initrd = {
+    availableKernelModules = [
+      "ahci"
+      "xhci_pci"
+      "sd_mod"
+      "sr_mod"
+    ];
+    kernelModules = ["pinctrl_alderlake"];
+  };
 
   # OpenArena
   networking.firewall.allowedUDPPorts = [27960 27961 27962 27963];
 
   # Fingerprint reader support
-  services.fprintd.enable = true;
-  security.pam.services.polkit-1.fprintAuth = true;
-  security.pam.services.sudo.fprintAuth = true;
-  services.fprintd.tod.driver = pkgs.libfprint-2-tod1-goodix;
+  services.fprintd = {
+    enable = true;
+    tod.driver = pkgs.libfprint-2-tod1-goodix;
+  };
+  security.pam.services = {
+    polkit-1.fprintAuth = true;
+    sudo.fprintAuth = true;
+  };
   systemd.services.fprintd = {
     wantedBy = ["multi-user.target"];
     serviceConfig.Type = "simple";
@@ -60,7 +65,6 @@
 
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "iHD"; # Prefer the modern iHD backend
-    # VDPAU_DRIVER = "va_gl";      # Only if using libvdpau-va-gl
   };
 
   hardware.enableRedistributableFirmware = true;
@@ -69,17 +73,21 @@
   users.users.lopl.extraGroups = ["podman"];
 
   # Prefer IPv4
-  networking.getaddrinfo.enable = true;
-  networking.getaddrinfo.precedence = {
-    "::ffff:0:0/96" = 100;
+  networking.getaddrinfo = {
+    enable = true;
+    precedence = {
+      "::ffff:0:0/96" = 100;
+    };
   };
 
   environment.systemPackages = [pkgs.vial];
-  services.udev.packages = with pkgs; [via];
   # Vial udev rules
-  services.udev.extraRules = ''
-    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
-  '';
+  services.udev = {
+    packages = [pkgs.via];
+    extraRules = ''
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
+    '';
+  };
   hardware.keyboard.qmk.enable = true;
 
   # This value determines the NixOS release from which the default
