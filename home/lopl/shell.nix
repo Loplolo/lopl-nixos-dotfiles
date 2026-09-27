@@ -105,14 +105,4 @@ in {
     tldr
     lazygit
   ];
-
-  home.sessionPath = [
-    "$HOME/.config/guix/current/bin"
-    "$HOME/.guix-profile/bin"
-  ];
-
-  home.sessionVariables = {
-    GUIX_PROFILE = "$HOME/.guix-profile";
-    GUIX_LOCPATH = "$HOME/.guix-profile/lib/locale";
-  };
 }

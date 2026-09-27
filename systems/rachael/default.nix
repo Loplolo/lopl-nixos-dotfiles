@@ -74,11 +74,7 @@
     "::ffff:0:0/96" = 100;
   };
 
-  environment.systemPackages = with pkgs; [
-    distrobox
-    vial
-    tofi
-  ];
+  environment.systemPackages = [pkgs.vial];
   services.udev.packages = with pkgs; [via];
   # Vial udev rules
   services.udev.extraRules = ''

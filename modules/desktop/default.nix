@@ -14,7 +14,10 @@
     ./thunar.nix
   ];
 
-  nixpkgs.overlays = [inputs.vintagestory-nix.overlays.default];
+  nixpkgs.overlays = [
+    inputs.vintagestory-nix.overlays.default
+    (import ../../pkgs)
+  ];
   nixpkgs.config.allowBroken = true;
 
   users.users.lopl.extraGroups = ["video" "audio" "input" "greeter" "nm-openvpn"];

@@ -1,36 +1,22 @@
-{
-  config,
-  pkgs,
-  lib,
-  osConfig,
-  inputs,
-  ...
-}: {
+{inputs, ...}: {
   imports = [
     inputs.nix-flatpak.homeManagerModules.nix-flatpak
     inputs.stylix.homeModules.stylix
+    ./desktop
+    ./dev
+    ./firefox.nix
+    ./flatpak.nix
     ./git.nix
     ./gpg.nix
-    ./shell.nix
-    ./packages.nix
-    ./programming.nix
-    ./firefox.nix
-    ./theme.nix
-    ./xdg_mime.nix
-    ./flatpak.nix
     ./nyxt.nix
+    ./packages.nix
     ./secret-service.nix
+    ./shell.nix
     ./syncthing.nix
-    ./emacs
-    ./sway.nix
-    ./waybar.nix
-    ./tofi.nix
   ];
 
   home.username = "lopl";
   home.homeDirectory = "/home/lopl";
   home.stateVersion = "25.11";
   programs.home-manager.enable = true;
-  programs.info.enable = true;
-  systemd.user.services.emacs.Service.Environment = "COLORTERM=truecolor";
 }

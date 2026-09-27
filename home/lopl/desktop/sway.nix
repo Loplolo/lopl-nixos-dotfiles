@@ -8,6 +8,8 @@
   drun = "tofi-drun | xargs swaymsg exec --";
   app = "${mod}+Control";
 in {
+  programs.alacritty.enable = true;
+
   wayland.windowManager.sway = {
     enable = true;
     systemd.enable = true;
@@ -16,26 +18,7 @@ in {
       modifier = mod;
       terminal = "alacritty";
 
-      output = lib.mkMerge [
-        {
-          "*" = {
-            bg = "${./wallpaper.png} fill";
-          };
-
-          "Virtual-1" = {
-            mode = "1920x1080@60Hz";
-          };
-
-          "DP-1" = {
-            position = "0 0";
-          };
-          "HDMI-A-1" = {
-            position = "1920 0";
-            transform = "270";
-            subpixel = "vrgb";
-          };
-        }
-      ];
+      output."*".bg = "${./wallpaper.png} fill";
 
       input = {
         "type:keyboard" = {

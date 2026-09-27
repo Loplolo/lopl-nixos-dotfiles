@@ -13,6 +13,8 @@
 
   networking.hostName = "roy";
 
+  home-manager.users.lopl.wayland.windowManager.sway.config.output."Virtual-1".mode = "1920x1080@60Hz";
+
   # Fingerprint reader support
   #services.fprintd.enable = true;
 

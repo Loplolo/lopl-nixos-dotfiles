@@ -12,6 +12,15 @@
 
   networking.hostName = "pris";
 
+  home-manager.users.lopl.wayland.windowManager.sway.config.output = {
+    "DP-1".position = "0 0";
+    "HDMI-A-1" = {
+      position = "1920 0";
+      transform = "270";
+      subpixel = "vrgb";
+    };
+  };
+
   # VR
   services.wivrn = {
     enable = true;

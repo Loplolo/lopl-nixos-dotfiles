@@ -5,10 +5,6 @@
 }: {
   xdg.enable = true;
 
-  xdg.systemDirs.data = [
-    "${config.home.homeDirectory}/.guix-profile/share"
-  ];
-
   xdg.configFile."mimeapps.list".force = true;
 
   xdg.mimeApps = {

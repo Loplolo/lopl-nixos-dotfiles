@@ -31,6 +31,7 @@ in {
   home.file.".emacs.d/logo.png".source = ./logo.png;
 
   services.emacs.enable = true;
+  systemd.user.services.emacs.Service.Environment = "COLORTERM=truecolor";
   programs.emacs = {
     enable = true;
     package = pkgs.emacs;

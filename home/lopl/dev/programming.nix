@@ -24,6 +24,11 @@
         ]
     ))
 
+    # LaTeX
+    texlab
+    texliveFull
+    ghostscript
+
     # Guile and Guix
     guile
     guile-commonmark
@@ -33,11 +38,6 @@
     guile-reader
     guix
     haunt
-
-    # LaTeX
-    texlab
-    texliveFull
-    ghostscript
 
     # Typst
     tinymist

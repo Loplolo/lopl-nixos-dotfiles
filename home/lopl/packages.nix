@@ -2,21 +2,9 @@
   pkgs,
   pkgs-stable,
   ...
-}: let
-  # Custom packages
-  trenchbroom-appimage = pkgs.callPackage ./packages/trenchbroom.nix {};
-  paktool = pkgs.callPackage ./packages/paktool.nix {};
-  qss-m = pkgs.callPackage ./packages/qss-m.nix {};
-  slade = pkgs.callPackage ./packages/slade.nix {};
-  fteqw-latest = pkgs.callPackage ./packages/fteqw.nix {};
+}: {
+  programs.info.enable = true;
 
-  # Texinfo Manuals
-  sicp-info = pkgs.callPackage ./packages/sicp-info.nix {};
-  nix-pills-info = pkgs.callPackage ./packages/nix-pills-info.nix {};
-in {
-  programs.alacritty.enable = true;
-
-  # OBS
   programs.obs-studio = {
     enable = true;
     plugins = with pkgs.obs-studio-plugins; [
@@ -30,8 +18,8 @@ in {
     # System
     fastfetch
     freenect
-    gvfs
     htop
+    i7z
     jack2
     openal
     pavucontrol
@@ -51,18 +39,14 @@ in {
     unzip
     xarchiver
     xz
-    i7z
     zip
 
     # Tools
-    direnv
-    fd
     ffmpeg
     imagemagick
     jq
     pandoc
     pv
-    ripgrep
     tmux
     tree
     ttyper
