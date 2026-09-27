@@ -2,8 +2,8 @@
   stylix = {
     enable = true;
 
-    targets.sway.enable = true;
-    targets.waybar.enable = true;
+    overlays.enable = false;
+    targets.rofi.enable = false;
 
     image = ./wallpaper.png;
     polarity = "dark";

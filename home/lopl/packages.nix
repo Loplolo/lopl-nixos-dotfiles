@@ -86,7 +86,7 @@
     sicp-info
 
     # Writing
-    libreoffice-still
+    libreoffice
     zotero
     typst
 

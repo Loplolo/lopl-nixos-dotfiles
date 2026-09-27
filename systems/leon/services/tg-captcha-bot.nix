@@ -11,7 +11,7 @@
   };
 in {
   virtualisation.podman.enable = true;
-  virtualisation.containers.registries.search = ["docker.io"];
+  virtualisation.containers.registries.settings.registries.search.registries = ["docker.io"];
   virtualisation.oci-containers = {
     backend = "podman";
 

@@ -30,8 +30,8 @@ stdenv.mkDerivation rec {
     libvorbis
     zlib
     curl
-    xorg.libX11
-    xorg.xorgproto
+    libx11
+    xorgproto
   ];
 
   sourceRoot = "${src.name}/Quake";

@@ -14,7 +14,13 @@
   libGL,
   zlib,
   gnutls,
-  xorg,
+  libx11,
+  libxext,
+  libxscrnsaver,
+  libxxf86vm,
+  libxcursor,
+  libxinerama,
+  libxi,
 }:
 stdenv.mkDerivation rec {
   pname = "fteqw";
@@ -43,13 +49,13 @@ stdenv.mkDerivation rec {
     libGL
     zlib
     gnutls
-    xorg.libX11
-    xorg.libXext
-    xorg.libXScrnSaver
-    xorg.libXxf86vm
-    xorg.libXcursor
-    xorg.libXinerama
-    xorg.libXi
+    libx11
+    libxext
+    libxscrnsaver
+    libxxf86vm
+    libxcursor
+    libxinerama
+    libxi
   ];
 
   hardeningDisable = ["fortify" "format"];
