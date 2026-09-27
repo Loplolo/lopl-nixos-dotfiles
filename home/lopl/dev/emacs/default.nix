@@ -30,7 +30,10 @@ in {
   systemd.user.services.emacs.Service.Environment = "COLORTERM=truecolor";
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs;
+    package = pkgs.emacs.override {
+      withXwidgets = true;
+      withGTK3 = true;
+    };
     extraPackages = epkgs:
       with epkgs; [
         # System Integration
