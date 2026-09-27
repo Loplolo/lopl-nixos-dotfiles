@@ -16,15 +16,13 @@ in {
     enable = true;
     package = caddyWithCloudflare;
 
+    logFormat = ''
+      output stdout
+      level DEBUG
+    '';
+
     globalConfig = ''
       acme_dns cloudflare {env.CF_API_TOKEN}
-
-      {
-          log {
-              output stdout
-              level DEBUG
-          }
-      }
 
       layer4 {
         # Wingo's server
@@ -33,6 +31,7 @@ in {
             proxy 100.92.106.16:25565
           }
         }
+      }
     '';
 
     virtualHosts = lib.mapAttrs' (name: port:
