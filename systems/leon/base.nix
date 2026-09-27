@@ -41,8 +41,22 @@
 
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [22 80 443 53 3001 3000 25565 8123 8096];
-    allowedUDPPorts = [53 25565 5353];
+    allowedTCPPorts = [
+      22
+      80
+      443
+      53
+      3001
+      3000
+      25565
+      8123
+      8096
+    ];
+    allowedUDPPorts = [
+      53
+      25565
+      5353
+    ];
     trustedInterfaces = ["tailscale0"];
     checkReversePath = "loose";
   };
@@ -54,7 +68,10 @@
   };
 
   nixpkgs.config.allowUnfree = true;
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   nix.settings.auto-optimise-store = true;
   nix.gc = {
     automatic = true;

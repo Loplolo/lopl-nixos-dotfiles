@@ -3,43 +3,72 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  shieldy = pkgs.fetchFromGitHub {
+    owner = "1inch";
+    repo = "shieldy";
+    rev = "master";
+    hash = "sha256-12BqAYl9zji6D7/DCOAUiEBpgR0aEgNhTfA/ePTIPRQ=";
+  };
+in {
+  virtualisation.podman.enable = true;
+  virtualisation.containers.registries.search = ["docker.io"];
   virtualisation.oci-containers = {
     backend = "podman";
-    containers."tg-captcha-bot" = {
-      image = "mxssl/tg-captcha-bot:latest";
-      environmentFiles = [
-        config.sops.templates."captcha-bot-env".path
-      ];
-      environment = {
-      };
 
+    containers."shieldy-mongo" = {
+      image = "docker.io/library/mongo:6";
       autoStart = true;
-      volumes = [
-        "${config.sops.templates."captcha-bot-config".path}:/config.toml:ro"
-      ];
+      extraOptions = ["--network=host"];
+      cmd = ["--bind_ip" "127.0.0.1"];
+      volumes = ["shieldy_mongo_data:/data/db"];
+    };
+
+    containers."shieldy-bot" = {
+      image = "localhost/shieldy:latest";
+      autoStart = true;
+      extraOptions = ["--network=host"];
+      dependsOn = ["shieldy-mongo"];
+      cmd = ["yarn" "distribute"];
+      environmentFiles = [config.sops.templates."shieldy-env".path];
     };
   };
 
-  sops.templates."captcha-bot-env" = {
-    mode = "0444";
-    content = ''
-      TGTOKEN=${config.sops.placeholder.tg-captcha-bot-token}
+  systemd.services."podman-build-shieldy" = {
+    wants = ["network-online.target"];
+    after = ["network-online.target"];
+    path = [pkgs.podman];
+    script = ''
+      set -euo pipefail
+      builddir=$(mktemp -d)
+      trap 'rm -rf "$builddir"' EXIT
+      cp -r ${shieldy}/. "$builddir"
+      chmod -R u+w "$builddir"
+      podman build -t localhost/shieldy:latest "$builddir"
     '';
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      TimeoutStartSec = "15m";
+    };
   };
 
-  sops.templates."captcha-bot-config" = {
+  systemd.services."podman-shieldy-bot" = {
+    requires = ["podman-build-shieldy.service"];
+    after = ["podman-build-shieldy.service"];
+  };
+
+  sops.defaultSopsFile = ../../../secrets/secrets.yaml;
+  sops.secrets."tg-shieldy-bot-token" = {};
+  sops.secrets."tg-bot-owner" = {};
+
+  sops.templates."shieldy-env" = {
+    mode = "0400";
+    restartUnits = ["podman-shieldy-bot.service"];
     content = ''
-      button_text = "Non sono un robot!"
-      welcome_message = "Ciao! Per favore premi il pulsante entro 30 secondi."
-      after_success_message = "L'utente ha superato la validazione."
-      after_fail_message = "L'utente non ha superato la validazione ed è stato bannato."
-      success_message_strategy = "del"
-      fail_message_strategy = "del"
-      welcome_timeout = "30"
-      ban_duration = "forever"
-      delete_join_message_on_fail = "yes"
-      use_socks5_proxy = "no"
+      TOKEN=${config.sops.placeholder."tg-shieldy-bot-token"}
+      MONGO=mongodb://127.0.0.1:27017/shieldy
+      ADMIN=${config.sops.placeholder."tg-bot-owner"}
     '';
   };
 }

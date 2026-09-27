@@ -34,20 +34,19 @@ in {
       acme_dns cloudflare {env.CF_API_TOKEN}
 
       {
-      	log {
-        		output stdout
-      		level DEBUG
-       }
+          log {
+              output stdout
+              level DEBUG
+          }
       }
 
       layer4 {
+        # Wingo's server
         :25565 {
           route {
             proxy 100.92.106.16:25565
           }
         }
-      }
-
     '';
 
     virtualHosts =

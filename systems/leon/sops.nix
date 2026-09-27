@@ -43,13 +43,13 @@
         sopsFile = ../../secrets/secrets.yaml;
         key = "tailscale-api-key";
       };
-      tg-captcha-bot-token = {
+      tg-shieldy-bot-token = {
         sopsFile = ../../secrets/secrets.yaml;
-        key = "tg-captcha-bot-token";
+        key = "tg-shieldy-bot-token";
       };
-      tg-captcha-bot-owner = {
+      tg-bot-owner = {
         sopsFile = ../../secrets/secrets.yaml;
-        key = "tg-captcha-bot-owner";
+        key = "tg-bot-owner";
       };
     };
   };

@@ -33,12 +33,18 @@
   networking.hostName = "leon";
   networking.networkmanager.enable = true;
 
-  nix.settings.trusted-users = ["root" "@wheel"];
+  nix.settings.trusted-users = [
+    "root"
+    "@wheel"
+  ];
 
   users.users.lopl = {
     isNormalUser = true;
     description = "lopl";
-    extraGroups = ["networkmanager" "wheel"];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
 
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF3JAfNH9UYSk1Vmf/TcZ8cpQiCpb8qjy9Qx2n21A16R lopl@pris"
