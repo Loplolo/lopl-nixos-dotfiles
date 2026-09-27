@@ -1,4 +1,4 @@
-{
+{lib, ...}: {
   # Bootloader
   boot.initrd.availableKernelModules = [
     "virtio_blk"
@@ -11,7 +11,9 @@
 
   networking.hostName = "roy";
 
-  home-manager.users.lopl.wayland.windowManager.sway.config.output."Virtual-1".mode = "1920x1080@60Hz";
+  home-manager.users.lopl.xsession.initExtra = lib.mkBefore ''
+    xrandr --output Virtual-1 --mode 1920x1080
+  '';
 
   # VM specific guest additions
   services.qemuGuest.enable = true;

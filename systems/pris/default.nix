@@ -12,14 +12,9 @@
 
   networking.hostName = "pris";
 
-  home-manager.users.lopl.wayland.windowManager.sway.config.output = {
-    "DP-1".position = "0 0";
-    "HDMI-A-1" = {
-      position = "1920 0";
-      transform = "270";
-      subpixel = "vrgb";
-    };
-  };
+  home-manager.users.lopl.xsession.initExtra = lib.mkBefore ''
+    xrandr --output DP-0 --primary --pos 0x0 --output HDMI-0 --pos 1920x0 --rotate left
+  '';
 
   # VR
   services.wivrn = {
@@ -131,21 +126,14 @@
   };
 
   environment.variables = {
-    GBM_BACKEND = "nvidia-drm";
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    NIXOS_OZONE_WL = "1";
     __GL_GSYNC_ALLOWED = "1";
     __GL_VRR_ALLOWED = "1";
     LIBVA_DRIVER_NAME = "nvidia";
-    MOZ_ENABLE_WAYLAND = "1";
-    EGL_PLATFORM = "wayland";
   };
 
   # xserver
-  services.xserver = {
-    enable = true;
-    videoDrivers = ["nvidia"];
-  };
+  services.xserver.videoDrivers = ["nvidia"];
 
   environment.systemPackages = with pkgs; [
     wayvr
@@ -159,7 +147,6 @@
 
     mangohud
 
-    mako
     xdg-utils
   ];
 

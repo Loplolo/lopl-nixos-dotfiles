@@ -9,8 +9,16 @@
 
   services.guix.enable = true;
 
-  programs.sway.enable = true;
-  services.xserver.enable = true;
+  # TrackPoint
+  services.xserver.inputClassSections = [
+    ''
+      Identifier "TrackPoint"
+      MatchProduct "TPPS/2 Elan TrackPoint"
+      Driver "libinput"
+      Option "AccelSpeed" "0.75"
+      Option "AccelProfile" "flat"
+    ''
+  ];
 
   # Bootloader
   boot.initrd = {

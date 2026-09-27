@@ -8,10 +8,10 @@
     ./audio.nix
     ./bluetooth.nix
     ./fonts.nix
-    ./greetd.nix
     ./portals.nix
     ./printing.nix
     ./thunar.nix
+    ./xserver.nix
   ];
 
   nixpkgs.overlays = [
@@ -20,7 +20,7 @@
   ];
   nixpkgs.config.allowBroken = true;
 
-  users.users.lopl.extraGroups = ["video" "audio" "input" "greeter" "nm-openvpn"];
+  users.users.lopl.extraGroups = ["video" "audio" "input" "nm-openvpn"];
 
   networking.networkmanager = {
     enable = true;
@@ -46,8 +46,8 @@
     pciutils
     usbutils
     busybox
-    wl-clipboard
-    wayland-utils
+    xclip
+    xrandr
     brightnessctl
     pamixer
     playerctl

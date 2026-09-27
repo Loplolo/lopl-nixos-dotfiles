@@ -1,10 +1,9 @@
 {
   imports = [
-    ./sway.nix
+    ./i3.nix
+    ./i3status-rust.nix
     ./theme.nix
     ./thunar.nix
-    ./tofi.nix
-    ./waybar.nix
     ./xdg-mime.nix
   ];
 }

@@ -25,6 +25,18 @@
     pavucontrol
     xwiimote
 
+    # Desktop
+    arandr
+    blueman
+    flameshot
+    maim
+    networkmanagerapplet
+    playerctl
+    wmctrl
+    xclip
+    xdotool
+    xsel
+
     # Files
     (thunar.override {
       thunarPlugins = [
@@ -194,6 +206,7 @@
 
     # Fonts
     fira-code
+    font-awesome_6
     nerd-fonts.symbols-only
     noto-fonts
   ];

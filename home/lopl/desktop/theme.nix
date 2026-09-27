@@ -3,7 +3,6 @@
     enable = true;
 
     overlays.enable = false;
-    targets.rofi.enable = false;
 
     image = ./wallpaper.png;
     polarity = "dark";
