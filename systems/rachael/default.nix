@@ -6,15 +6,14 @@
   imports = [
     ../../modules/common/tailscale.nix
     ../../modules/desktop/nix-ld.nix
+    ../../modules/desktop/razer.nix
     ../../modules/desktop/virtualisation.nix
   ];
 
   networking.hostName = "rachael";
 
-  # Force light theme and font size on laptop only
+  # Force font size on laptop only
   home-manager.users.lopl.stylix = {
-    polarity = lib.mkForce "light";
-    base16Scheme = lib.mkForce "${pkgs.base16-schemes}/share/themes/solarized-light.yaml";
     fonts.sizes.terminal = lib.mkForce 12;
   };
 
