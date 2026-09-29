@@ -18,7 +18,6 @@
     #./services/minecraft-server.nix
     ./services/tg-captcha-bot.nix
     ./services/jellyfin.nix
-    #./services/vintagestory.nix
     #./services/blog.nix
   ];
 
