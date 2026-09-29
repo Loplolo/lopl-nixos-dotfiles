@@ -27,13 +27,9 @@
 
     # Desktop
     arandr
-    blueman
     flameshot
     maim
-    networkmanagerapplet
-    playerctl
     wmctrl
-    xclip
     xdotool
     xsel
 
@@ -45,12 +41,10 @@
         thunar-media-tags-plugin
       ];
     })
-    gnutar
     p7zip
     unrar
     unzip
     xarchiver
-    xz
     zip
 
     # Tools

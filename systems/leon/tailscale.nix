@@ -1,5 +1,5 @@
 {
-  imports = [../../modules/common/tailscale.nix];
+  imports = [../../modules/tailscale.nix];
 
   services.tailscale = {
     useRoutingFeatures = "both";

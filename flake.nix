@@ -66,7 +66,7 @@
       vintagestory-nix.nixosModules.default
       home-manager.nixosModules.home-manager
       ./modules/home-manager.nix
-      ./modules/desktop
+      ./modules/desktop.nix
     ];
   in {
     formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
@@ -75,7 +75,7 @@
       rachael = mkHost "rachael" desktopModules;
       pris = mkHost "pris" desktopModules;
       roy = mkHost "roy" desktopModules;
-      leon = mkHost "leon" [./modules/server];
+      leon = mkHost "leon" [./modules/server.nix];
     };
   };
 }

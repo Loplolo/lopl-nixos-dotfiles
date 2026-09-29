@@ -5,10 +5,10 @@
   ...
 }: {
   imports = [
-    ../../modules/common/tailscale.nix
-    ../../modules/desktop/nix-ld.nix
-    ../../modules/desktop/razer.nix
-    ../../modules/desktop/virtualisation.nix
+    ../../modules/tailscale.nix
+    ../../modules/nix-ld.nix
+    ../../modules/razer.nix
+    ../../modules/virtualisation.nix
   ];
 
   networking.hostName = "pris";
