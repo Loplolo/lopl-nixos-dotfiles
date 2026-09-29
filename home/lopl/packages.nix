@@ -179,6 +179,7 @@
     ))
 
     # Games
+    gamemode
     gzdoom
     nethack
     openarena

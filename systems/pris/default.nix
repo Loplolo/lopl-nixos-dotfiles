@@ -7,6 +7,7 @@
   imports = [
     ../../modules/common/tailscale.nix
     ../../modules/desktop/nix-ld.nix
+    ../../modules/desktop/razer.nix
     ../../modules/desktop/virtualisation.nix
   ];
 
