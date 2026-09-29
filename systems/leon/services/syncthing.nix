@@ -25,7 +25,7 @@
           addresses = ["dynamic"];
         };
         "server" = {
-          id = "BFM6PQL-3WLN6UQ-LYNHFLG-WWDDRZA-VTWSBDH-IJZRNXN-4DON3CX-35VFGQA";
+          id = "IVCWUDO-TSVCJ4C-DNUKRHB-INRQXTJ-OKXO43X-4UB2OOO-7L54WDU-WQ5JPAG";
           addresses = ["dynamic"];
         };
       };
