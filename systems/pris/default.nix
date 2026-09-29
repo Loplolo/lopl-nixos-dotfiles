@@ -13,9 +13,31 @@
 
   networking.hostName = "pris";
 
-  home-manager.users.lopl.xsession.initExtra = lib.mkBefore ''
-    xrandr --output DP-0 --primary --pos 0x0 --output HDMI-0 --pos 1920x0 --rotate left
-  '';
+  home-manager.users.lopl = {
+    programs.autorandr = {
+      enable = true;
+      profiles.desk = {
+        fingerprint = {
+          DP-0 = "*";
+          HDMI-0 = "*";
+        };
+        config = {
+          DP-0 = {
+            primary = true;
+            position = "0x0";
+            mode = "1920x1080";
+            rate = "279.86";
+          };
+          HDMI-0 = {
+            position = "1920x0";
+            mode = "1920x1080";
+            rotate = "left";
+          };
+        };
+      };
+    };
+    xsession.initExtra = lib.mkBefore "autorandr --change";
+  };
 
   # VR
   services.wivrn = {
@@ -119,7 +141,7 @@
 
   hardware.nvidia = {
     modesetting.enable = true;
-    powerManagement.enable = false;
+    powerManagement.enable = true;
     powerManagement.finegrained = false;
     open = true;
     nvidiaSettings = true;
