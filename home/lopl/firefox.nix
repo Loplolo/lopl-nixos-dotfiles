@@ -1,7 +1,6 @@
 {config, ...}: {
-  programs.firefox = {
+  programs.librewolf = {
     enable = true;
-    configPath = "${config.xdg.configHome}/mozilla/firefox";
     profiles.lopl = {
       isDefault = true;
 

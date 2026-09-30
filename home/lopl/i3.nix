@@ -152,7 +152,7 @@ in {
 
           # Custom Apps
           "${app}+g" = "exec nyxt";
-          "${app}+f" = "exec firefox";
+          "${app}+f" = "exec librewolf";
           "${app}+t" = "exec Telegram";
           "${app}+r" = "exec thunderbird";
           "${app}+c" = "exec code";
