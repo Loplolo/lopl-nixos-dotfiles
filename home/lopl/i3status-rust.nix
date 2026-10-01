@@ -31,9 +31,13 @@ in {
           block = "memory";
           format = " $icon $mem_used.eng(w:1,prefix:Gi)/$mem_total.eng(w:1,prefix:Gi) ($mem_used_percents) ";
         }
+
         {
           block = "temperature";
           format = " $icon $max ";
+        }
+        {
+          block = "backlight";
         }
         {
           block = "net";
