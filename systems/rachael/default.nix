@@ -31,6 +31,8 @@
     ''
   ];
 
+  services.xserver.deviceSection = ''Option "TearFree" "true"'';
+
   # Bootloader
   boot.initrd = {
     availableKernelModules = [
@@ -66,6 +68,7 @@
       enable32Bit = true;
       extraPackages = with pkgs; [
         vpl-gpu-rt
+        intel-vaapi-driver
         intel-media-driver
       ];
     };
