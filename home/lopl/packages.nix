@@ -93,7 +93,7 @@
 
     # Writing
     libreoffice
-    zotero
+    pkgs-stable.zotero
     typst
 
     # Reading
