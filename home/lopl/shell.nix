@@ -3,27 +3,7 @@
   osConfig,
   config,
   ...
-}: let
-  rebuild = pkgs.writeShellScriptBin "rebuild" ''
-    cd ~/dotfiles || exit 1
-    ${pkgs.alejandra}/bin/alejandra .
-
-    if ! nixos-rebuild switch --flake .#${osConfig.networking.hostName} --sudo; then
-      exit 1
-    fi
-  '';
-
-  remote-rebuild = pkgs.writeShellScriptBin "remote-rebuild" ''
-    cd ~/dotfiles || exit 1
-    ${pkgs.alejandra}/bin/alejandra .
-
-    if ! nixos-rebuild switch --flake .#leon \
-      --target-host lopl@leon \
-      --sudo --ask-sudo-password; then
-      exit 1
-    fi
-  '';
-in {
+}: {
   programs.zsh = {
     enable = true;
     autosuggestion.enable = true;
@@ -40,18 +20,13 @@ in {
     };
     initContent = ''
       bat "${./.duck}" --style=plain --paging=never --color=always
-
-       lslib() {
-         local path
-         path=$(nix-build '<nixpkgs>' -A "$1" --no-out-link)
-         ls -la "$path/include"
-       }
     '';
 
     shellAliases = {
+      rebuild = "nixos-rebuild switch --flake ~/dotfiles/.#${osConfig.networking.hostName} --sudo";
+      remote-rebuild = "nixos-rebuild switch --flake ~/dotfiles/.#leon --target-host lopl@leon --sudo --ask-sudo-password";
       cleanup = "nix-collect-garbage -d";
       update = "nix flake update";
-      grep = "rg";
       emc = "emacsclient -t";
       curl = "curl -4";
       ".." = "cd ..";
@@ -93,15 +68,11 @@ in {
 
   home.packages = with pkgs; [
     nvd
-    rebuild
-    remote-rebuild
-    eza
     bat
     lolcat
     ripgrep
     fd
     fzf
     tldr
-    lazygit
   ];
 }
