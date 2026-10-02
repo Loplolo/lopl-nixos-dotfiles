@@ -1,0 +1,30 @@
+name: Nix Flake Checks
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  check-and-build:
+    runs-on: ubuntu-latest 
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Install Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Verify Formatting with Alejandra  
+        run: nix fmt -- --check .
+        
+      - name: Check Flake
+        run: nix flake check --all-systems
