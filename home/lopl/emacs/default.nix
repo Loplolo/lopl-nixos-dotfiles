@@ -67,6 +67,7 @@ in {
         move-text
         expreg
         iedit
+        aggressive-indent
 
         # Completion
         company
@@ -112,6 +113,8 @@ in {
 
         # Nix
         nix-ts-mode
+        nix-mode
+        ob-nix
 
         # Python
         lsp-pyright

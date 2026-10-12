@@ -120,13 +120,14 @@
     (sp-pair brace nil :post-handlers '(("||\n[i]" "RET"))))
   (smartparens-global-mode 1))
 
+(setq lsp-format-buffer-on-save t)
 (use-package apheleia
-  :hook ((python-base-mode nix-ts-mode rust-ts-mode c-ts-base-mode c-mode c++-mode) . apheleia-mode)
   :config
   (setf (alist-get 'alejandra apheleia-formatters) '("alejandra" "-q" "-")
         (alist-get 'python-mode apheleia-mode-alist) '(ruff-isort ruff)
         (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)
-        (alist-get 'nix-ts-mode apheleia-mode-alist) 'alejandra))
+        (alist-get 'nix-ts-mode apheleia-mode-alist) 'alejandra)
+  (apheleia-global-mode t))
 
 (save-place-mode 1)
 
@@ -227,7 +228,7 @@
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump)
          :map dired-mode-map
-          ("RET" . dired-find-alternate-file)
+         ("RET" . dired-find-alternate-file)
          ("^"   . (lambda () (interactive) (find-alternate-file ".."))))
   :custom (dired-listing-switches "-agho --group-directories-first"))
 
@@ -352,13 +353,13 @@
   ((lsp-mode . lsp-enable-which-key-integration)
    (lsp-mode . yas-minor-mode)
    ((c-mode c++-mode objc-mode c-ts-base-mode
-     java-mode java-ts-mode
-     rust-ts-mode
-     css-mode css-ts-mode
-     csharp-mode csharp-ts-mode
-     cmake-ts-mode
-     gdscript-mode
-     nix-ts-mode) . lopl/lsp-deferred))
+            java-mode java-ts-mode
+            rust-ts-mode
+            css-mode css-ts-mode
+            csharp-mode csharp-ts-mode
+            cmake-ts-mode
+            gdscript-mode
+            nix-ts-mode) . lopl/lsp-deferred))
   :bind (:map prog-mode-map
               ("M-RET" . lsp-execute-code-action))
   :init
@@ -616,6 +617,17 @@
 (require 'ob-awk)
 (require 'ob-calc)
 (require 'ob-scheme)
+
+(setq org-src-fontify-natively t)
+(add-to-list 'org-src-lang-modes '("python" . python-ts))
+(add-to-list 'org-src-lang-modes '("rust"   . rust-ts))
+(add-to-list 'org-src-lang-modes '("nix"    . nix-ts))
+(add-to-list 'org-src-lang-modes '("c"      . c-ts))
+(add-to-list 'org-src-lang-modes '("cpp"    . c++-ts))
+
+(use-package aggressive-indent
+  :hook (emacs-lisp-mode . aggressive-indent-mode))
+
 (use-package org
   :config
   (org-babel-do-load-languages
@@ -627,7 +639,8 @@
      (sql        . t)   
      (sqlite     . t)   
      (R          . t)   
-     (C          . t)   
+     (C          . t)
+     (nix        . t)
      (awk        . t)
      (calc       . t)
      (plantuml   . t)
