@@ -1,4 +1,8 @@
-{config, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   services.adguardhome = {
     enable = true;
     mutableSettings = false;
@@ -14,11 +18,17 @@
         ];
 
         upstream_dns = [
-          "[/lopl.dev/]127.0.0.1:5353"
           "https://dns.cloudflare.com/dns-query"
           "https://dns.quad9.net/dns-query"
         ];
       };
+      filtering.rewrites =
+        map (name: {
+          domain = "${name}.lopl.dev";
+          answer = "100.87.157.78";
+          enabled = true;
+        })
+        (lib.attrNames config.lopl.proxies ++ ["mc"]);
       filters = [
         {
           enabled = true;

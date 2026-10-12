@@ -3,21 +3,17 @@
     ./tailscale.nix
     ./services/cloudflared.nix
     ./services/caddy.nix
-    ./services/glance.nix
-    ./services/dnsmasq.nix
     ./services/nextcloud.nix
     ./services/adguard.nix
-    ./services/stirling-pdf.nix
     ./services/immich.nix
     ./services/navidrome.nix
-    ./services/searxng.nix
     ./services/syncthing.nix
     ./services/homeassistant.nix
     ./services/microbin.nix
     ./services/forgejo.nix
+    ./services/karakeep.nix
     #./services/minecraft-server.nix
     ./services/tg-captcha-bot.nix
-    ./services/jellyfin.nix
     #./services/blog.nix
   ];
 

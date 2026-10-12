@@ -6,7 +6,7 @@
 
       settings = {
         "gfx.webrender.all" = true;
-        "browser.startup.homepage" = "https://home.lopl.dev/";
+        "browser.startup.homepage" = "https://keep.lopl.dev/";
         "media.ffmpeg.vaapi.enabled" = true;
         "extensions.pocket.enabled" = false;
         "dom.disable_beforeunload" = true;

@@ -5,7 +5,7 @@
 }: {
   services.nextcloud = {
     enable = true;
-    package = pkgs.nextcloud34;
+    package = pkgs.nextcloud35;
     hostName = "cloud.lopl.dev";
 
     config.dbtype = "pgsql";
@@ -29,7 +29,6 @@
         tasks
         notes
         deck
-        news
         ;
     };
     extraAppsEnable = true;
