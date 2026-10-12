@@ -151,6 +151,9 @@ in {
           "${mod}+Shift+r" = "reload";
           "${mod}+Shift+e" = "exec --no-startup-id ${exitPrompt}";
 
+          # Run autorandr to fix screens
+          "${mod}+Shift+m" = "exec --no-startup-id autorandr --change --force";
+
           # Custom Apps
           "${app}+g" = "exec nyxt";
           "${app}+f" = "exec librewolf";
