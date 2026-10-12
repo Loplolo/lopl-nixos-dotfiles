@@ -30,6 +30,7 @@ in {
   programs.rofi = {
     enable = true;
     settings.terminal = "alacritty";
+    settings.font = "Fira Code";
   };
 
   services.dunst.enable = true;

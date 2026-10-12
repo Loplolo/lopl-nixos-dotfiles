@@ -11,7 +11,7 @@ This setup uses nix flakes, every dependency is pinned in =flake.lock= and the s
 ** How to Update
 Run =nix flake update= to pull the latest versions of NixOS and community modules.
 
-Run =rebuild= (local) or =remote-rebuild= (remote server) to apply changes made to the dotfiles.
+Run =rebuild= (local) or =remote-rebuild= (remote server) to apply changes made to the dotfiles.'
 
 #+begin_src 
 .

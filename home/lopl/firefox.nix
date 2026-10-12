@@ -16,5 +16,5 @@
     };
   };
 
-  stylix.targets.firefox.profileNames = ["lopl"];
+  stylix.targets.librewolf.profileNames = ["lopl"];
 }
