@@ -81,7 +81,7 @@
     dbeaver-bin
     drawio
     gurobi
-    octave
+    octaveFull
     pkg-config
     plantuml
     unityhub
@@ -103,7 +103,6 @@
     # Notes
     anki
     obsidian
-    super-productivity
     xournalpp
 
     # Browser
@@ -120,6 +119,7 @@
     element-desktop
     teams-for-linux
     telegram-desktop
+    ayugram-desktop
     thunderbird
 
     # Graphics

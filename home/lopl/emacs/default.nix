@@ -151,6 +151,9 @@ in {
         typst-ts-mode
         typst-preview
 
+        # MATLAB
+        matlab-mode
+
         # AMPL
         ampl-mode
 

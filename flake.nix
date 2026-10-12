@@ -52,6 +52,10 @@
         specialArgs = {inherit inputs pkgs-stable;};
         modules =
           [
+            {
+              nixpkgs.config.allowUnfree = true;
+              nixpkgs.config.android_sdk.accept_license = true;
+            }
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
             ./systems/${name}

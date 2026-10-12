@@ -713,6 +713,16 @@
 
 (use-package websocket)
 
+;; MATLAB
+(use-package matlab-mode
+  :ensure t
+  :config
+  (setq matlab-shell-command "matlab")
+  (setq matlab-shell-command-switches (list "-nodesktop"))
+  (setq matlab-show-mlint-warnings t)
+  (add-hook 'matlab-mode-hook (lambda ()
+                                (mlint-minor-mode 1))))
+
 ;; Jupyter
 (use-package jupyter
   :ensure nil
