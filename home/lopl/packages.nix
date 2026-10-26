@@ -86,6 +86,7 @@
     plantuml
     unityhub
     vscode
+    opencode
 
     # Info Manuals
     nix-pills-info
@@ -107,6 +108,7 @@
 
     # Browser
     chromium
+    tor-browser
 
     # File Sharing
     localsend
