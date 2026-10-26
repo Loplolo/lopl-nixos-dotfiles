@@ -6,10 +6,11 @@
 }: let
   mod = "Mod4";
   colors = config.lib.stylix.colors.withHashtag;
+  fonts = config.stylix.fonts;
   transparent = "#00000000";
   launcher = pkgs.writeShellScript "rofi-top-bar" ''
     exec rofi -show "$1" -theme-str '
-      window { location: north; anchor: north; width: 100%; }
+      window { location: north; anchor: north; width: calc(100% - 16px); y-offset: 8px; }
       mainbox { orientation: horizontal; children: [ inputbar, listview ]; }
       inputbar { width: 25em; expand: false; }
       listview { layout: horizontal; lines: 100; spacing: 15px; fixed-height: false; scrollbar: false; }
@@ -25,16 +26,77 @@
     fi
   '';
 in {
-  programs.alacritty.enable = true;
+  programs.alacritty = {
+    enable = true;
+    settings.window = {
+      padding = {
+        x = 12;
+        y = 12;
+      };
+      dynamic_padding = true;
+    };
+  };
+
+  stylix.targets.rofi.alternatePattern = false;
 
   programs.rofi = {
     enable = true;
     settings.terminal = "alacritty";
-    settings.font = "Fira Code";
+    theme = let
+      inherit (config.lib.formats.rasi) mkLiteral;
+    in {
+      window = {
+        border = 0;
+        padding = mkLiteral "8px";
+      };
+      inputbar.padding = mkLiteral "6px 10px";
+      element = {
+        padding = mkLiteral "6px 10px";
+        border-radius = mkLiteral "6px";
+      };
+    };
   };
 
-  services.dunst.enable = true;
-  services.picom.enable = true;
+  services.dunst = {
+    enable = true;
+    settings.global = {
+      origin = "top-right";
+      offset = "(8, 8)";
+      width = 360;
+      padding = 12;
+      horizontal_padding = 14;
+      gap_size = 8;
+      frame_width = 2;
+      corner_radius = 10;
+      icon_corner_radius = 6;
+      progress_bar_corner_radius = 4;
+      separator_height = 0;
+    };
+  };
+  services.picom = {
+    enable = true;
+    backend = "glx";
+    vSync = true;
+    fade = true;
+    fadeDelta = 4;
+    shadow = true;
+    shadowOpacity = 0.3;
+    shadowExclude = [
+      "window_type = 'dock'"
+      "window_type = 'desktop'"
+      "class_g = 'flameshot'"
+      "_GTK_FRAME_EXTENTS@"
+    ];
+    settings = {
+      corner-radius = 10;
+      shadow-radius = 16;
+      rounded-corners-exclude = [
+        "window_type = 'dock'"
+        "window_type = 'desktop'"
+        "fullscreen"
+      ];
+    };
+  };
 
   xsession = {
     enable = true;
@@ -79,16 +141,16 @@ in {
             trayOutput = "primary";
             trayPadding = 5;
             fonts = {
-              names = ["Fira Code" "Font Awesome 6 Free Solid" "Font Awesome 6 Brands"];
+              names = [fonts.monospace.name "Font Awesome 6 Free Solid" "Font Awesome 6 Brands"];
               style = "Medium";
-              size = 13.5;
+              size = fonts.sizes.desktop * 1.25;
             };
             colors = {
               background = transparent;
               statusline = colors.base05;
               separator = transparent;
               focusedWorkspace = {
-                border = "#c9545d";
+                border = colors.base0D;
                 background = transparent;
                 text = colors.base05;
               };
@@ -108,9 +170,9 @@ in {
                 text = colors.base00;
               };
               bindingMode = {
-                border = "#64727D";
-                background = "#64727D";
-                text = "#ffffff";
+                border = colors.base0E;
+                background = colors.base0E;
+                text = colors.base00;
               };
             };
           }
