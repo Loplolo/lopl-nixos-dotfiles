@@ -12,7 +12,6 @@
 
 ;; Variables
 (defvar efs/default-font-size 115)
-(defvar efs/default-variable-font-size 135)
 
 ;; Use Stylix color scheme if on NixOs
 (require 'base16-theme)
@@ -33,6 +32,12 @@
 (global-display-line-numbers-mode t)
 (global-auto-revert-mode t)
 
+(let ((dir (expand-file-name "emacs/" (or (getenv "XDG_CACHE_HOME") "~/.cache"))))
+  (make-directory (expand-file-name "auto-save/" dir) t)
+  (setq backup-directory-alist `(("." . ,(expand-file-name "backups/" dir)))
+        auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-save/" dir) t))
+        lock-file-name-transforms `((".*" ,(expand-file-name "auto-save/" dir) t))))
+
 ;; Use system clipboard
 (setq select-enable-clipboard t)
 (setq select-enable-primary nil)
@@ -45,9 +50,9 @@
 
 
 ;; Fonts
-(set-face-attribute 'default nil :font "Fira Code" :height efs/default-font-size)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height efs/default-font-size)
-(set-face-attribute 'variable-pitch nil :font "Fira Code" :height efs/default-variable-font-size :weight 'regular)
+(set-face-attribute 'default nil :family lopl/font-mono :height efs/default-font-size)
+(set-face-attribute 'fixed-pitch nil :family lopl/font-mono :height 1.0)
+(set-face-attribute 'variable-pitch nil :family lopl/font-sans :height 1.2)
 
 ;; Icons
 (use-package nerd-icons)
@@ -61,7 +66,10 @@
 (use-package visual-fill-column
   :custom
   (visual-fill-column-width 110)
-  (visual-fill-column-center-text t))
+  (visual-fill-column-center-text t)
+  (visual-fill-column-adjust-for-text-scale nil)
+  :config
+  (advice-add 'text-scale-adjust :after #'visual-fill-column-adjust))
 
 ;; Dashboard
 (use-package page-break-lines)
@@ -559,9 +567,9 @@
   :ensure nil
   :hook (org-mode . (lambda ()
                       (visual-line-mode 1)
+                      (setq-local visual-fill-column-width 80)
                       (visual-fill-column-mode 1)
                       (variable-pitch-mode 1)
-                      (org-superstar-mode 1)
                       (display-line-numbers-mode -1)))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
@@ -570,43 +578,122 @@
          ("C-c s" . org-schedule))
   :config
   (setq org-ellipsis " ▾"
-        org-hide-emphasis-markers t)
+        org-hide-emphasis-markers t
+        org-pretty-entities t
+        org-startup-with-inline-images t
+        org-image-actual-width '(600))
+  (setq org-agenda-files '("~/Documents/todo.org" "~/Documents/agenda.org"))
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/Documents/todo.org" "Inbox")
+           "* TODO %?\n  %i\n  %a")
+          ("a" "Agenda" entry (file+headline "~/Documents/agenda.org" "Inbox")
+           "* %?\nEntered on %U\n  %i")))
   (require 'org-faces)
   (require 'org-indent)
   (require 'ox-haunt)
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Noto sans" :weight 'regular :height (cdr face)))
+  (set-face-attribute 'org-document-title nil :family lopl/font-serif :weight 'bold :height 1.8)
+  (dolist (face '((org-level-1 . 1.5)
+                  (org-level-2 . 1.3)
+                  (org-level-3 . 1.15)
+                  (org-level-4 . 1.05)
+                  (org-level-5 . 1.0)
+                  (org-level-6 . 1.0)
+                  (org-level-7 . 1.0)
+                  (org-level-8 . 1.0)))
+    (set-face-attribute (car face) nil :family lopl/font-serif :weight 'bold
+                        :height (cdr face)))
+  (dolist (face '(org-block org-block-begin-line org-block-end-line org-code
+                            org-verbatim org-table org-formula org-meta-line
+                            org-special-keyword org-property-value org-drawer
+                            org-checkbox org-date org-latex-and-related))
+    (set-face-attribute face nil :family lopl/font-mono)))
 
-  (set-face-attribute 'org-document-title nil :inherit 'variable-pitch :weight 'bold :height 1.3)
-  (set-face-attribute 'org-block nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-formula nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
-
-(use-package org-superstar
+(use-package org-modern
   :after org
+  :hook ((org-mode . org-modern-mode)
+         (org-agenda-finalize . org-modern-agenda))
   :custom
-  (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (org-modern-star 'replace)
+  (org-modern-replace-stars "◉○●○●○●"))
 
 ;; presentations
+(use-package hide-mode-line)
+
+(defun lopl/presentation-start ()
+  (hide-mode-line-mode 1)
+  (text-scale-set 3)
+  (setq-local visual-fill-column-width 70
+              cursor-type nil
+              global-hl-line-mode nil)
+  (global-hl-line-unhighlight)
+  (visual-fill-column-adjust)
+  (org-display-inline-images))
+
+(defun lopl/presentation-stop ()
+  (hide-mode-line-mode -1)
+  (text-scale-set 0)
+  (kill-local-variable 'visual-fill-column-width)
+  (kill-local-variable 'cursor-type)
+  (kill-local-variable 'global-hl-line-mode)
+  (visual-fill-column-adjust))
+
 (use-package org-tree-slide
-  :custom (org-image-actual-width nil))
+  :after org
+  :bind (:map org-mode-map
+              ("<f8>" . org-tree-slide-mode)
+              :map org-tree-slide-mode-map
+              ("<right>" . org-tree-slide-move-next-tree)
+              ("<left>" . org-tree-slide-move-previous-tree))
+  :hook ((org-tree-slide-play . lopl/presentation-start)
+         (org-tree-slide-stop . lopl/presentation-stop))
+  :custom
+  (org-tree-slide-slide-in-effect nil)
+  (org-tree-slide-header t)
+  (org-tree-slide-breadcrumbs " › ")
+  (org-tree-slide-activate-message "")
+  (org-tree-slide-deactivate-message ""))
+
+(with-eval-after-load 'ox-latex
+  (setq org-latex-compiler "lualatex"
+        org-latex-pdf-process
+        '("latexmk -lualatex -interaction=nonstopmode -output-directory=%o %f")))
+
+(with-eval-after-load 'ox-beamer
+  (setf (alist-get "beamer" org-latex-classes nil nil #'equal)
+        `(,(concat "\\documentclass[presentation,aspectratio=169]{beamer}
+\\usetheme[progressbar=frametitle]{metropolis}
+\\usepackage{fontspec}
+\\setsansfont{" lopl/font-sans "}
+\\setmainfont{" lopl/font-serif "}
+\\setmonofont{" lopl/font-mono "}
+\\definecolor{paper}{HTML}{FFFCF0}
+\\definecolor{ink}{HTML}{100F0F}
+\\definecolor{accent}{HTML}{205EA6}
+\\definecolor{alert}{HTML}{AF3029}
+\\AtBeginDocument{
+\\setbeamercolor{normal text}{fg=ink,bg=paper}
+\\setbeamercolor{frametitle}{fg=paper,bg=ink}
+\\setbeamercolor{alerted text}{fg=alert}
+\\setbeamercolor{progress bar}{fg=accent,bg=paper}
+\\setbeamercolor{progress bar in head/foot}{fg=accent,bg=ink}
+\\setbeamercolor{title separator}{fg=accent}
+\\setbeamerfont{title}{family=\\rmfamily,series=\\bfseries}
+\\setbeamerfont{frametitle}{family=\\rmfamily,series=\\bfseries}}")
+          ("\\section{%s}" . "\\section*{%s}")
+          ("\\subsection{%s}" . "\\subsection*{%s}")
+          ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+
+(use-package ox-reveal
+  :after org
+  :custom
+  (org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js@5.1.0")
+  (org-reveal-theme "simple")
+  (org-reveal-head-preamble
+   (concat "<style>:root{--r-background-color:#FFFCF0;--r-main-color:#100F0F;"
+           "--r-heading-color:#100F0F;--r-link-color:#205EA6;"
+           "--r-main-font:'" lopl/font-sans "',sans-serif;"
+           "--r-heading-font:'" lopl/font-serif "',serif;"
+           "--r-code-font:'" lopl/font-mono "',monospace;}</style>")))
 
 ;; gpg/epa
 (require 'epa-file)

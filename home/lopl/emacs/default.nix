@@ -1,4 +1,10 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  config,
+  ...
+}: let
+  fonts = config.stylix.fonts;
+
   ampl-mode = pkgs.emacsPackages.trivialBuild {
     pname = "ampl-mode";
     version = "unstable-2017-08-08";
@@ -174,16 +180,24 @@ in {
         pdf-tools
 
         # Org
-        org-superstar
+        org-modern
+        hide-mode-line
         org-journal
         org-roam
         org-tree-slide
+        ox-reveal
         ox-haunt
 
         # eBooks
         nov
       ];
 
-    extraConfig = builtins.readFile ./init.el;
+    extraConfig =
+      ''
+        (defvar lopl/font-mono "${fonts.monospace.name}")
+        (defvar lopl/font-sans "${fonts.sansSerif.name}")
+        (defvar lopl/font-serif "${fonts.serif.name}")
+      ''
+      + builtins.readFile ./init.el;
   };
 }
