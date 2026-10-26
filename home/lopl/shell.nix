@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   osConfig,
   config,
   ...
@@ -9,18 +10,19 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
+    completionInit = "";
+    initContent = lib.mkOrder 549 ''
+      autoload -U compinit
+      if [[ -n $ZDOTDIR/.zcompdump(N.mh+24) ]]; then compinit; else compinit -C; fi
+    '';
     antidote = {
       enable = true;
       plugins = [
-        "zsh-users/zsh-autosuggestions"
         "ohmyzsh/ohmyzsh path:plugins/git"
         "ohmyzsh/ohmyzsh path:plugins/sudo"
         "ohmyzsh/ohmyzsh path:plugins/systemd"
       ];
     };
-    initContent = ''
-      bat "${./.duck}" --style=plain --paging=never --color=always
-    '';
 
     shellAliases = {
       rebuild = "nixos-rebuild switch --flake ~/dotfiles/.#${osConfig.networking.hostName} --sudo";

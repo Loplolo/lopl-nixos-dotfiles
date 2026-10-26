@@ -36,7 +36,10 @@
   nixpkgs.config.allowUnfree = true;
 
   # Users
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    enableGlobalCompInit = false;
+  };
 
   users.users.lopl = {
     isNormalUser = true;
