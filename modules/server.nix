@@ -38,6 +38,11 @@
       fileSystems = ["/" "/var/lib"];
     };
 
+    zramSwap = {
+      enable = true;
+      memoryPercent = 50;
+    };
+
     environment.systemPackages = with pkgs; [
       vim
       git

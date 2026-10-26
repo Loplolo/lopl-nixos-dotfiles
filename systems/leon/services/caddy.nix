@@ -24,6 +24,12 @@ in {
     globalConfig = ''
       acme_dns cloudflare {env.CF_API_TOKEN}
 
+      # Requests from cloudflared carry the visitor's real IP.
+      servers {
+        trusted_proxies static 127.0.0.1/32 ::1/128
+        client_ip_headers Cf-Connecting-IP
+      }
+
       layer4 {
         # Wingo's server
         :25565 {

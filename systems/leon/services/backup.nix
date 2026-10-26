@@ -1,63 +1,35 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: let
-  # Only company data is backed up; personal users/repos are left out on purpose.
-  company = {
-    nextcloudUsers = []; # e.g. ["mario.rossi"]
-    nextcloudGroupFolders = []; # ids from `nextcloud-occ groupfolders:list`
-    forgejoOrgs = []; # e.g. ["camocondo"]
-  };
-
-  dumpDir = "/var/backup";
-  ncDir = config.services.nextcloud.datadir;
-  fj = config.services.forgejo;
-
-  paths =
-    [
-      "${dumpDir}/postgresql"
-      "${dumpDir}/forgejo"
-      "${ncDir}/config"
-      "${fj.stateDir}/custom"
-    ]
-    ++ map (u: "${ncDir}/data/${u}/files") company.nextcloudUsers
-    ++ map (id: "${ncDir}/data/__groupfolders/${toString id}") company.nextcloudGroupFolders
-    ++ map (o: "${fj.repositoryRoot}/${lib.toLower o}") company.forgejoOrgs;
+{config, ...}: let
+  nc = config.services.nextcloud;
 in {
-  # Nextcloud DB dump (also holds personal rows; can't be split per user).
-  # No timer of its own: the restic job pulls it in so dump and backup stay in sync.
+  # Company data lives in Nextcloud group folders; personal files are not backed up here.
+  # The DB dump covers the whole instance (shares, passwords app, calendars).
   services.postgresqlBackup = {
     enable = true;
-    databases = [config.services.nextcloud.config.dbname];
-    location = "${dumpDir}/postgresql";
+    databases = [nc.config.dbname];
+    location = "/var/backup/postgresql";
     compression = "zstd";
     startAt = [];
   };
 
-  services.restic.backups.company = {
-    repository = "${dumpDir}/restic/company";
-    passwordFile = config.sops.secrets.restic-company-password.path;
+  services.restic.backups.camocondo = {
+    repository = "/var/backup/restic/camocondo";
+    passwordFile = config.sops.secrets.restic-password.path;
     initialize = true;
 
-    # Skip paths that don't exist yet (e.g. a company user not created so far).
+    paths = [
+      "/var/backup/postgresql"
+      "${nc.datadir}/config"
+    ];
+    # Group folders only exist once the first one is created in the admin UI.
     dynamicFilesFrom = ''
-      for p in ${lib.escapeShellArgs paths}; do
-        [ -e "$p" ] && echo "$p"
-      done
-    '';
-
-    backupPrepareCommand = ''
-      install -d -m 700 ${dumpDir}/forgejo
-      ${pkgs.sqlite}/bin/sqlite3 ${fj.database.path} ".backup '${dumpDir}/forgejo/forgejo.db'"
+      [ -d ${nc.datadir}/data/__groupfolders ] && echo ${nc.datadir}/data/__groupfolders
+      true
     '';
 
     timerConfig = {
       OnCalendar = "03:00";
       Persistent = true;
     };
-
     pruneOpts = [
       "--keep-daily 7"
       "--keep-weekly 4"
@@ -67,10 +39,10 @@ in {
     checkOpts = ["--read-data-subset=10%"];
   };
 
-  systemd.services.restic-backups-company = {
-    wants = ["postgresqlBackup-${config.services.nextcloud.config.dbname}.service"];
-    after = ["postgresqlBackup-${config.services.nextcloud.config.dbname}.service"];
+  systemd.services.restic-backups-camocondo = {
+    wants = ["postgresqlBackup-${nc.config.dbname}.service"];
+    after = ["postgresqlBackup-${nc.config.dbname}.service"];
   };
 
-  sops.secrets.restic-company-password = {};
+  sops.secrets.restic-password = {};
 }

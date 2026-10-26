@@ -26,9 +26,27 @@
         tasks
         notes
         deck
+        groupfolders
+        richdocuments
         ;
+
+      passwords = pkgs.fetchNextcloudApp {
+        url = "https://git.mdns.eu/api/v4/projects/45/packages/generic/passwords/2026.10.0/passwords.tar.gz";
+        hash = "sha256-EXxP3Y0m+i6RIUJ2qVENQ6m+NE/+RMbXQbnEjCsQTSU=";
+        license = "agpl3Plus";
+      };
     };
     extraAppsEnable = true;
+  };
+
+  # Keep uploads in chunks below Cloudflare's 100 MB request limit.
+  systemd.services.nextcloud-chunk-size = {
+    wantedBy = ["multi-user.target"];
+    after = ["nextcloud-setup.service"];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      ${pkgs.lib.getExe config.services.nextcloud.occ} config:app:set files max_chunk_size --value 52428800
+    '';
   };
 
   services.nginx = {
