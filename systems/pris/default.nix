@@ -111,9 +111,6 @@
 
   users.users.lopl.extraGroups = ["podman" "adbusers" "render" "lp" "uinput"];
 
-  # WayDroid
-  virtualisation.waydroid.enable = true;
-
   # Graphics
   hardware.graphics = {
     enable32Bit = true;
@@ -189,10 +186,8 @@
     supportedFilesystems = ["btrfs"];
   };
 
-  boot.kernelModules = ["kvm-amd" "binder_linux" "hid-wiimote" "uinput"];
-  boot.extraModulePackages = with config.boot.kernelPackages; [
-    v4l2loopback
-  ];
+  boot.kernelModules = ["kvm-amd" "hid-wiimote" "uinput"];
+
   boot.extraModprobeConfig = ''
     options v4l2loopback devices=1 video_nr=9 card_label="OBS Virtual Camera" exclusive_caps=1 max_buffers=8
   '';

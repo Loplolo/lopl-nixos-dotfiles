@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   hardware.openrazer = {
-    enable = true;
+    enable = false;
     users = ["lopl"];
   };
 
