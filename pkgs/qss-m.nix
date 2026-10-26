@@ -1,27 +1,35 @@
 {
+  lib,
   stdenv,
   fetchFromGitHub,
-  pkgs,
+  pkg-config,
+  sdl3,
+  libGL,
+  gnutls,
+  libmad,
+  libopus,
+  opusfile,
+  libvorbis,
+  zlib,
+  curl,
 }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "qss-m";
-  version = "unstable-2026-07-21";
+  version = "1.6.5-unstable-2026-10-12";
 
   src = fetchFromGitHub {
     owner = "timbergeron";
     repo = "QSS-M";
-    rev = "b7ef8b48e167497ee29333d26df0b598dbf0d876";
-    sha256 = "1lbi9mw5by7swysyqbfd2sfhdikc18lah4pl44r39gyc999sgzvs";
+    rev = "21a5d106f977fa4f544eaa89a7400eba5cc29d89";
+    hash = "sha256-I4EAn9ceJQy7wdrJWx+nrpAqd1nGrqJiQWzHaTeSlDg=";
   };
 
-  nativeBuildInputs = with pkgs; [
-    pkg-config
-    gnumake
-    zip
-  ];
+  sourceRoot = "${finalAttrs.src.name}/Quake";
 
-  buildInputs = with pkgs; [
-    SDL2
+  nativeBuildInputs = [pkg-config];
+
+  buildInputs = [
+    sdl3
     libGL
     gnutls
     libmad
@@ -30,35 +38,30 @@ stdenv.mkDerivation rec {
     libvorbis
     zlib
     curl
-    libx11
-    xorgproto
   ];
 
-  sourceRoot = "${src.name}/Quake";
-
-  # Correctly reference the dev outputs via the 'pkgs' set
-  NIX_CFLAGS_COMPILE = [
-    "-I${pkgs.libopus.dev}/include/opus"
-    "-I${pkgs.opusfile.dev}/include/opus"
+  env.NIX_CFLAGS_COMPILE = toString [
+    "-I${lib.getDev libopus}/include/opus"
   ];
 
   makeFlags = [
-    "DO_CODECS=1"
-    "USE_SDL2=1"
+    # Required on GCC >= 10 see BUILDING.html
     "QSS_LDFLAGS=-Wl,--allow-multiple-definition"
   ];
 
-  buildPhase = ''
-    runHook preBuild
-    make $makeFlags -j$NIX_BUILD_CORES
-    runHook postBuild
-  '';
-
+  enableParallelBuilding = true;
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/bin
-    cp quakespasm $out/bin/qss-m
-
+    install -Dm755 quakespasm $out/bin/qss-m
     runHook postInstall
   '';
-}
+
+  meta = {
+    description = "QSS-M, a port of ID Software's original Quake, evolved from Quake 1.09 to Fitzquake, Quakespasm, Quakespasm Spiked, and now Quakespasm Spiked Multiplayer. NetQuake competitive multiplayer clients began with ProQuake, progressed to Qrack or Mark V, and arrived at QSS-M, thanks to voluntary contributions.";
+    homepage = "https://github.com/timbergeron/QSS-M";
+    license = lib.licenses.gpl2Plus;
+    platforms = lib.platforms.linux;
+    maintainers = with lib.maintainers; [lopl];
+    mainProgram = "qss-m";
+  };
+})
