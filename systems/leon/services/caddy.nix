@@ -9,7 +9,7 @@
       "github.com/caddy-dns/cloudflare@v0.2.4"
       "github.com/mholt/caddy-l4@v0.1.2"
     ];
-    hash = "sha256-pSr7yKE8iTyscxqRGptGYDJVz9oiN0ocnToJK3K3dY0=";
+    hash = "sha256-eGv+I4CceOEqWrMs5fTWPrTF3DBXtB+0vu3Ndw4yArE=";
   };
 in {
   services.caddy = {

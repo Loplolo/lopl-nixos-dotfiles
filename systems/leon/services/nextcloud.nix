@@ -10,9 +10,6 @@
 
     config.dbtype = "pgsql";
     database.createLocally = true;
-    config.adminpassFile = config.sops.secrets.nextcloud-admin-pass.path; #
-    config.adminuser = "admin";
-
     https = true;
 
     settings = {
@@ -61,6 +58,4 @@
   ];
 
   lopl.proxies.cloud = 8081;
-
-  sops.secrets.nextcloud-admin-pass.key = "nextcloud-admin-password";
 }

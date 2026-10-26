@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://nixos.org/guides/nix-pills/nix-pills.epub";
-    hash = "sha256-2qV5/8jeDt/Je9CxwM4PIx6PtdwzUA+wkQDSBFhzRWE=";
+    hash = "sha256-izWrgh7lyLJDUUyc3yMYQdUBy6yeHsaPFRUxc4vczb4=";
   };
 
   dontUnpack = true;
