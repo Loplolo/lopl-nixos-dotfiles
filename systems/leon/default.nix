@@ -11,6 +11,7 @@
     ./services/homeassistant.nix
     ./services/microbin.nix
     ./services/forgejo.nix
+    ./services/backup.nix
     #./services/minecraft-server.nix
     ./services/tg-captcha-bot.nix
     #./services/blog.nix

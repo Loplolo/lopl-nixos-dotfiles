@@ -35,7 +35,7 @@
     services.btrfs.autoScrub = {
       enable = true;
       interval = "weekly";
-      fileSystems = ["/"];
+      fileSystems = ["/" "/var/lib"];
     };
 
     environment.systemPackages = with pkgs; [
