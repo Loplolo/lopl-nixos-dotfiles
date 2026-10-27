@@ -184,7 +184,7 @@ in {
         hide-mode-line
         org-journal
         org-roam
-        org-tree-slide
+        org-present
         ox-reveal
         ox-haunt
 

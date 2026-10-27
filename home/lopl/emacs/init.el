@@ -619,39 +619,48 @@
 ;; presentations
 (use-package hide-mode-line)
 
-(defun lopl/presentation-start ()
-  (hide-mode-line-mode 1)
-  (text-scale-set 3)
-  (setq-local visual-fill-column-width 70
-              cursor-type nil
+(defvar-local lopl/present-remaps nil)
+
+(defun lopl/present-start ()
+  (setq lopl/present-remaps
+        (list (face-remap-add-relative 'default :height 1.75)
+              (face-remap-add-relative 'header-line :height 4.0
+                                       :background (face-background 'default)
+                                       :box nil)
+              (face-remap-add-relative 'org-block-begin-line :height 0.7)
+              (face-remap-add-relative 'org-block-end-line :height 0.7)))
+  (setq header-line-format " ")
+  (setq-local cursor-type nil
               global-hl-line-mode nil)
   (global-hl-line-unhighlight)
-  (visual-fill-column-adjust)
-  (org-display-inline-images))
-
-(defun lopl/presentation-stop ()
-  (hide-mode-line-mode -1)
-  (text-scale-set 0)
-  (kill-local-variable 'visual-fill-column-width)
-  (kill-local-variable 'cursor-type)
-  (kill-local-variable 'global-hl-line-mode)
+  (hide-mode-line-mode 1)
+  (org-display-inline-images)
   (visual-fill-column-adjust))
 
-(use-package org-tree-slide
+(defun lopl/present-end ()
+  (mapc #'face-remap-remove-relative lopl/present-remaps)
+  (setq lopl/present-remaps nil
+        header-line-format nil)
+  (kill-local-variable 'cursor-type)
+  (kill-local-variable 'global-hl-line-mode)
+  (hide-mode-line-mode -1)
+  (visual-fill-column-adjust))
+
+(defun lopl/present-prepare-slide (_buffer _heading)
+  (org-overview)
+  (org-fold-show-entry)
+  (org-fold-show-children))
+
+(use-package org-present
   :after org
   :bind (:map org-mode-map
-              ("<f8>" . org-tree-slide-mode)
-              :map org-tree-slide-mode-map
-              ("<right>" . org-tree-slide-move-next-tree)
-              ("<left>" . org-tree-slide-move-previous-tree))
-  :hook ((org-tree-slide-play . lopl/presentation-start)
-         (org-tree-slide-stop . lopl/presentation-stop))
-  :custom
-  (org-tree-slide-slide-in-effect nil)
-  (org-tree-slide-header t)
-  (org-tree-slide-breadcrumbs " › ")
-  (org-tree-slide-activate-message "")
-  (org-tree-slide-deactivate-message ""))
+              ("<f8>" . org-present)
+              :map org-present-mode-keymap
+              ("<f8>" . org-present-quit))
+  :hook ((org-present-mode . lopl/present-start)
+         (org-present-mode-quit . lopl/present-end))
+  :config
+  (add-hook 'org-present-after-navigate-functions #'lopl/present-prepare-slide))
 
 (with-eval-after-load 'ox-latex
   (setq org-latex-compiler "lualatex"
