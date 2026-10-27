@@ -11,10 +11,16 @@
     syntaxHighlighting.enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
     completionInit = "";
-    initContent = lib.mkOrder 549 ''
-      autoload -U compinit
-      if [[ -n $ZDOTDIR/.zcompdump(N.mh+24) ]]; then compinit; else compinit -C; fi
-    '';
+    initContent = lib.mkMerge [
+      (lib.mkOrder 549 ''
+        autoload -U compinit
+        if [[ -n $ZDOTDIR/.zcompdump(N.mh+24) ]]; then compinit; else compinit -C; fi
+      '')
+      (lib.mkOrder 550 ''
+        export GPG_TTY=$(tty)
+        gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1
+      '')
+    ];
     antidote = {
       enable = true;
       plugins = [
