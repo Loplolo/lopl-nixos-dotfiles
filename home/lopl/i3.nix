@@ -6,6 +6,7 @@
 }: let
   mod = "Mod4";
   colors = config.lib.stylix.colors.withHashtag;
+  barColors = config.lib.lopl.barColors;
   fonts = config.stylix.fonts;
   transparent = "#00000000";
   launcher = pkgs.writeShellScript "rofi-launcher" ''
@@ -166,32 +167,32 @@ in {
             };
             colors = {
               background = transparent;
-              statusline = colors.base05;
+              statusline = barColors.base05;
               separator = transparent;
               focusedWorkspace = {
-                border = colors.base0D;
+                border = barColors.base0D;
                 background = transparent;
-                text = colors.base05;
+                text = barColors.base05;
               };
               activeWorkspace = {
                 border = transparent;
                 background = transparent;
-                text = colors.base05;
+                text = barColors.base05;
               };
               inactiveWorkspace = {
                 border = transparent;
                 background = transparent;
-                text = colors.base04;
+                text = barColors.base04;
               };
               urgentWorkspace = {
-                border = colors.base08;
-                background = colors.base08;
-                text = colors.base00;
+                border = barColors.base08;
+                background = barColors.base08;
+                text = barColors.base00;
               };
               bindingMode = {
-                border = colors.base0E;
-                background = colors.base0E;
-                text = colors.base00;
+                border = barColors.base0E;
+                background = barColors.base0E;
+                text = barColors.base00;
               };
             };
           }

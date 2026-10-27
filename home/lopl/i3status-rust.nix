@@ -1,5 +1,5 @@
 {config, ...}: let
-  colors = config.lib.stylix.colors.withHashtag;
+  colors = config.lib.lopl.barColors;
   transparent = "#00000000";
 in {
   programs.i3status-rust = {

@@ -2,19 +2,24 @@
   pkgs,
   config,
   lib,
+  inputs,
   ...
 }: let
   polarity = config.stylix.polarity;
+  scheme = variant: "${pkgs.base16-schemes}/share/themes/flexoki-${variant}.yaml";
+  base16 = inputs.stylix.inputs.base16.lib {inherit pkgs lib;};
 
   wallpaper = ./wallpaper.png;
 in {
+  lib.lopl.barColors = (base16.mkSchemeAttrs (scheme "dark")).withHashtag;
+
   stylix = {
     enable = true;
     overlays.enable = false;
     image = wallpaper;
 
     polarity = lib.mkDefault "dark";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/flexoki-${polarity}.yaml";
+    base16Scheme = scheme polarity;
     override = lib.mkIf (polarity == "light") {
       base03 = "878580";
       base04 = "6F6E69";
