@@ -586,8 +586,8 @@
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline "~/Documents/todo.org" "Inbox")
            "* TODO %?\n  %i\n  %a")
-          ("a" "Agenda" entry (file+headline "~/Documents/agenda.org" "Inbox")
-           "* %?\nEntered on %U\n  %i")))
+          ("a" "Agenda" entry (file+olp+datetree "~/Documents/agenda.org")
+           "* %?\n  %i\n  %a")))
   (require 'org-faces)
   (require 'org-indent)
   (require 'ox-haunt)
