@@ -41,6 +41,8 @@
       "nofail"
       "uid=1000"
       "gid=100"
+      "dmask=0002"
+      "fmask=0002"
     ];
   };
   system.stateVersion = "25.11";

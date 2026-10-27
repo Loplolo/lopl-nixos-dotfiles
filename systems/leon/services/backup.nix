@@ -1,8 +1,6 @@
 {config, ...}: let
   nc = config.services.nextcloud;
 in {
-  # Company data lives in Nextcloud group folders; personal files are not backed up here.
-  # The DB dump covers the whole instance (shares, passwords app, calendars).
   services.postgresqlBackup = {
     enable = true;
     databases = [nc.config.dbname];
@@ -20,7 +18,7 @@ in {
       "/var/backup/postgresql"
       "${nc.datadir}/config"
     ];
-    # Group folders only exist once the first one is created in the admin UI.
+
     dynamicFilesFrom = ''
       [ -d ${nc.datadir}/data/__groupfolders ] && echo ${nc.datadir}/data/__groupfolders
       true
