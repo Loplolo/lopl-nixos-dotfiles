@@ -1,8 +1,7 @@
 {config, ...}: {
   services.immich = {
     enable = true;
-    host = "0.0.0.0";
-    openFirewall = true;
+    host = "127.0.0.1";
     port = 2283;
   };
 

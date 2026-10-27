@@ -39,7 +39,6 @@
     extraAppsEnable = true;
   };
 
-  # Keep uploads in chunks below Cloudflare's 100 MB request limit.
   systemd.services.nextcloud-chunk-size = {
     wantedBy = ["multi-user.target"];
     after = ["nextcloud-setup.service"];

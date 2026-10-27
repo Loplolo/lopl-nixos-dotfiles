@@ -19,6 +19,7 @@ in {
         termination = true;
       };
       net = {
+        proto = "IPv4";
         listen = "loopback";
         post_allow.host = ["::1" "127.0.0.1"];
       };
@@ -29,11 +30,8 @@ in {
     };
   };
 
-  # Collabora fetches documents from Nextcloud through the local Caddy.
   networking.hosts."127.0.0.1" = [cloud];
 
-  # Point Nextcloud Office at Collabora. Runs in the background and retries,
-  # since coolwsd takes a while to answer after starting.
   systemd.services.nextcloud-collabora-config = {
     wantedBy = ["multi-user.target"];
     after = ["nextcloud-setup.service" "coolwsd.service"];

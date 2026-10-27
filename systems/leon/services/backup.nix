@@ -11,8 +11,8 @@ in {
     startAt = [];
   };
 
-  services.restic.backups.camocondo = {
-    repository = "/var/backup/restic/camocondo";
+  services.restic.backups.nextcloud = {
+    repository = "/var/backup/restic/nextcloud";
     passwordFile = config.sops.secrets.restic-password.path;
     initialize = true;
 
@@ -39,7 +39,7 @@ in {
     checkOpts = ["--read-data-subset=10%"];
   };
 
-  systemd.services.restic-backups-camocondo = {
+  systemd.services.restic-backups-nextcloud = {
     wants = ["postgresqlBackup-${nc.config.dbname}.service"];
     after = ["postgresqlBackup-${nc.config.dbname}.service"];
   };
