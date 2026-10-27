@@ -80,6 +80,7 @@
     android-tools
     dbeaver-bin
     drawio
+    godot
     gurobi
     octaveFull
     pkg-config
