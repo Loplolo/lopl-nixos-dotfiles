@@ -8,20 +8,17 @@
   colors = config.lib.stylix.colors.withHashtag;
   fonts = config.stylix.fonts;
   transparent = "#00000000";
-  launcher = pkgs.writeShellScript "rofi-top-bar" ''
-    exec rofi -show "$1" -theme-str '
-      window { location: north; anchor: north; width: calc(100% - 16px); y-offset: 8px; }
-      mainbox { orientation: horizontal; children: [ inputbar, listview ]; }
-      inputbar { width: 25em; expand: false; }
-      listview { layout: horizontal; lines: 100; spacing: 15px; fixed-height: false; scrollbar: false; }
-      element-icon { enabled: false; }
-    '
+  launcher = pkgs.writeShellScript "rofi-launcher" ''
+    exec rofi -show "$1" -i -sort -matching fuzzy
   '';
   menu = "${launcher} run";
   drun = "${launcher} drun";
   app = "${mod}+Control";
   exitPrompt = pkgs.writeShellScript "i3-exit-prompt" ''
-    if [ "$(printf 'No\nYes' | rofi -dmenu -i -p 'Exit i3?')" = "Yes" ]; then
+    answer=$(printf 'No\nYes' | rofi -dmenu -i -no-custom \
+      -p 'Exit i3' \
+      -theme-str 'window { width: 14em; } listview { lines: 2; }')
+    if [ "$answer" = "Yes" ]; then
       i3-msg exit
     fi
   '';
@@ -46,31 +43,56 @@ in {
       inherit (config.lib.formats.rasi) mkLiteral;
     in {
       window = {
-        border = 0;
-        padding = mkLiteral "8px";
+        width = mkLiteral "28em";
+        border = mkLiteral "1px";
+        border-color = mkLiteral colors.base03;
+        padding = mkLiteral "6px";
       };
-      inputbar.padding = mkLiteral "6px 10px";
-      element = {
-        padding = mkLiteral "6px 10px";
-        border-radius = mkLiteral "6px";
+      inputbar.padding = mkLiteral "4px 8px";
+      listview = {
+        lines = 10;
+        spacing = mkLiteral "0px";
       };
+      element.padding = mkLiteral "4px 8px";
     };
   };
 
   services.dunst = {
     enable = true;
-    settings.global = {
-      origin = "top-right";
-      offset = "(8, 8)";
-      width = 360;
-      padding = 12;
-      horizontal_padding = 14;
-      gap_size = 8;
-      frame_width = 2;
-      corner_radius = 10;
-      icon_corner_radius = 6;
-      progress_bar_corner_radius = 4;
-      separator_height = 0;
+    settings = {
+      global = {
+        origin = "top-right";
+        offset = "(12, 12)";
+        width = 320;
+        padding = 8;
+        horizontal_padding = 10;
+        gap_size = 6;
+        frame_width = 1;
+        corner_radius = 0;
+        icon_corner_radius = 0;
+        progress_bar_corner_radius = 0;
+        separator_height = 0;
+
+        icon_position = "left";
+        max_icon_size = 32;
+        text_icon_padding = 8;
+        alignment = "left";
+        vertical_alignment = "center";
+        format = "<b>%s</b>\n%b";
+        markup = "full";
+
+        notification_limit = 3;
+        history_length = 20;
+        dmenu = "rofi -dmenu -p dunst";
+
+        mouse_left_click = "close_current";
+        mouse_middle_click = "do_action, close_current";
+        mouse_right_click = "close_all";
+      };
+
+      urgency_low.timeout = 5;
+      urgency_normal.timeout = 8;
+      urgency_critical.timeout = 0;
     };
   };
   services.picom = {
@@ -85,16 +107,13 @@ in {
       "window_type = 'dock'"
       "window_type = 'desktop'"
       "class_g = 'flameshot'"
+      "class_g = 'Dunst'"
+      "class_g = 'Rofi'"
       "_GTK_FRAME_EXTENTS@"
     ];
     settings = {
-      corner-radius = 10;
+      corner-radius = 0;
       shadow-radius = 16;
-      rounded-corners-exclude = [
-        "window_type = 'dock'"
-        "window_type = 'desktop'"
-        "fullscreen"
-      ];
     };
   };
 
