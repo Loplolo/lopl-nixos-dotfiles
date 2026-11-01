@@ -66,11 +66,14 @@
   users.groups = {
     media.members = ["nextcloud" "navidrome" "immich" "lopl"];
     syncthing.members = ["nextcloud" "lopl"];
+    users.members = ["nextcloud" "lopl"];
   };
 
   systemd.tmpfiles.rules = [
+    "d /mnt/media 0775 root media -"
     "d /mnt/media/music 0775 root media -"
     "d /mnt/media/photos 0775 root media -"
+    "Z /mnt/media 0775 root media -"
     "d /var/lib/syncthing 0750 syncthing syncthing -"
   ];
 

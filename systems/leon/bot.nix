@@ -5,6 +5,7 @@
   ...
 }: let
   alert = import ./alert.nix {inherit config pkgs;};
+  sandbox = import ./sandbox.nix;
   alertEnv = config.sops.templates."security-alert-env".path;
 
   watched =
@@ -28,6 +29,10 @@
       "tailscaled"
       "fail2ban"
       "sshd"
+      "status-bot"
+      "prometheus"
+      "alertmanager"
+      "prometheus-node-exporter"
     ]
     ++ lib.filter (lib.hasPrefix "cloudflared-tunnel-") (lib.attrNames config.systemd.services);
 
@@ -37,6 +42,7 @@
       coreutils
       gawk
       gnugrep
+      gnused
       procps
       util-linux
       systemd
@@ -44,7 +50,7 @@
     ];
     text = ''
       secs=$(cut -d. -f1 /proc/uptime)
-      echo "$(hostname) up $((secs / 86400))d $((secs % 86400 / 3600))h, load $(cut -d' ' -f1-3 /proc/loadavg)"
+      echo "${config.networking.hostName} up $((secs / 86400))d $((secs % 86400 / 3600))h, load $(cut -d' ' -f1-3 /proc/loadavg)"
       echo "mem $(free -h | awk '/^Mem:/ {print $3 "/" $2}' | sed 's/i//g')"
       for m in / /mnt/storage; do
         if mountpoint -q "$m"; then
@@ -118,53 +124,6 @@
       done
     '';
   };
-
-  backup-report = pkgs.writeShellApplication {
-    name = "backup-report";
-    runtimeInputs = with pkgs; [systemd alert];
-    text = ''
-      unit=restic-backups-nextcloud.service
-      start=$(systemctl show "$unit" -p ExecMainStartTimestampMonotonic --value)
-      end=$(systemctl show "$unit" -p ExecMainExitTimestampMonotonic --value)
-      security-alert "backup ok ($(((end - start) / 60000000)) min)"
-    '';
-  };
-
-  notify-failure = pkgs.writeShellApplication {
-    name = "notify-failure";
-    runtimeInputs = with pkgs; [coreutils systemd alert];
-    text = ''
-      unit="$1.service"
-      stamp="$STATE_DIRECTORY/$1"
-      if [ -f "$stamp" ] && [ $(($(date +%s) - $(stat -c %Y "$stamp"))) -lt 900 ]; then
-        exit 0
-      fi
-      touch "$stamp"
-      log=$(journalctl -q -u "$unit" -n 15 -o cat --no-pager 2>/dev/null | tail -c 3000 || true)
-      security-alert "$(printf '%s failed\n\n%s' "$unit" "$log")"
-    '';
-  };
-
-  sandbox = {
-    NoNewPrivileges = true;
-    PrivateTmp = true;
-    PrivateDevices = true;
-    ProtectSystem = "strict";
-    ProtectHome = "read-only";
-    ProtectKernelTunables = true;
-    ProtectKernelModules = true;
-    ProtectKernelLogs = true;
-    ProtectControlGroups = true;
-    ProtectClock = true;
-    ProtectHostname = true;
-    RestrictNamespaces = true;
-    RestrictRealtime = true;
-    RestrictSUIDSGID = true;
-    LockPersonality = true;
-    SystemCallArchitectures = "native";
-    RestrictAddressFamilies = ["AF_UNIX" "AF_INET" "AF_INET6"];
-    CapabilityBoundingSet = "";
-  };
 in {
   environment.systemPackages = [status-report];
 
@@ -182,36 +141,4 @@ in {
         StateDirectory = "status-bot";
       };
   };
-
-  systemd.services.restic-backups-nextcloud.onSuccess = ["backup-report.service"];
-  systemd.services.backup-report = {
-    description = "Report a successful backup";
-    serviceConfig =
-      {
-        Type = "oneshot";
-        ExecStart = lib.getExe backup-report;
-      }
-      // sandbox;
-  };
-
-  systemd.services."notify-failure@" = {
-    description = "Report failure of %i";
-    serviceConfig =
-      sandbox
-      // {
-        Type = "oneshot";
-        ExecStart = "${lib.getExe notify-failure} %i";
-        StateDirectory = "notify-failure";
-      };
-  };
-
-  systemd.packages = [
-    (pkgs.runCommand "notify-on-failure" {} ''
-      mkdir -p $out/etc/systemd/system/service.d $out/etc/systemd/system/notify-failure@.service.d
-      printf '[Unit]\nOnFailure=notify-failure@%%N.service\n' \
-        >$out/etc/systemd/system/service.d/90-notify-failure.conf
-      printf '[Unit]\nOnFailure=\n' \
-        >$out/etc/systemd/system/notify-failure@.service.d/90-notify-failure.conf
-    '')
-  ];
 }

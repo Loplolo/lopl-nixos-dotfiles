@@ -1,6 +1,9 @@
 {
   imports = [
     ./tailscale.nix
+    ./security.nix
+    ./monitoring.nix
+    ./bot.nix
     ./services/cloudflared.nix
     ./services/caddy.nix
     ./services/nextcloud.nix
@@ -40,7 +43,8 @@
       "defaults"
       "nofail"
       "uid=1000"
-      "gid=100"
+      "gid=media"
+      "umask=002"
     ];
   };
   system.stateVersion = "25.11";

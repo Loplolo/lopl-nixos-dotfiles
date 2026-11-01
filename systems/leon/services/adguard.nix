@@ -55,7 +55,7 @@
   lopl.proxies.adguard = config.services.adguardhome.port;
 
   networking.firewall = {
-    allowedTCPPorts = [53 3001];
+    allowedTCPPorts = [53];
     allowedUDPPorts = [53];
   };
 }

@@ -6,128 +6,118 @@
 }: let
   tailnet = ["100.64.0.0/10" "fd7a:115c:a1e0::/48"];
 
-  alertEnv = config.sops.templates."security-alert-env".path;
+  security-alert = import ./alert.nix {inherit config pkgs;};
+  sandbox = import ./sandbox.nix;
 
-  security-alert = pkgs.writeShellApplication {
-    name = "security-alert";
-    runtimeInputs = with pkgs; [curl util-linux coreutils];
-    excludeShellChecks = ["SC1091"];
+  audit-watch = pkgs.writeShellApplication {
+    name = "audit-watch";
+    runtimeInputs = with pkgs; [coreutils systemd security-alert];
     text = ''
-      if [ "$#" -gt 0 ]; then msg="$*"; else msg=$(cat); fi
-      msg="[${config.networking.hostName}] $msg"
-      printf '%s\n' "$msg" | logger -t security-alert
+      state="''${RUNTIME_DIRECTORY:-/run/audit-watch}"
+      mkdir -p "$state"
 
-      . ${alertEnv}
-      printf 'url = "https://api.telegram.org/bot%s/sendMessage"\n' "$TG_TOKEN" |
-        curl -fsS --max-time 20 -K - \
-          --data-urlencode "chat_id=$TG_CHAT" \
-          --data-urlencode "text=$(printf '%s' "$msg" | head -c 4000)" \
-          -o /dev/null ||
-        logger -t security-alert "Telegram delivery failed"
-    '';
-  };
+      journalctl -f -n 0 -o cat -t audisp-syslog -t sudo | while IFS= read -r line; do
+        case "$line" in
+          *'key=identity'* | *'key="identity"'*)
+            key=identity
+            label="account change"
+            ;;
+          *'key=privilege'* | *'key="privilege"'*)
+            key=privilege
+            label="sudoers change"
+            ;;
+          *'key=sshd'* | *'key="sshd"'*)
+            key=sshd
+            label="SSH key/config change"
+            ;;
+          *'key=persistence'* | *'key="persistence"'*)
+            key=persistence
+            label="persistence change"
+            ;;
+          *'key=exec_tmp'* | *'key="exec_tmp"'*)
+            key=exec_tmp
+            label="process executed from tmp"
+            ;;
+          *"incorrect password attempt"* | *"NOT in sudoers"* | *"command not allowed"* | *"user NOT authorized"*)
+            key=sudo
+            label="sudo failure"
+            ;;
+          *) continue ;;
+        esac
 
-  security-digest = pkgs.writeShellApplication {
-    name = "security-digest";
-    runtimeInputs = with pkgs; [
-      coreutils
-      gnugrep
-      gnused
-      gawk
-      findutils
-      diffutils
-      iproute2
-      systemd
-      config.services.fail2ban.package
-      security-alert
-    ];
-    text = ''
-      state=/var/lib/security-digest
-      since="-24h"
-      out=$(mktemp)
-      trap 'rm -f "$out"' EXIT
-      say() { printf '%s\n' "$*" >>"$out"; }
-      count() { grep -cE "$1" || true; }
+        now=$(date +%s)
+        last=0
+        if [ -f "$state/$key" ]; then last=$(cat "$state/$key"); fi
+        if [ $((now - last)) -lt 30 ]; then continue; fi
+        printf '%s' "$now" >"$state/$key"
 
-      say "Security digest, last 24h"
-
-      ssh_log=$(journalctl -q -o cat -u sshd.service --since "$since" || true)
-      say ""
-      say "SSH logins accepted: $(printf '%s\n' "$ssh_log" | count '^Accepted ')"
-      printf '%s\n' "$ssh_log" | grep -E '^Accepted ' |
-        awk '{print "  " $4 " from " $6 " (" $2 ")"}' | sort | uniq -c | head -n 10 >>"$out" || true
-      say "SSH failed attempts: $(printf '%s\n' "$ssh_log" | count 'Failed |Invalid user|authentication failure')"
-
-      sudo_log=$(journalctl -q -o cat _COMM=sudo --since "$since" || true)
-      say "sudo commands: $(printf '%s\n' "$sudo_log" | count 'COMMAND=')"
-      say "sudo failures: $(printf '%s\n' "$sudo_log" | count 'incorrect password|authentication failure|NOT in sudoers')"
-
-      nc_fail=$(journalctl -q -o cat SYSLOG_IDENTIFIER=Nextcloud --since "$since" | count 'Login failed')
-      fj_fail=$(journalctl -q -o cat -u forgejo.service --since "$since" | count 'Failed authentication attempt')
-      say "Nextcloud failed logins: $nc_fail"
-      say "Forgejo failed logins: $fj_fail"
-
-      say ""
-      say "fail2ban bans: $(journalctl -q -o cat -u fail2ban.service --since "$since" | count '\] Ban ')"
-      for jail in $(fail2ban-client status 2>/dev/null | sed -n 's/.*Jail list:\s*//p' | tr ',' ' '); do
-        n=$(fail2ban-client status "$jail" | sed -n 's/.*Currently banned:\s*//p')
-        [ "''${n:-0}" != 0 ] && say "  $jail: $n banned now"
+        security-alert "$(printf '%s: %s' "$label" "$line" | head -c 3500)"
       done
-
-      fw=$(journalctl -q -k -o cat --since "$since" | grep 'refused connection' || true)
-      say "Firewall refused connections: $(printf '%s' "$fw" | count 'refused')"
-      printf '%s\n' "$fw" | grep -oE 'SRC=[^ ]+' | sort | uniq -c | sort -rn | head -n 5 |
-        awk '{print "  " $1 "x " substr($2, 5)}' >>"$out" || true
-
-      failed=$(systemctl --failed --no-legend --plain | awk '{print $1}')
-      if [ -n "$failed" ]; then
-        say ""
-        say "Failed units:"
-        printf '%s\n' "$failed" | sed 's/^/  /' >>"$out"
-      fi
-
-      changes=""
-      check() {
-        local name=$1 now="$state/$1.now"
-        shift
-        "$@" >"$now" 2>/dev/null || true
-        if [ -f "$state/$name.prev" ]; then
-          d=$(diff "$state/$name.prev" "$now" | grep -E '^[<>]' | head -n 15 || true)
-          [ -n "$d" ] && changes="$changes"$'\n'"$name changed:"$'\n'"$d"
-        fi
-        mv "$now" "$state/$name.prev"
-      }
-      check listening-ports sh -c "ss -tulnH | awk '{print \$1, \$5}' | sort -u"
-      check ssh-keys sh -c 'sha256sum /root/.ssh/authorized_keys /home/*/.ssh/authorized_keys \
-        /var/lib/forgejo/.ssh/authorized_keys /etc/ssh/authorized_keys.d/* 2>/dev/null | sort -k2'
-      check suid-files sh -c 'find / -xdev \( -path /nix -o -path /var/lib/containers -o -path /proc \) -prune \
-        -o -type f -perm /6000 -print 2>/dev/null | sort'
-      check users sh -c "getent passwd | awk -F: '\$3 == 0 || \$7 !~ /nologin|false/ {print \$1, \$3, \$7}' | sort"
-
-      say ""
-      if [ -n "$changes" ]; then say "CHANGES SINCE LAST DIGEST:$changes"; else say "No changes in ports, SSH keys, SUID files or login users."; fi
-
-      cat "$out"
-      security-alert <"$out"
     '';
   };
 in {
   sops.secrets = {
-    security-alert-bot-token = {};
+    tg-homelab-bot-token = {};
     security-alert-chat-id = {};
   };
   sops.templates."security-alert-env" = {
     mode = "0400";
     content = ''
-      TG_TOKEN=${config.sops.placeholder."security-alert-bot-token"}
+      TG_TOKEN=${config.sops.placeholder."tg-homelab-bot-token"}
       TG_CHAT=${config.sops.placeholder."security-alert-chat-id"}
     '';
   };
 
-  environment.systemPackages = [security-alert security-digest pkgs.lynis];
+  environment.systemPackages = [security-alert pkgs.lynis pkgs.audit];
 
   services.openssh.openFirewall = false;
   services.openssh.settings.AllowUsers = ["lopl" config.services.forgejo.user];
+
+  # Kernel-level auditing replaces the old snapshot/diff watchers.
+  security.auditd = {
+    enable = true;
+    settings = {
+      max_log_file = 50;
+      num_logs = 5;
+      max_log_file_action = "ROTATE";
+    };
+    plugins.syslog = {
+      active = true;
+      args = ["interpret"];
+    };
+  };
+  security.audit = {
+    enable = true;
+    backlogLimit = 8192;
+    rules = [
+      "-w /etc/passwd -p wa -k identity"
+      "-w /etc/shadow -p wa -k identity"
+      "-w /etc/group -p wa -k identity"
+      "-w /etc/sudoers -p wa -k privilege"
+      "-w /etc/ssh -p wa -k sshd"
+      "-w /etc/ssh/authorized_keys.d -p wa -k sshd"
+      "-w /etc/pam.d -p wa -k persistence"
+      "-w /run/systemd/system -p wa -k persistence"
+      "-a always,exit -F arch=b64 -F dir=/tmp -F perm=x -k exec_tmp"
+      "-a always,exit -F arch=b64 -F dir=/var/tmp -F perm=x -k exec_tmp"
+      "-a always,exit -F arch=b64 -F dir=/dev/shm -F perm=x -k exec_tmp"
+    ];
+  };
+
+  systemd.services.audit-watch = {
+    description = "Forward audit and sudo events to Telegram";
+    wantedBy = ["multi-user.target"];
+    wants = ["auditd.service"];
+    after = ["auditd.service"];
+    serviceConfig =
+      sandbox
+      // {
+        ExecStart = lib.getExe audit-watch;
+        Restart = "always";
+        RestartSec = 10;
+        RuntimeDirectory = "audit-watch";
+      };
+  };
 
   services.fail2ban = {
     enable = true;
@@ -184,7 +174,7 @@ in {
           maxretry = 1;
           findtime = "1m";
           bantime = "1m";
-          action = "security-alert[jail=%(__name__)s, msg=\"SSH login accepted from\"]";
+          action = "security-alert[jail=%(__name__)s, msg=\"ssh login from\"]";
         };
         filter.Definition = {
           failregex = "^Accepted \\S+ for \\S+ from <HOST>";
@@ -199,28 +189,11 @@ in {
     actionstart =
     actionstop =
     actioncheck =
-    actionban = ${lib.getExe security-alert} "<msg> <ip> (<jail>, <failures> hits)"
+    actionban = ${lib.getExe security-alert} "<msg> <ip> (<jail>, <failures>)"
     actionunban =
 
     [Init]
     jail = fail2ban
-    msg = fail2ban banned
+    msg = banned
   '';
-
-  systemd.services.security-digest = {
-    description = "Daily security digest";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = lib.getExe security-digest;
-      StateDirectory = "security-digest";
-      StateDirectoryMode = "0700";
-    };
-  };
-  systemd.timers.security-digest = {
-    wantedBy = ["timers.target"];
-    timerConfig = {
-      OnCalendar = "08:00";
-      Persistent = true;
-    };
-  };
 }

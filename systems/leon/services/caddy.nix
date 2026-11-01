@@ -18,7 +18,7 @@ in {
 
     logFormat = ''
       output stdout
-      level DEBUG
+      level INFO
     '';
 
     globalConfig = ''
