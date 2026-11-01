@@ -15,6 +15,7 @@ in {
 
         ingress = {
           "forgejo.lopl.dev" = "http://127.0.0.1:3000";
+          "bin.lopl.dev" = viaCaddy "bin.lopl.dev";
           "cloud.lopl.dev" = viaCaddy "cloud.lopl.dev";
           "office.lopl.dev" = viaCaddy "office.lopl.dev";
         };

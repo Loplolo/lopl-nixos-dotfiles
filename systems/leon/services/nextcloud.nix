@@ -66,16 +66,32 @@
   users.groups = {
     media.members = ["nextcloud" "navidrome" "immich" "lopl"];
     syncthing.members = ["nextcloud" "lopl"];
-    users.members = ["nextcloud" "lopl"];
+    users.members = ["nextcloud"];
   };
 
   systemd.tmpfiles.rules = [
     "d /mnt/media 0775 root media -"
-    "d /mnt/media/music 0775 root media -"
-    "d /mnt/media/photos 0775 root media -"
-    "Z /mnt/media 0775 root media -"
+    "d /mnt/media/music 2775 root media -"
+    "d /mnt/media/photos 2775 root media -"
     "d /var/lib/syncthing 0750 syncthing syncthing -"
   ];
+
+  systemd.services.phpfpm-nextcloud.serviceConfig.UMask = "0002";
+  systemd.services.nextcloud-cron.serviceConfig.UMask = "0002";
+
+  systemd.services.media-permissions = {
+    wantedBy = ["multi-user.target"];
+    after = ["systemd-tmpfiles-setup.service"];
+    before = ["navidrome.service"];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      for d in /mnt/media/music /mnt/media/photos; do
+        chgrp -R media "$d"
+        chmod -R g+rwX "$d"
+        find "$d" -type d -exec chmod g+s {} +
+      done
+    '';
+  };
 
   lopl.proxies.cloud = 8081;
 }
