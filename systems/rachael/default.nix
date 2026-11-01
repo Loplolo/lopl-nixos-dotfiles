@@ -15,7 +15,7 @@
   # Force font size and light mode on laptop only
   home-manager.users.lopl.stylix = {
     fonts.sizes.terminal = lib.mkForce 12;
-    polarity = "dark";
+    polarity = "light";
   };
 
   services.guix.enable = true;
