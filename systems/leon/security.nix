@@ -48,7 +48,12 @@
         now=$(date +%s)
         last=0
         if [ -f "$state/$key" ]; then last=$(cat "$state/$key"); fi
-        if [ $((now - last)) -lt 30 ]; then continue; fi
+
+        cooldown=30
+        case "$key" in
+          exec_tmp) cooldown=300 ;;
+        esac
+        if [ $((now - last)) -lt $cooldown ]; then continue; fi
         printf '%s' "$now" >"$state/$key"
 
         security-alert "$(printf '%s: %s' "$label" "$line" | head -c 3500)"
@@ -98,9 +103,9 @@ in {
       "-w /etc/ssh/authorized_keys.d -p wa -k sshd"
       "-w /etc/pam.d -p wa -k persistence"
       "-w /run/systemd/system -p wa -k persistence"
-      "-a always,exit -F arch=b64 -F dir=/tmp -F perm=x -k exec_tmp"
-      "-a always,exit -F arch=b64 -F dir=/var/tmp -F perm=x -k exec_tmp"
-      "-a always,exit -F arch=b64 -F dir=/dev/shm -F perm=x -k exec_tmp"
+      "-a always,exit -F arch=b64 -F dir=/tmp -F perm=x -F auid>=1000 -F auid!=unset -k exec_tmp"
+      "-a always,exit -F arch=b64 -F dir=/var/tmp -F perm=x -F auid>=1000 -F auid!=unset -k exec_tmp"
+      "-a always,exit -F arch=b64 -F dir=/dev/shm -F perm=x -F auid>=1000 -F auid!=unset -k exec_tmp"
     ];
   };
 

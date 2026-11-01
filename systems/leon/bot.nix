@@ -26,6 +26,7 @@
       "podman-homeassistant"
       "podman-shieldy-bot"
       "podman-shieldy-mongo"
+      "podman-interpelli-bot"
       "tailscaled"
       "fail2ban"
       "sshd"

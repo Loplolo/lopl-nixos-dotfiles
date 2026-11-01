@@ -18,6 +18,7 @@
     ./services/backup.nix
     #./services/minecraft-server.nix
     ./services/tg-captcha-bot.nix
+    ./services/tg-interpelli-bot.nix
     #./services/blog.nix
   ];
 
