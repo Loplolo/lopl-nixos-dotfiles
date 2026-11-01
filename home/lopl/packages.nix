@@ -117,13 +117,14 @@
     qbittorrent
 
     # Communication
-    dino
+    signal-desktop
     discord
     element-desktop
     teams-for-linux
     telegram-desktop
     ayugram-desktop
     thunderbird
+    meshtastic
 
     # Graphics
     feh
