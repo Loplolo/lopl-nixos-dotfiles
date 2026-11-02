@@ -1,17 +1,18 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: let
   interpelli = pkgs.fetchFromGitHub {
     owner = "Loplolo";
+    rev = "main";
     repo = "interpelli-torino";
-    rev = "efd1909cf6f29efda0af9e40db52fe8c3c410d9a";
-    hash = "sha256-FDVaGmYW8C0HvWkGQpiJJ4JNP5UggYYS5cPBzCsCXdI=";
+    hash = "sha256-n2EIBS7RwyCdjAEatxClGhgi4QoXslKCmaXNcwZiokQ=";
   };
 in {
   virtualisation.podman.enable = true;
-  virtualisation.containers.registries.settings.registries.search.registries = ["docker.io"];
+  virtualisation.containers.registries.settings.unqualified-search-registries = ["docker.io"];
 
   virtualisation.oci-containers = {
     backend = "podman";
@@ -32,6 +33,7 @@ in {
       environment = {
         CACHE = "/data/interpelli.json";
         USERS_FILE = "/data/users.json";
+        SENT = "/data/sent.json";
         TZ = "Europe/Rome";
       };
 
