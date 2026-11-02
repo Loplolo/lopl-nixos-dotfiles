@@ -99,7 +99,7 @@ in {
   services.picom = {
     enable = true;
     backend = "glx";
-    vSync = true;
+    vSync = false;
     fade = true;
     fadeDelta = 4;
     shadow = true;
@@ -115,6 +115,8 @@ in {
     settings = {
       corner-radius = 0;
       shadow-radius = 16;
+      unredir-if-possible = true;
+      no-frame-pacing = true;
     };
   };
 
