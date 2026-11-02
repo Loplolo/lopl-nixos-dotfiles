@@ -28,12 +28,8 @@
       "podman-shieldy-mongo"
       "podman-interpelli-bot"
       "tailscaled"
-      "fail2ban"
       "sshd"
       "status-bot"
-      "prometheus"
-      "alertmanager"
-      "prometheus-node-exporter"
     ]
     ++ lib.filter (lib.hasPrefix "cloudflared-tunnel-") (lib.attrNames config.systemd.services);
 
@@ -47,7 +43,6 @@
       procps
       util-linux
       systemd
-      config.services.fail2ban.package
     ];
     text = ''
       secs=$(cut -d. -f1 /proc/uptime)
@@ -78,17 +73,52 @@
         *) echo "backup ok ''${last:0:16}" | tr T ' ' ;;
       esac
 
-      banned=0
-      for jail in $(fail2ban-client status 2>/dev/null | sed -n 's/.*Jail list:\s*//p' | tr ',' ' '); do
-        n=$(fail2ban-client status "$jail" | sed -n 's/.*Currently banned:\s*//p')
-        banned=$((banned + ''${n:-0}))
-      done
-      echo "bans $banned"
-
       echo "built $(date -d "@$(stat -c %Y /nix/var/nix/profiles/system)" '+%Y-%m-%d %H:%M')"
       if [ "$(readlink /run/booted-system/kernel)" != "$(readlink /run/current-system/kernel)" ]; then
         echo "reboot pending (new kernel)"
       fi
+    '';
+  };
+
+  health-check = pkgs.writeShellApplication {
+    name = "health-check";
+    runtimeInputs = with pkgs; [coreutils gawk gnugrep gnused systemd iproute2 alert];
+    text = ''
+      export LC_ALL=C
+      cd "$STATE_DIRECTORY"
+
+      {
+        for u in ${lib.concatStringsSep " " watched}; do
+          s=$(systemctl is-active "$u.service" || true)
+          [ "$s" = active ] || echo "$u is $s"
+        done
+        systemctl --failed --no-legend --plain | awk '{print $1 " failed"}'
+        for m in / /var/lib /mnt/storage; do
+          if mountpoint -q "$m"; then
+            df --output=pcent "$m" | tail -n 1 | awk -v m="$m" '$1 + 0 >= 90 {print m " is " $1 " full"}'
+          fi
+        done
+        awk '/^MemTotal:/ {t = $2} /^MemAvailable:/ {a = $2} END {if (a / t < 0.1) print "memory below 10%"}' /proc/meminfo
+        awk -v n="$(nproc)" '$2 > 2 * n {print "load above " 2 * n}' /proc/loadavg
+        last=$(systemctl show --timestamp=unix -P LastTriggerUSec restic-backups-nextcloud.timer | tr -d @)
+        case "$last" in "" | *[!0-9]*) last=0 ;; esac
+        [ $(($(date +%s) - last)) -lt $((30 * 3600)) ] || echo "backup not run in 30h"
+      } | sort -u >problems.new
+
+      ss -Hltn | awk '{print $4}' | grep -vE '^(127\.|\[::1\]|\[::ffff:127\.|100\.|\[fd7a:)' |
+        awk -F: '$NF < 32768 {print $NF}' | sort -u >ports.new
+
+      touch problems
+      msg=$(
+        comm -13 problems problems.new | sed 's/^/problem: /'
+        comm -23 problems problems.new | sed 's/^/resolved: /'
+        if [ -f ports ]; then
+          comm -13 ports ports.new | sed 's/^/new listening port: /'
+        fi
+      )
+      mv problems.new problems
+      mv ports.new ports
+      [ -z "$msg" ] || security-alert "$msg"
     '';
   };
 
@@ -127,6 +157,19 @@
   };
 in {
   environment.systemPackages = [status-report];
+
+  systemd.services.health-check = {
+    description = "Alert on service, resource and listening port changes";
+    startAt = "*:0/5";
+    serviceConfig =
+      sandbox
+      // {
+        Type = "oneshot";
+        ExecStart = lib.getExe health-check;
+        StateDirectory = "health-check";
+        RestrictAddressFamilies = ["AF_UNIX" "AF_INET" "AF_INET6" "AF_NETLINK"];
+      };
+  };
 
   systemd.services.status-bot = {
     description = "Telegram status bot";

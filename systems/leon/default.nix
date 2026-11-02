@@ -2,7 +2,6 @@
   imports = [
     ./tailscale.nix
     ./security.nix
-    ./monitoring.nix
     ./bot.nix
     ./services/cloudflared.nix
     ./services/caddy.nix
