@@ -87,7 +87,11 @@
     plantuml
     unityhub
     vscode
-    opencode
+    opencode.overrideAttrs
+    (finalAttrs: previousAttrs: {
+      npmDepsHash = "sha256-prx9dX7kUvs/E3zopkaPk5LXh3xJAy5sZeum/W8L7cA=";
+    })
+    exercism
 
     # Info Manuals
     nix-pills-info
@@ -137,13 +141,14 @@
     # 3D
     blender
     blockbench
-    pkgs-stable.freecad
+    freecad
     orca-slicer
 
     # Maps
     qgis
 
     # Audio and Video
+    cheese
     cmus
     kdePackages.kdenlive
     mpv
