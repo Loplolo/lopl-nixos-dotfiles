@@ -6,9 +6,9 @@
 }: let
   interpelli = pkgs.fetchFromGitHub {
     owner = "Loplolo";
-    rev = "main";
+    rev = "bba706aafc693049ecc3369bdfc98365dfb20756";
     repo = "interpelli-torino";
-    hash = "sha256-n2EIBS7RwyCdjAEatxClGhgi4QoXslKCmaXNcwZiokQ=";
+    hash = "sha256-YOI+ua0WAP2EQyV8/5sj2PT0Hck/PF+iEXvPjaxjQdQ=";
   };
 in {
   virtualisation.podman.enable = true;
@@ -33,7 +33,7 @@ in {
       environment = {
         CACHE = "/data/interpelli.json";
         USERS_FILE = "/data/users.json";
-        SENT = "/data/sent.json";
+        SENT_FILE = "/data/sent.json";
         TZ = "Europe/Rome";
       };
 
